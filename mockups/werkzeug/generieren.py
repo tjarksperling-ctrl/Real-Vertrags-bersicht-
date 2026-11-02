@@ -1793,6 +1793,41 @@ def mb_v1(offline=False):
     return (sb + f'<main class="main">{tb}{bereichsleiste_v1()}<div class="content narrow ub v2e mb">{bs}{gz}</div></main>' + extra)
 
 
+# ---------------- Bild 16 v1 (Sitzung 23): Einstellungen → Datenschutz ----------------
+def datenschutz_overlay_v1():
+    titel = es_titel('lock', 'Datenschutz', f'<span class="kk-status">{ic("check")} DSGVO-Einstellungen aktiv</span>', True)
+    kach = [('user', 'Kundendaten', 'nur der Name'),
+            ('file', 'Unterlagen', 'nur ausgewertet'),
+            ('cloud', 'Speicherort', 'Microsoft 365 · EU'),
+            ('key', 'Zugriff', 'nur Agentur-Konten')]
+    kh = ''.join(f'<div class="ds-k"><span class="es-sym">{ic(i)}</span><div><b>{n}</b><small>{d}</small></div></div>' for i, n, d in kach)
+    prot = [('a2', 'SK', 'Sabine K.', 'Familie Berger · Jahresgespräch 2026', 'Wohngebäude geändert', 'heute, 10:41'),
+            ('a4', 'TS', 'Tjark S.', 'Familie Berger · Jahresgespräch 2026', 'PDF erstellt und gesendet', 'heute, 10:12'),
+]
+    ph = ''.join(f'<div class="ds-p"><span class="avatar {a}">{k}</span><b>{n}</b><span class="ds-p-w">{w}</span><span class="ds-p-t">{t}</span><span class="spacer"></span><small>{z}</small></div>'
+                 for a, k, n, w, t, z in prot)
+    inhalt = f'''<p class="kk-lead">So wenig Daten wie möglich, nur im Microsoft 365 der Agentur. Hier erledigen Sie Löschen, Auskunft und Dokumentation.</p>
+  <div class="ex-sec"><span class="kk-n">1</span>Was gespeichert wird</div>
+  <div class="ds-kacheln">{kh}</div>
+  <div class="ex-sec"><span class="kk-n">2</span>KI</div>
+  <div class="ex-box">
+   <div class="optrow"><div>Kundenname vor dem Versand an die KI entfernen<small>Die KI sieht nur Verträge und Beträge, nie den Namen</small></div><span class="kk-fest">{ic("lock")} immer an</span></div>
+   <div class="optrow"><div>Hinweis vor jedem KI-Import zeigen<small>Erinnert daran, dass Unterlagen zum KI-Anbieter übertragen werden</small></div>{es_sw(True)}</div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">3</span>Löschen und Auskunft</div>
+  <div class="ex-box">
+   <div class="optrow"><div>Kunde endgültig löschen<small>Entfernt alle Übersichten und Aufgaben des Kunden auf allen Geräten · mit Rückfrage</small></div><button class="btn ds-rot">{ic("trash")} Kunde wählen …</button></div>
+   <div class="optrow"><div>Auskunft für einen Kunden<small>Alle gespeicherten Daten eines Kunden als PDF (Art. 15 DSGVO)</small></div><button class="btn">{ic("pdf")} Kunde wählen …</button></div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">4</span>Protokoll und Dokumentation</div>
+  <div class="ex-box ds-prot">{ph}
+   <div class="ds-p-fuss"><button class="btn ghost">Ganzes Protokoll öffnen …</button><span class="ds-hint">wird 12 Monate aufbewahrt</span><button class="btn ds-r">{ic("file")} Verarbeitungsverzeichnis (Vorlage)</button></div>
+  </div>'''
+    fuss = (f'<span class="kk-fuss">{ic("lock")} Nur Inhaber können diese Seite ändern. Alle anderen sehen sie nur.</span>'
+            f'<span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
+    return einst_overlay_v1('Datenschutz', titel, inhalt, fuss)
+
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -1806,6 +1841,7 @@ def index_page():
              ('ki-konto.html', 'Einstellungen: KI-Konto verbinden', 'Anbieter wählen, API-Schlüssel eintragen und testen, Datenschutz (AVV)'),
              ('einstellungen-outlook.html', 'Einstellungen: Outlook', 'Konto verbinden, Senden, Vorlage für die E-Mail'),
              ('einstellungen-speicherort.html', 'Einstellungen: Speicherort', 'Gemeinsamer SharePoint/OneDrive-Ordner, Auf Desktop speichern (.vtue, Passwort), Sicherheit'),
+             ('einstellungen-datenschutz.html', 'Einstellungen: Datenschutz', 'Was wo gespeichert wird, KI-Regeln, Kunde löschen, Auskunft, Protokoll, Verarbeitungsverzeichnis'),
              ('einstellungen-schnellstart.html', 'Einstellungen: Schnellstart', '5–8 Links bearbeiten, sortieren, App oder Webseite hinzufügen'),
              ('aufgaben.html', 'Aufgaben je Vertragsübersicht', 'Seitenfeld mit offenen Aufgaben, Aufgabe anlegen: Fällig, Priorität, Zuständig, Bezug, Outlook-Erinnerung'),
              ('desktop-speichern.html', 'Auf Desktop speichern', 'Datei .vtue mit festem Stand, optional mit Passwort verschlüsselt'),
@@ -1847,6 +1883,7 @@ files = {
  'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
  'einstellungen-outlook.html': page('Einstellungen – Outlook', start_body(), outlook_overlay_v1()),
  'einstellungen-speicherort.html': page('Einstellungen – Speicherort', start_body(), speicherort_overlay_v1()),
+ 'einstellungen-datenschutz.html': page('Einstellungen – Datenschutz', start_body(), datenschutz_overlay_v1()),
  'einstellungen-schnellstart.html': page('Einstellungen – Schnellstart', start_body(), schnellstart_overlay_v1()),
  'aufgaben.html': page('Aufgaben', aufgaben_v1()),
  'aufgaben-liste.html': page('Aufgaben – Liste', aufgaben_v1(formular=False)),

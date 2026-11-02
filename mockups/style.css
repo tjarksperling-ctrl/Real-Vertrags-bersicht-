@@ -1487,3 +1487,24 @@ td.v2-lz .edit-cell { display: block; }
 .ex2 .ex-sec-row { margin-top: 12px; }
 .ex2 .optrow { padding: 6px 0; }
 .ex2 .kopf-vorschau { margin: 4px 0 8px 28px; }
+
+/* ---------- Bild 16 v1 (Sitzung 23): Einstellungen → Datenschutz ---------- */
+.ds-kacheln { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ds-k { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 10px; background: #fff; box-shadow: inset 0 0 0 1px var(--line); }
+.ds-k b { display: block; font-size: 13px; } .ds-k small { color: var(--muted); font-size: 11.5px; }
+.btn.ds-rot { color: #d70015; }
+.ds-sec { display: flex; align-items: center; }
+.ds-prot { padding-top: 4px; }
+.ds-p { display: flex; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line-soft); font-size: 12.5px; white-space: nowrap; }
+.ds-p .avatar { width: 20px; height: 20px; font-size: 8px; }
+.ds-p-w { color: var(--muted); } .ds-p-t { color: var(--text); }
+.ds-p small { color: var(--muted); font-size: 11.5px; }
+.ds-p-fuss { display: flex; align-items: center; gap: 8px; padding: 8px 0 4px; }
+.ds-kacheln { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.ds-k { padding: 8px 10px; gap: 8px; }
+.ds-p-fuss { padding: 6px 0 2px; }
+.ds-prot { padding-top: 2px; }
+.ds-p-fuss { padding: 5px 0 1px; }
+.ds-hint { color: var(--muted); font-size: 11.5px; }
+.ds-p-fuss .btn.ds-r { margin-left: auto; }
+.ds-p small { margin-left: auto; }
