@@ -1007,7 +1007,7 @@ def aufgaben_v1(formular=True):
     tb = toolbar_v1().replace(f'<button class="btn">{ic("tasks")} Aufgaben <span class="badge orange">1</span></button>',
                               f'<button class="btn on" title="Offene Aufgaben dieser Übersicht · rot = eine ist überfällig">{ic("tasks")} Aufgaben <span class="badge rot">2</span></button>')
     return (sidebar('Familie Berger', v2=True) +
-            f'<main class="main au-main-wrap">{tb}{bereichsleiste_v1()}<div class="content narrow">{bs}{gz}</div>{aufgaben_panel_v1(formular)}</main>')
+            f'<main class="main au-main-wrap">{tb}{bereichsleiste_v1()}<div class="content narrow ub v2e">{v2_bereiche(bs)}{gz}</div>{aufgaben_panel_v1(formular)}</main>')  # Hintergrund-Leitlinie (Sitzung 22)
 
 # ---------------- Bild 10 v1 (Sitzung 15): Auf Desktop speichern (+ Passwort) und gespeicherte Datei öffnen ----------------
 # Fehlender Screen aus Abschnitt 2 („Stand einfrieren“ = Datei auf dem Desktop, Doppelklick öffnet, optional verschlüsselt).
@@ -1064,10 +1064,10 @@ def desktop_speichern_overlay_v1():
 def desktop_speichern_v1():
     tb = toolbar_v1().replace(f'<button class="btn" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">',
                               f'<button class="btn on" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">')
-    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL))
+    bs = v2_bereiche(''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL)))  # Hintergrund-Leitlinie (Sitzung 22)
     gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
-            f'<main class="main">{tb}{bereichsleiste_v1()}<div class="content narrow">{bs}{gz}</div></main>')
+            f'<main class="main">{tb}{bereichsleiste_v1()}<div class="content narrow ub v2e">{bs}{gz}</div></main>')
 
 def datei_passwort_v1():
     """Windows-Desktop: Doppelklick auf die .vtue-Datei → kleines App-Fenster mit Passwortabfrage."""
@@ -1113,6 +1113,7 @@ def datei_geoeffnet_v1():
     banner = (f'<div class="ds-banner">{ic("lock")}<span><b>Gespeicherter Stand vom 02.11.2026, 14:32 Uhr</b> · nur ansehen · mit Passwort geschützt</span>'
               f'<span class="spacer"></span><span class="ds-seit">{ic("info")} In der App wurde die Übersicht seitdem 3-mal geändert</span></div>')
     bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL))
+    bs = v2_bereiche(bs).replace(V2_DEL, '').replace(V2_X, '')  # Sitzung 22: nur ansehen → kein „…“, kein Mülleimer/×
     gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     body = f'<main class="main">{tb}{banner}{bereichsleiste_v1()}<div class="content narrow nurlesen">{bs}{gz}</div></main>'
     return page('Gespeicherte Datei', body).replace('<div class="app">', '<div class="app ds-app">').replace(
@@ -1263,7 +1264,7 @@ def nk_editor_v1():
     cg = colgroup_v1('VERS')
     def ug(sym, name, body, summe):
         return (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(sym)}</span>'
-                f'<span class="name">{name}</span><span class="ug-more">{ic("more")}</span></div>{body}'
+                f'<span class="name">{name}</span>{V2_DEL}</div>{body}'  # Sitzung 22: Mülleimer statt „…“
                 f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span><span class="summe"><small>Beitrag / Monat</small> {summe}</span></div></div>')
     phv = (f'<table class="vt">{cg}<tbody><tr><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Privathaftpflicht</span></td>'
            f'<td class="bem"><span class="edit-cell">Familientarif, Deckung 20 Mio. €</span></td><td class="num">7,90 €</td>'
@@ -1282,14 +1283,15 @@ def nk_editor_v1():
     ugs = (ug('shield', 'Haftpflicht &amp; Recht', phv, '7,90 €') + ug('home', 'Wohnen', wohnen, '0,00 €') +
            ug('car', 'Kfz', leer, '0,00 €') + ug('activity', 'Gesundheit', leer, '0,00 €'))
     vers = (f'<section class="bereich v1 vers"><header class="bereich-kopf"><span class="nr">1</span><h2>Versicherungen</h2>'
-            f'<span class="spacer"></span><button class="btn icon ghost">{ic("more")}</button></header>{spaltenkopf_v1("VERS")}'
+            f'</header>{spaltenkopf_v1("VERS")}'  # Sitzung 22: kein „…“ im Bereichskopf
             f'<div class="ugs">{ugs}<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
             f'<footer class="bereich-summe v1"><span class="bs-label">Summe Versicherungen</span><span class="spacer"></span><div class="kv"><span>Beitrag / Monat</span><b>7,90 €</b></div></footer></section>')
     hinweis = (f'<div class="nk-band">{ic("tpl")}<span><b>Familie Hoffmann</b> wurde mit der Vorlage „Junge Familie“ angelegt · Darlehen ist aus und lässt sich oben jederzeit zuschalten.</span>'
                f'<span class="spacer"></span><span class="ds-link">Vorlage wechseln</span><span class="nk-x">{ic("x")}</span></div>')
     sb = sidebar('Familie Hoffmann', v2=True)
     sb = sb.replace('<ul class="nav">', '<ul class="nav"><li class="sel"><span class="avatar a2">FH</span>Familie Hoffmann<span class="nk-neu">neu</span></li>', 1)
-    return sb + f'<main class="main">{tb}{leiste}<div class="content narrow">{hinweis}{vers}</div></main>'
+    vers = vers.replace('</td></tr>', V2_X + '</td></tr>')  # Sitzung 22: × an jedem Vertrag
+    return sb + f'<main class="main">{tb}{leiste}<div class="content narrow ub v2e">{hinweis}{vers}</div></main>'
 
 
 def p_head(fassung):
@@ -1778,9 +1780,9 @@ files = {
  'neu.html': page('Neu', editor_v1(mode='Neu', leitlinie=True)),
  'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False, leitlinie=True)),
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
- 'export.html': page('PDF erstellen', editor_v1(mode='Neu'), export_overlay_v1()),
- 'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
- 'ki-import.html': page('KI-Import', editor_v1(), ki_overlay_v1()),
+ 'export.html': page('PDF erstellen', editor_v1(mode='Neu', leitlinie=True), export_overlay_v1()),
+ 'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu', leitlinie=True), export_overlay_v1(titel=True)),
+ 'ki-import.html': page('KI-Import', editor_v1(leitlinie=True), ki_overlay_v1()),
  'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
  'einstellungen-outlook.html': page('Einstellungen – Outlook', start_body(), outlook_overlay_v1()),
  'einstellungen-speicherort.html': page('Einstellungen – Speicherort', start_body(), speicherort_overlay_v1()),
