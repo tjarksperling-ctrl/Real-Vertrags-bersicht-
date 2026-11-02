@@ -338,7 +338,7 @@ def side_body():
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
 # nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert,
-# v3: angepinnte Übersichten (max. 5), Aufgaben mit direktem Sprung in die Übersicht.
+# v3: angepinnte Übersichten (max. 4, Wunsch Sitzung 4), Aufgaben mit direktem Sprung in die Übersicht.
 PINNED = ['Familie Berger', 'Thomas Brandt', 'Jonas & Mira Albers', 'Elif Yılmaz']
 
 def start_body():
@@ -390,7 +390,7 @@ def start_body():
             f'<div class="links">{lh}</div>'
             f'<div class="grid-start">'
             f'<div><div class="section-title">Aufgaben<span class="spacer"></span><span class="btn ghost" style="padding:0">{ic("plus")} Aufgabe</span></div><div class="panel">{tk}</div></div>'
-            f'<div><div class="section-title">{ic("pin", "i pin-t")} Angepinnt<span class="hdr-note">4 von 5</span><span class="spacer"></span><span class="hdr-note">Neu pro Monat</span></div><div class="pins">{ph}</div>'
+            f'<div><div class="section-title">{ic("pin", "i pin-t")} Angepinnt<span class="hdr-note">4 von 4</span><span class="spacer"></span><span class="hdr-note">Neu pro Monat</span></div><div class="pins">{ph}</div>'
             f'<div class="section-title" style="margin-top:18px">Zuletzt bearbeitet<span class="spacer"></span><span class="hdr-note">Beitrag pro Monat</span></div><div class="panel">{ch}</div></div>'
             f'</div></div>')
     return sidebar('start', v2=True) + f'<main class="main">{body}</main>'
