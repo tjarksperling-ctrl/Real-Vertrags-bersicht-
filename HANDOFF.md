@@ -60,7 +60,7 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | Automatische Updates, Mac-Version | – (kein Layout nötig) |
 
 **Eigene Vorschläge aus dem Plan (freigegeben)**
-Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ (Anwesenheit in der Kopfzeile) · Übersichten anpinnen (max. 4) ✅ Bild 1 v4 · **Kundenakte** mit allen Vertragsübersichten + Kundenaufgaben ✅ Bild 1b · Rückgängig/Wiederholen ✅ Festlegung Sitzung 23 (Strg+Z/Strg+Y, nur eigene Änderungen, Hinweis wie Bild 12/13) · „Neu aus Aktuell kopieren“ ✅ Festlegung Sitzung 23 (Neu startet als Kopie; „Neu wieder wie Aktuell“ im Menü „…“) · Hell/Dunkel ✅ Festlegung Sitzung 23 (folgt System, wählbar in Einstellungen → Allgemein, PDF immer hell) · Tastatursteuerung ❌ → **Punkt 6**
+Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ (Anwesenheit in der Kopfzeile) · Übersichten anpinnen (max. 4) ✅ Bild 1 v4 · **Kundenakte** mit allen Vertragsübersichten + Kundenaufgaben ✅ Bild 1b · Rückgängig/Wiederholen ✅ Festlegung Sitzung 23 (Strg+Z/Strg+Y, nur eigene Änderungen, Hinweis wie Bild 12/13) · „Neu aus Aktuell kopieren“ ✅ Festlegung Sitzung 23 (Neu startet als Kopie; „Neu wieder wie Aktuell“ im Menü „…“) · Hell/Dunkel ✅ Festlegung Sitzung 23 (folgt System, wählbar in Einstellungen → Allgemein, PDF immer hell) · Tastatursteuerung ✅ Festlegung Sitzung 23 (Enter/Tab/Esc, Strg+K/P/1/2/3, Entf, Übersicht Strg+/)
 
 **Fehlende Screens:** keine mehr (Einstellungen → Bild 6b + 8, Aufgaben → Bild 9, Desktop-Datei → Bild 10, Neuer Kunde + Vorlagen → Bild 11, Bearbeiten → Bild 12, abgewählter Bereich → Bild 13, Sync → Bild 14).
 
@@ -72,7 +72,7 @@ Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ (Anwesenheit in der Kopf
 | 3 | Rückgängig/Wiederholen | ◐ Hinweis Strg+Z in Bild 12/13 | Festlegung | ✅ **Festlegung** (Sitzung 23): Strg+Z rückgängig, Strg+Y (Mac ⇧⌘Z) wiederholen, für alles (Werte, Löschen, Verschieben, Bereich abwählen) · nur eigene Änderungen, nie die anderer · nach Löschen/Abwählen kurzer Hinweis mit „Rückgängig“ wie Bild 12/13 · keine Pfeil-Knöpfe in der Kopfzeile. Kein Bild. |
 | 4 | PDF-Passwort im PDF-Dialog | ❌ | Bild 5 v2 (nur Ergänzung im Dialog) | **Bild** → ✅ Bild 5 v2 **freigegeben** (Sitzung 23, „Freigeben“) |
 | 5 | Hell/Dunkel | ❌ | Festlegung | ✅ **Festlegung** (Sitzung 23): App folgt automatisch Windows/macOS; Einstellungen → Allgemein „Automatisch / Hell / Dunkel“ (nur für einen selbst); PDF immer hell; dunkle Variante entsteht bei der Umsetzung aus denselben Farb-Tokens, kein Bild. |
-| 6 | Tastatursteuerung | ❌ | Festlegung | offen |
+| 6 | Tastatursteuerung | ❌ | Festlegung | ✅ **Festlegung** (Sitzung 23): Enter = speichern + gleiche Spalte nächste Zeile, in letzter Zeile neuer Vertrag · Tab/⇧Tab nächstes/voriges Feld · Esc bricht ab · Strg+K Kundensuche · Strg+P PDF-Dialog · Strg+1/2/3 Aktuell/Neu/Nebeneinander · Entf auf markierter Zeile löscht (mit Rückgängig) · Strg+Z/Strg+Y (Punkt 3) · Mac ⌘ statt Strg · Kürzel-Übersicht mit Strg+/ und in Einstellungen → Allgemein. Kein Bild. |
 | 7 | Datenschutz/DSGVO | ◐ Konzept im Plan, Einstellungsseite leer | Bild: Einstellungen → Datenschutz (Design Bild 8) | offen |
 
 Kleinere offene Punkte (blockieren Phase 4 nicht, bei Umsetzung klären): Einstellungsseite „Allgemein“ nur angedeutet · Übersichtstitel auf der Startseite unbestätigt · Seitenleiste v2 auf alle Seiten übertragen · Bild 4 Löschen wie Bild 2/3 · nicht gewählte eigene Ideen (Bild 3: neue/entfernte Verträge kennzeichnen, „Auf Aktuell zurücksetzen“ je Vertrag; Bild 14: Kennzeichen ↻ in „Neu“).
