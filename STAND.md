@@ -1,9 +1,9 @@
 # Projektstand – Vertragsübersicht (Desktop-App)
 
-**Aktueller Stand:** Phase 1 (Rückfragen) ✅ abgeschlossen · Phase 2 (Plan) **freigegeben, noch nicht begonnen**.
-**Nächster Schritt:** Phase 2 erstellen → danach STOPP und Freigabe abwarten → dann Spezifikation kompakt in CLAUDE.md.
+**Aktueller Stand:** Phase 1 ✅ · Phase 2 (Plan) **erstellt → `PLAN.md`, wartet auf Freigabe**.
+**Nächster Schritt:** Freigabe + Entscheidungen zu PLAN.md einholen → Spezifikation kompakt in CLAUDE.md → Phase 3 (Mockups).
 
-> Fortsetzen in neuer Sitzung: „Lies STAND.md und mach mit Phase 2 weiter."
+> Fortsetzen in neuer Sitzung: „Lies HANDOFF.md und mach beim nächsten Schritt weiter."
 
 ## Arbeitsweise (strikt)
 1. Rückfragen ✅ · 2. Plan · 3. Design (statische HTML-Mockups in /mockups, inkl. PDF-Vorschau; bei Feedback nur betroffene Seite ändern) · 4. Umsetzung in Meilensteinen (Datenmodell & Berechnungen → Editor → Aktuell/Neu-Vergleich → PDF → Zusatzfunktionen), je Meilenstein Tests für Berechnungslogik + kurzer Status.
