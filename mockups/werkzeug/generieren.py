@@ -1631,6 +1631,45 @@ def einfach_av_v2():
     return v2_editor(nur='AV', ersetzen=[(erste, erste_neu), (zeile_alt, zeile_neu)] + reps, extra_cls='v2av') + tipp
 
 
+# ---------------- Bild 13 v1 (Sitzung 18): Abgewählter Bereich ----------------
+# Ein Klick auf das Kästchen in der Bereichsleiste wählt den Bereich ab. Der Bereich klappt zu einer schmalen grauen Leiste
+# an seinem Platz zusammen (Daten bleiben gespeichert), zählt nicht zum Gesamtbetrag und erscheint nicht im PDF.
+# Wieder zuschalten: Kästchen erneut anklicken oder „Wieder zuschalten“ in der Leiste. Keine Rückfrage, kein Menü.
+P['eyeoff'] = '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>'
+AUS = 'DARL'
+
+def bereich_aus_v1(b, i):
+    t = b['typ']; s = b_summen(b); n = sum(len(u['v']) for u in b['ug'])
+    werte = f'Rate {eur(s["monat"])} / Monat · Restschuld {eur(s["restschuld"])}' if t == 'DARL' else f'{eur(s["monat"])} / Monat'
+    return (f'<section class="bereich-aus {FARBE[t]}"><span class="chk" title="Kästchen anklicken: Bereich wieder zuschalten"></span>'
+            f'<span class="nr">{i+1}</span><b>{META[t][0]}</b><span class="ba-tag">{ic("eyeoff")} abgewählt</span>'
+            f'<span class="ba-info">{len(b["ug"])} Untergruppen · {n} Verträge bleiben gespeichert<br>'
+            f'<s>{werte}</s> – zählt nicht zum Gesamtbetrag, nicht im PDF</span>'
+            f'<span class="spacer"></span><span class="ba-btn">{ic("check")} Wieder zuschalten</span></section>')
+
+def abgewaehlt_v1():
+    ohne = sum(b_summen(b)['monat'] for b in AKTUELL if b['typ'] != AUS)
+    titel = META[AUS][0]
+    leiste = bereichsleiste_v1(g=ohne)
+    i0 = leiste.find(f'bl-item {FARBE[AUS]}')
+    seg = leiste[i0:].replace(f'<span class="chk" title="Bereich an-/abwählen">{ic("check")}</span>',
+                              '<span class="chk" title="Kästchen anklicken: Bereich wieder zuschalten"></span>', 1)
+    leiste = leiste[:i0] + seg.replace(f'bl-item {FARBE[AUS]}"', f'bl-item {FARBE[AUS]} off"', 1)
+    leiste = leiste.replace('<small>Gesamtbetrag monatlich</small>', f'<small>Gesamtbetrag ohne {titel}</small>')
+    bs = ''
+    for i, b in enumerate(AKTUELL):
+        bs += bereich_aus_v1(b, i) if b['typ'] == AUS else bereich_v1(b, i)
+    bs = bs.replace(f'<span class="ug-more">{ic("more")}</span>', V2_DEL).replace('</td></tr>', V2_X + '</td></tr>')
+    bs = bs.replace(f'<button class="btn icon ghost" title="Bereich umbenennen, ausblenden …">{ic("more")}</button>', '')  # keine Menüs
+    gz = (f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><span class="spacer"></span>'
+          f'<div class="neben">3 von 4 Bereichen<br>ohne {titel} ({eur(GA - ohne)} / Monat)</div><b>{eur(ohne)}</b></div>')
+    toast = (f'<div class="ub-toast">{ic("check")}<span>„{titel}“ abgewählt – Gesamtbetrag jetzt {eur(ohne)} statt {eur(GA)}</span>'
+             f'<span class="ub-toast-a">{ic("undo")} Rückgängig</span><span class="v2-tk">Strg + Z</span></div>')
+    js = "<script>/* Mockup: gleich zur zugeklappten Leiste scrollen */document.querySelector('.bereich-aus').scrollIntoView({block:'center'});</script>"
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{toolbar_v1()}{leiste}<div class="content narrow ub v2e b13">{bs}{gz}</div></main>' + toast + js)
+
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -1654,6 +1693,7 @@ def index_page():
              ('einfach-bearbeiten.html', 'Untergruppen &amp; Verträge bearbeiten (v2)', 'Alles direkt an Ort und Stelle: anklicken und tippen, Papierkorb beim Darüberfahren, + Vertrag / + Untergruppe, Rückgängig'),
              ('untergruppe-bearbeiten.html', 'Untergruppe bearbeiten (v1, abgelöst)', 'Menü „…“: Name &amp; Symbol, sortieren, duplizieren, löschen · Varianten: verschieben (Drag &amp; Drop), löschen'),
              ('vertrag-bearbeiten.html', 'Vertrag bearbeiten (v1, abgelöst)', 'Vertragsdetails: Zahlweise, Leistung mit Art, Laufzeit-Enddatum, Untergruppe wechseln, löschen'),
+             ('bereich-abgewaehlt.html', 'Bereich abgewählt', 'Kästchen in der Bereichsleiste: Bereich klappt zu, zählt nicht zum Gesamtbetrag, nicht im PDF, jederzeit wieder zuschalten'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1693,6 +1733,7 @@ files = {
  'vertrag-bearbeiten.html': page('Vertrag bearbeiten', vertrag_bearbeiten_v1()),
  'einfach-bearbeiten.html': page('Einfach bearbeiten', einfach_bearbeiten_v2()),
  'einfach-bearbeiten-av.html': page('Einfach bearbeiten – Altersvorsorge', einfach_av_v2()),
+ 'bereich-abgewaehlt.html': page('Bereich abgewählt', abgewaehlt_v1()),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
