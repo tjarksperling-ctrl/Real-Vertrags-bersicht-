@@ -1673,8 +1673,8 @@ def abgewaehlt_v1():
 # ---------------- Bild 14 v1 (Sitzung 19): Sync-Schalter „In „Neu“ übernehmen“ ----------------
 # (a) Schalter an, Ansicht „Aktuell“: Hausrat wird gerade auf 158,40 € geändert → kleines Zeichen „auch in „Neu““ am Wert,
 #     Erklärkarte am Schalter (erscheint beim Darüberfahren und einmal beim ersten Öffnen): An / Aus / Ausnahme / Beispiel.
-# (b) Schalter aus, Ansicht „Neu“: graue Leiste „Übernehmen ist aus“, Neu bleibt unverändert (Hausrat 145,20 €),
-#     am Wert der Hinweis „in „Aktuell“ 158,40 €“ mit Ein-Klick-Knopf „Übernehmen“ (nur dieser Wert, nichts sonst).
+# (b) Schalter aus, Ansicht „Neu“: graue Leiste „Übernehmen ist aus“, Neu bleibt unverändert (Hausrat 145,20 €).
+#     v2: kein Einzel-Übernehmen – was bei „aus“ geändert wird, kommt nie nach „Neu“, auch nicht beim Wiedereinschalten.
 A14 = copy.deepcopy(AKTUELL)
 A14[0]['ug'][1]['v'][0]['beitrag'] = 15840  # Hausrat in „Aktuell“ geändert: 145,20 € → 158,40 € (jährlich)
 GA14 = gesamt(A14)
@@ -1688,8 +1688,8 @@ def sync_karte():
  <div class="sy-kopf">{ic("sync")}<b>In „Neu“ übernehmen</b><span class="spacer"></span><span class="sy-scope">gilt nur für diese Übersicht</span></div>
  <div class="sy-zeile on"><span class="switch on"><i></i></span><div><b>An</b> – Was Sie in „Aktuell“ eintragen, ändern, löschen oder abwählen, passiert sofort auch in „Neu“.
   <small>Ausnahme: Was Sie in „Neu“ selbst geändert haben, bleibt so – z. B. Wohngebäude 540,00 €.</small></div></div>
- <div class="sy-zeile"><span class="switch"><i></i></span><div><b>Aus</b> – „Neu“ bleibt, wie es ist. Nichts wird rückwirkend geändert.
-  <small>Später wieder an: Übernommen wird nur, was Sie ab dann in „Aktuell“ ändern.</small></div></div>
+ <div class="sy-zeile"><span class="switch"><i></i></span><div><b>Aus</b> – Solange der Schalter aus ist, wird keine Änderung aus „Aktuell“ nach „Neu“ übertragen.
+  <small>Wieder an: Übertragen wird nur, was Sie ab dann ändern – nichts rückwirkend.</small></div></div>
  <div class="sy-bsp"><span class="sy-chip">Gerade</span>Hausrat 158,40 € in „Aktuell“ {ic("arrow")} steht jetzt auch in „Neu“</div>
 </div>'''
 
@@ -1707,17 +1707,13 @@ def sync_an_v1():
 def sync_aus_v1():
     bs = ''.join(bereich_v1(b, i, other=A14[i], mark=True) for i, b in enumerate(NEU))
     bs = v2_bereiche(bs)
-    alt = '<td class="num">145,20 €</td>'
-    assert bs.count(alt) == 1
-    bs = bs.replace(alt, f'<td class="num">145,20 €<span class="sy-diff" title="Seit dem Ausschalten in „Aktuell“ geändert">in „Aktuell“ 158,40 €'
-                         f'<span class="sy-mini">Übernehmen</span></span></td>')
+    # v2 (Wunsch Sitzung 19): bei „aus“ wird nichts übertragen, auch nicht einzeln oder später → kein Hinweis/Knopf am Wert
     n = sum(1 for b in NEU for ug in b['ug'] for v in ug['v'] if 'vorher' in v)
     sw = lambda on, txt: f'<span class="switch{" on" if on else ""}"><i></i>{txt}</span>'
     leiste = (f'<div class="aenderungen"><span class="ae-mark">28,90 €</span><span><b>{n} Änderungen</b> gegenüber „Aktuell“ · vorheriger Wert steht darunter (nur in der App)</span>'
               f'<span class="spacer"></span>{sw(False, "Nur Änderungen zeigen")}{sw(True, "Ersparnis anzeigen")}</div>')
-    aus = (f'<div class="sy-aus"><span class="sy-ic">{ic("sync")}</span><div><b>Übernehmen ist aus</b> – „Neu“ bleibt, wie es ist. '
-           f'Änderungen in „Aktuell“ kommen hier nicht mehr an.<small>Ausgeschaltet heute, 10:42 von Tjark S. · seitdem in „Aktuell“ geändert: '
-           f'<b>1 Wert</b> (Hausrat) – unten markiert, mit einem Klick einzeln übernehmen</small></div>'
+    aus = (f'<div class="sy-aus"><span class="sy-ic">{ic("sync")}</span><div><b>Übernehmen ist aus</b> – Änderungen in „Aktuell“ werden nicht nach „Neu“ übertragen. '
+           f'<small>Ausgeschaltet heute, 10:42 von Tjark S. · Wieder eingeschaltet wird nur übernommen, was Sie ab dann in „Aktuell“ ändern – nichts rückwirkend.</small></div>'
            f'<span class="spacer"></span><span class="sy-an">{ic("sync")} Wieder einschalten</span></div>')
     gn = gesamt(NEU); d = gn - GA14
     neben = f'<span class="spacer"></span><div class="neben">Aktuell {eur(GA14)}<br><b style="color:#7ee2a0">{eur(d, True)} pro Monat</b></div>'
@@ -1757,7 +1753,7 @@ def index_page():
              ('vertrag-bearbeiten.html', 'Vertrag bearbeiten (v1, abgelöst)', 'Vertragsdetails: Zahlweise, Leistung mit Art, Laufzeit-Enddatum, Untergruppe wechseln, löschen'),
              ('bereich-abgewaehlt.html', 'Bereich abgewählt', 'Kästchen in der Bereichsleiste: Bereich klappt zu, zählt nicht zum Gesamtbetrag, nicht im PDF, jederzeit wieder zuschalten'),
              ('sync-an.html', 'In „Neu“ übernehmen: an', 'Änderung in „Aktuell“ erscheint sofort auch in „Neu“ · Erklärkarte am Schalter'),
-             ('sync-aus.html', 'In „Neu“ übernehmen: aus', '„Neu“ bleibt, wie es ist · seitdem geänderte Werte markiert, einzeln übernehmen'),
+             ('sync-aus.html', 'In „Neu“ übernehmen: aus', 'Änderungen in „Aktuell“ werden nicht übertragen · wieder an = nur Änderungen ab dann'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
