@@ -1,7 +1,7 @@
 # Projektstand – Vertragsübersicht (Desktop-App)
 
-**Aktueller Stand:** Phase 1 ✅ · Phase 2 ✅ freigegeben (`PLAN.md`) · Phase 3 (Mockups) in Arbeit.
-**Nächster Schritt:** Mockups in `/mockups` fertigstellen → STOPP, Feedback/Freigabe abwarten.
+**Aktueller Stand:** Phase 1 ✅ · Phase 2 ✅ (`PLAN.md`) · Phase 3: Mockups erstellt (`/mockups`), **wartet auf Feedback/Freigabe**.
+**Nächster Schritt:** Feedback einarbeiten (nur betroffene Seite) → nach Freigabe Phase 4, Meilenstein 1.
 
 > Fortsetzen in neuer Sitzung: „Lies HANDOFF.md und mach beim nächsten Schritt weiter."
 
