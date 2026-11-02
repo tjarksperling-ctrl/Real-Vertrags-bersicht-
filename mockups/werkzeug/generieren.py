@@ -1736,6 +1736,55 @@ def sync_aus_v1():
             f'<main class="main">{tb}{bereichsleiste_v1(g=gn)}<div class="content narrow neu2 ub v2e b14">{leiste}{aus}{bs}{gz}</div></main>')  # Hinweis „Rückgängig“ erscheint nur direkt nach dem Ausschalten (toast)
 
 
+# ---------------- Bild 15 v1 (Sitzung 23): Mehrbenutzer – gemeinsam an derselben Übersicht ----------------
+# Tjark S. und Sabine K. arbeiten gleichzeitig in „Aktuell“ von Familie Berger. Keine Sperre: jeder sieht,
+# wo der andere gerade ist (farbiger Cursor mit Namen), und dessen Änderungen nach wenigen Sekunden.
+P.update({
+ 'cloudoff': '<path d="m2 2 20 20"/><path d="M5.78 5.78A7 7 0 0 0 9 19h8.5a4.5 4.5 0 0 0 1.31-.19"/><path d="M21.53 16.5A4.5 4.5 0 0 0 17.5 10h-1.79A7 7 0 0 0 10 5.07"/>',
+})
+SK_MINI = '<span class="avatar a2 mb-av">SK</span>'
+
+def mb_v1(offline=False):
+    bs = v2_bereiche(''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL)))
+    def r(alt, neu):
+        nonlocal bs
+        assert bs.count(alt) == 1, alt[:80]
+        bs = bs.replace(alt, neu)
+    # eigene Eingabe (Tjark): Cursor in der Bemerkung von Hausrat
+    r('<span class="edit-cell">110 m², inkl. Fahrraddiebstahl</span>', '<span class="edit-cell">110 m², inkl. Fahrraddiebstahl<span class="caret"></span></span>')
+    if not offline:
+        # Sabine bearbeitet gerade den Beitrag von Wohngebäude: oranger Cursor mit Namensfähnchen, Zeile leicht markiert
+        i = bs.index('<span class="edit-cell">Wohngebäude</span>')
+        j = bs.index('<td class="num">612,00 €</td>', i)
+        bs = bs[:j] + '<td class="num"><span class="mb-cur"><span class="mb-flag">Sabine K.</span>612,0<span class="mb-caret"></span>0 €</span></td>' + bs[j + len('<td class="num">612,00 €</td>'):]
+        k = bs.rindex('<tr class="">', 0, i)
+        bs = bs[:k] + '<tr class="mb-row">' + bs[k + len('<tr class="">'):]
+        # gerade eben von Sabine geändert: Bemerkung Rechtsschutz, kurz markiert
+        r('<td class="bem"><span class="edit-cell">Privat, Beruf, Verkehr</span></td>',
+          f'<td class="bem mb-neu"><span class="edit-cell">Privat, Beruf, Verkehr, <b>Vermieter</b></span><span class="mb-tag">{SK_MINI}geändert von Sabine K. · gerade eben</span></td>')
+    tb = toolbar_v1()
+    if offline:
+        tb = tb.replace(' <span class="avatar a2 live" title="Sabine K. arbeitet gerade ebenfalls in dieser Übersicht">SK</span>', '')
+    gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    sb = sidebar('Familie Berger', v2=True)
+    alt = f'<div class="row">{ic("cloud")} OneDrive · synchronisiert <span class="dot" style="margin-left:auto"></span></div>'
+    assert alt in sb
+    if offline:
+        sb = sb.replace(alt, f'<div class="row mb-off">{ic("cloudoff")} Offline · 3 Änderungen warten <span class="dot" style="margin-left:auto;background:var(--orange)"></span></div>')
+        extra = (f'<div class="ub-toast mb-toast">{ic("cloudoff")}<span><b>Keine Verbindung zu OneDrive</b> – Sie können normal weiterarbeiten.<br>'
+                 f'<small>Ihre Änderungen sind auf diesem Computer gesichert und werden automatisch zusammengeführt, sobald die Verbindung wieder da ist.</small></span></div>')
+    else:
+        sb = sb.replace(alt, f'<div class="row">{ic("cloud")} OneDrive · alles gespeichert <span class="dot" style="margin-left:auto"></span></div>')
+        extra = f'''<div class="mb-karte"><span class="mb-pfeil"></span>
+ <div class="mb-kopf"><span class="avatar a2">SK</span><div><b>Sabine K.</b> arbeitet gerade auch hier<small>seit 10:38 · in „Aktuell“</small></div></div>
+ <div class="mb-wo">{ic("home")} Wohnen › Wohngebäude <span class="spacer"></span><span class="mb-link">Hinspringen</span></div>
+ <ul><li>Niemand wird gesperrt – Sie können beide überall gleichzeitig arbeiten.</li>
+ <li>Was Sabine ändert, sehen Sie nach wenigen Sekunden, und umgekehrt.</li>
+ <li>Ändern beide denselben Wert, gilt der zuletzt eingegebene.</li></ul>
+</div>'''
+    return (sb + f'<main class="main">{tb}{bereichsleiste_v1()}<div class="content narrow ub v2e mb">{bs}{gz}</div></main>' + extra)
+
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -1762,6 +1811,8 @@ def index_page():
              ('bereich-abgewaehlt.html', 'Bereich abgewählt', 'Kästchen in der Bereichsleiste: Bereich klappt zu, zählt nicht zum Gesamtbetrag, nicht im PDF, jederzeit wieder zuschalten'),
              ('sync-an.html', 'In „Neu“ übernehmen: an', 'Änderung in „Aktuell“ erscheint sofort auch in „Neu“ · Erklärkarte am Schalter'),
              ('sync-aus.html', 'In „Neu“ übernehmen: aus', 'Änderungen in „Aktuell“ werden nicht übertragen · wieder an = nur Änderungen ab dann'),
+             ('mehrbenutzer.html', 'Gemeinsam bearbeiten', 'Zwei Personen in derselben Übersicht: Cursor mit Namen, Änderung „gerade eben“, keine Sperre'),
+             ('mehrbenutzer-offline.html', 'Gemeinsam bearbeiten: offline', 'Ohne Verbindung weiterarbeiten, später automatisch zusammengeführt'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1804,6 +1855,8 @@ files = {
  'bereich-abgewaehlt.html': page('Bereich abgewählt', abgewaehlt_v1()),
  'sync-an.html': page('In „Neu“ übernehmen – an', sync_an_v1()),
  'sync-aus.html': page('In „Neu“ übernehmen – aus', sync_aus_v1()),
+ 'mehrbenutzer.html': page('Gemeinsam bearbeiten', mb_v1()),
+ 'mehrbenutzer-offline.html': page('Gemeinsam bearbeiten – offline', mb_v1(offline=True)),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),

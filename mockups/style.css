@@ -1451,3 +1451,27 @@ td.v2-lz .edit-cell { display: block; }
 /* ---------- Bild 2 v3 (Sitzung 20): Leitlinie aus Bild 12 auf „Aktuell“ – keine weiße Zeile, kein weißes Auswahlfeld ---------- */
 .v2e .ug.v1 tr.focus td { background: transparent; }
 .v2e .zw-sel.open { box-shadow: none; background: transparent; color: var(--accent); }
+
+/* ---------- Bild 15 v1 (Sitzung 23): Mehrbenutzer – gemeinsam bearbeiten ---------- */
+.mb tr.mb-row td { background: rgba(255,159,10,.09); }
+.mb tr.mb-row td:first-child { box-shadow: inset 3px 0 0 #ff9f0a; }
+.mb-cur { position: relative; white-space: nowrap; }
+.mb-caret { display: inline-block; width: 2px; height: 16px; background: #ff9f0a; vertical-align: -3px; margin: 0 1px; }
+.mb-flag { position: absolute; right: calc(100% + 8px); top: 50%; transform: translateY(-50%); background: #ff9f0a; color: #fff; font-size: 10.5px; font-weight: 600; line-height: 1; padding: 3px 7px; border-radius: 9px; white-space: nowrap; vertical-align: 1px; }
+.mb td.mb-neu .edit-cell b { font-weight: 400; background: rgba(255,159,10,.2); border-radius: 3px; padding: 0 2px; }
+.mb-tag { display: flex; align-items: center; gap: 5px; margin-top: 3px; font-size: 11px; color: #c77700; font-weight: 500; white-space: nowrap; }
+.avatar.mb-av { width: 15px; height: 15px; font-size: 6.5px; }
+.mb-karte { position: absolute; top: 84px; left: 330px; z-index: 30; width: 380px; background: #fff; border-radius: 14px; padding: 14px 16px 12px;
+  box-shadow: 0 14px 40px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.06); font-size: 13px; line-height: 1.45; }
+.mb-pfeil { position: absolute; top: -6px; left: 158px; width: 12px; height: 12px; background: #fff; transform: rotate(45deg); box-shadow: -1px -1px 0 rgba(0,0,0,.06); }
+.mb-kopf { display: flex; align-items: center; gap: 10px; }
+.mb-kopf small { display: block; color: var(--muted); font-size: 11.5px; }
+.mb-wo { display: flex; align-items: center; gap: 6px; margin: 10px 0 6px; padding: 7px 10px; background: rgba(255,159,10,.1); border-radius: 8px; font-size: 12.5px; }
+.mb-wo svg.i { width: 14px; height: 14px; color: #c77700; }
+.mb-link { color: var(--accent); font-weight: 600; }
+.mb-karte ul { margin: 6px 0 0; padding-left: 18px; color: var(--muted); font-size: 12.5px; }
+.mb-karte li { margin: 2px 0; }
+.sidebar .bottom .row.mb-off { color: #c77700; font-weight: 500; }
+.mb-toast { white-space: normal; max-width: 640px; align-items: flex-start; line-height: 1.4; }
+.mb-toast > svg.i { color: #ffb340; margin-top: 2px; }
+.mb-toast small { color: rgba(255,255,255,.7); font-size: 12px; }
