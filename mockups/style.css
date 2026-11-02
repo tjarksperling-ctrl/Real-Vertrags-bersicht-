@@ -403,3 +403,60 @@ svg.pin-t { width: 15px; height: 15px; color: var(--muted); }
 .grid-start { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
 .crow .cdiff { width: 96px; }
 .pins { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+/* ---------- Kundenakte (Bild 1b, Sitzung 5) ---------- */
+.toolbar.kunde { padding: 12px 28px; gap: 12px; }
+.toolbar.kunde h1 { font-size: 20px; }
+.toolbar.kunde .datum { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.avatar.big { width: 40px; height: 40px; font-size: 14px; }
+.avatar.mini { width: 20px; height: 20px; font-size: 8px; }
+.kpis { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+.kpi { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 11px 16px; }
+.kpi small { display: block; color: var(--muted); font-size: 12px; }
+.kpi b { font-size: 19px; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.grid-kunde { display: grid; grid-template-columns: minmax(0,1.55fr) minmax(0,1fr); gap: 24px; align-items: start; }
+.urow { display: flex; align-items: center; gap: 12px; padding: 11px 14px 11px 16px; border-top: 1px solid var(--line-soft); }
+.urow.first { border-top: 0; }
+.urow.hover { background: #f7faff; }
+.urow .umain { flex: 1; min-width: 0; }
+.urow .umain b { display: flex; align-items: center; gap: 6px; font-size: 14.5px; font-weight: 650; white-space: nowrap; }
+.urow.hover .umain b { color: var(--accent); }
+.urow .umain small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; white-space: nowrap; }
+.urow .live { display: inline-flex; align-items: center; gap: 5px; color: var(--orange); font-weight: 500; }
+.urow .live .avatar { width: 15px; height: 15px; font-size: 7px; }
+.urow .frost svg.i { width: 13px; height: 13px; color: #30b0c7; }
+svg.pin.on { width: 14px; height: 14px; color: var(--accent); fill: var(--accent-soft); }
+.urow .ust { width: 86px; }
+.urow .auf { width: 34px; display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; color: var(--orange); }
+.urow .auf svg.i { width: 13px; height: 13px; }
+.urow .cval { width: 80px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.urow .cval small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.urow .cdiff { width: 82px; text-align: right; }
+.urow .go { width: 70px; display: flex; justify-content: flex-end; color: var(--faint); }
+.urow .go.on { display: inline-flex; align-items: center; justify-content: center; gap: 2px; background: var(--accent); color: #fff; border-radius: 7px; padding: 4px 6px 4px 10px; font-size: 12px; font-weight: 600; }
+.urow .go.on svg.i { width: 14px; height: 14px; }
+.urow + .tmore { display: flex; align-items: center; gap: 6px; }
+.tmore svg.i { width: 14px; height: 14px; }
+.tmore { display: flex; align-items: center; gap: 6px; }
+.tadd { padding: 12px 14px; border-bottom: 1px solid var(--line); background: #fafcff; border-radius: var(--radius) var(--radius) 0 0; }
+.tin { display: flex; align-items: center; gap: 8px; border: 1.5px solid var(--accent); border-radius: 8px; padding: 7px 10px; background: #fff; box-shadow: 0 0 0 3px rgba(0,113,227,.12); }
+.tin svg.i { color: var(--accent); width: 15px; height: 15px; }
+.tin .caret { width: 1.5px; height: 16px; background: var(--accent); margin-left: -6px; }
+.tchips { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; }
+.chip { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 99px; padding: 2px 9px; font-size: 12px; color: var(--muted); background: #fff; white-space: nowrap; }
+.chip svg.i { width: 12px; height: 12px; }
+.chip.on { border-color: #b9d6f6; background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.chip .avatar.mini { width: 16px; height: 16px; font-size: 7px; }
+.tchips .spacer { flex: 1; }
+.btn.sm { padding: 3px 10px; font-size: 12px; }
+.ttext.k { margin: 0; font-weight: 500; }
+.tueb { display: flex; align-items: center; gap: 4px; color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+.tueb svg.i { width: 12px; height: 12px; }
+.grid-kunde { grid-template-columns: minmax(0,1.65fr) minmax(0,1fr); }
+.urow .umain small { margin-top: 2px; }
+.urow .umain small .badge { font-size: 10.5px; padding: 0 6px; }
+.urow .auf { width: auto; font-weight: 500; }
+.urow .frost { display: inline-flex; align-items: center; gap: 4px; }
+.urow .go { width: 66px; }
+.urow .umain b .live, .urow .umain b .frost { font-size: 12px; font-weight: 500; margin-left: 4px; }
+.urow .umain b .frost { color: var(--muted); }
+.urow.hover .umain b .frost { color: var(--muted); }

@@ -395,6 +395,68 @@ def start_body():
             f'</div></div>')
     return sidebar('start', v2=True) + f'<main class="main">{body}</main>'
 
+# ---------------- Kundenakte (Bild 1b, Wunsch Sitzung 5) ----------------
+# Klick auf einen Kunden öffnet die Kundenakte statt direkt die letzte Übersicht:
+# alle Vertragsübersichten des Kunden (über Jahre), Kennzahlen, Aufgaben des Kunden inkl. schnell neu anlegen.
+UEBERSICHTEN = [  # Titel, angelegt, Status, Aktuell, Neu, Zusatz, offene Aufgaben, angepinnt
+ ('Jahresgespräch 2026', 'seit 14.10.2026', 'arbeit', GA, GN, 'live', 2, True),
+ ('Anschlussfinanzierung Haus', 'umgesetzt 28.05.2026', 'fertig', 205140, GA, 'frost', 1, False),
+ ('Jahresgespräch 2024', 'umgesetzt 09.12.2024', 'fertig', 198760, 205140, 'frost', 0, False),
+ ('Kfz-Wechsel', 'umgesetzt 15.02.2023', 'fertig', 199510, 198760, '', 0, False),
+ ('Jahresgespräch 2021', 'umgesetzt 06.12.2021', 'fertig', 184000, 199510, 'frost', 0, False),
+]
+
+def kunde_body():
+    st = {'arbeit': '<span class="badge blue">In Arbeit</span>', 'fertig': '<span class="badge">Umgesetzt</span>'}
+    rows = ''
+    for i, (t, meta, s, ga, gn, extra, auf, pin) in enumerate(UEBERSICHTEN):
+        d = gn - ga
+        dd = f'<span class="badge green">{eur(d, True)}</span>' if d < 0 else f'<span class="badge orange">{eur(d, True)}</span>'
+        x = ''
+        if extra == 'live': x = '<span class="live"><span class="avatar a2">SK</span>Sabine K. gerade drin</span>'
+        if extra == 'frost': x = f'<span class="frost">{ic("snow")} eingefroren</span>'
+        a = f'<span class="auf">· {ic("tasks")} {auf} {"Aufgabe" if auf == 1 else "Aufgaben"}</span>' if auf else ''
+        p = f'{ic("pin", "i pin on")}' if pin else ''
+        hov = i == 1
+        go = (f'<span class="go on">Öffnen {ic("chev")}</span>' if hov else f'<span class="go">{ic("chev")}</span>')
+        rows += (f'<div class="urow{" hover" if hov else ""}{" first" if i == 0 else ""}"><div class="umain"><b>{t} {p} {x}</b><small>{st[s]} {meta} {a}</small></div>'
+                 f'<div class="cval"><small>Aktuell</small>{eur(ga)}</div><div class="cval"><small>Neu</small>{eur(gn)}</div>'
+                 f'<div class="cdiff">{dd}</div>{go}</div>')
+    rows += f'<div class="tmore">{ic("down")} 3 ältere Übersichten anzeigen (2014–2020)</div>'
+
+    s = {b['typ']: b_summen(b) for b in AKTUELL}
+    n_v = sum(len(u['v']) for b in AKTUELL for u in b['ug'])
+    tiles = [('Beitrag pro Monat', eur(GA)), ('Gesamtvermögen', eur(s['SPAR']['vermoegen'])),
+             ('Restschuld', eur(s['DARL']['restschuld'])), ('Verträge', str(n_v))]
+    th = ''.join(f'<div class="kpi"><small>{l}</small><b>{v}</b></div>' for l, v in tiles)
+
+    def task(text, due, cls, ueb, prio=False, wer='TS', wa='a4'):
+        p = f'<span class="prio">{ic("flag")} Hoch</span>' if prio else ''
+        return (f'<div class="trow"><span class="box"></span><div class="tmain"><div class="ttext k">{text}</div>'
+                f'<div class="tueb">{ic("file")} {ueb}</div></div><div class="tside">{p}<span class="due {cls}">{due}</span></div>'
+                f'<span class="avatar {wa} mini" title="zuständig">{wer}</span></div>')
+    tk = (f'<div class="tadd"><div class="tin">{ic("plus")}<span>Termin zur Unterschrift vereinbaren</span><i class="caret"></i></div>'
+          f'<div class="tchips"><span class="chip on">{ic("calendar")} Fr, 13.11.</span><span class="chip">{ic("flag")} Priorität</span>'
+          f'<span class="chip on">{ic("file")} Jahresgespräch 2026</span><span class="chip"><span class="avatar a4 mini">TS</span> Tjark S.</span>'
+          f'<span class="spacer"></span><span class="btn primary sm">Hinzufügen</span></div></div>')
+    tk += '<div class="tgroup rot"><span>Überfällig</span><em>1</em></div>' + task('Kfz-Angebot senden', 'seit 2 Tagen', 'over', 'Jahresgespräch 2026', True)
+    tk += '<div class="tgroup"><span>Diese Woche</span><em>1</em></div>' + task('BU-Unterlagen prüfen', 'Do, 05.11.', '', 'Jahresgespräch 2026', wer='SK', wa='a2')
+    tk += '<div class="tgroup"><span>Später</span><em>1</em></div>' + task('Zinsbindung Bausparvertrag prüfen', '01.03.2027', '', 'Anschlussfinanzierung Haus')
+    tk += f'<div class="tmore">{ic("check")} 14 erledigte Aufgaben anzeigen</div>'
+
+    tb = (f'<div class="toolbar kunde"><span class="avatar a1 big">FB</span><div><h1>Familie Berger</h1>'
+          f'<div class="datum">Kunde seit 2014 · 8 Vertragsübersichten</div></div><span class="spacer"></span>'
+          f'<button class="btn">{ic("sparkles")} Mit Unterlagen starten</button>'
+          f'<button class="btn primary">{ic("plus")} Neue Vertragsübersicht {ic("down")}</button></div>')
+    body = (tb + f'<div class="content narrow start">'
+            f'<div class="section-title">Aktueller Stand<span class="hdr-note">laut „Jahresgespräch 2026“, Fassung Aktuell</span></div>'
+            f'<div class="kpis">{th}</div>'
+            f'<div class="grid-kunde">'
+            f'<div><div class="section-title">Vertragsübersichten<span class="spacer"></span><span class="hdr-note">Beitrag pro Monat</span></div><div class="panel">{rows}</div></div>'
+            f'<div><div class="section-title">Aufgaben<span class="hdr-note">3 offen</span></div><div class="panel">{tk}</div></div>'
+            f'</div></div>')
+    return sidebar('Familie Berger', v2=True) + f'<main class="main">{body}</main>'
+
 # ---------------- Export-Dialog ----------------
 def export_overlay():
     return f'''<div class="overlay"><div class="sheet">
@@ -498,6 +560,7 @@ def pdf_page():
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
+             ('kunde.html', 'Kundenakte', 'Alle Vertragsübersichten eines Kunden, aktueller Stand, Aufgaben des Kunden'),
              ('aktuell.html', 'Übersicht „Aktuell“ bearbeiten', '4 Bereiche, Untergruppen mit Symbol, Drag & Drop, Summen, Gesamtbetrag'),
              ('neu.html', 'Übersicht „Neu“', 'Änderungen markiert, Differenzen je Bereich, Vorteile mit automatischer Ersparnis'),
              ('nebeneinander.html', 'Aktuell und Neu nebeneinander', 'Kompaktansicht, Bereiche auf gleicher Höhe'),
@@ -515,6 +578,7 @@ def index_page():
 files = {
  'index.html': index_page(),
  'start.html': page('Startseite', start_body()),
+ 'kunde.html': page('Kundenakte', kunde_body()),
  'aktuell.html': page('Aktuell', editor_body('Aktuell')),
  'neu.html': page('Neu', editor_body('Neu')),
  'nebeneinander.html': page('Nebeneinander', side_body()),
