@@ -1003,6 +1003,115 @@ def aufgaben_v1(formular=True):
     return (sidebar('Familie Berger', v2=True) +
             f'<main class="main au-main-wrap">{tb}{bereichsleiste_v1()}<div class="content narrow">{bs}{gz}</div>{aufgaben_panel_v1(formular)}</main>')
 
+# ---------------- Bild 10 v1 (Sitzung 15): Auf Desktop speichern (+ Passwort) und gespeicherte Datei öffnen ----------------
+# Fehlender Screen aus Abschnitt 2 („Stand einfrieren“ = Datei auf dem Desktop, Doppelklick öffnet, optional verschlüsselt).
+# (a) Dialog „Auf Desktop speichern“ über der Ansicht „Aktuell“, (b) Doppelklick auf die Datei → Passwortabfrage,
+# (c) geöffnete Datei in eigenem Fenster, nur ansehen.
+P.update({
+ 'eye': '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+ 'folder': '<path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/>',
+ 'wand': '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>',
+ 'copy': '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+ 'trash': '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+})
+DS_NAME = 'Familie Berger – Jahresgespräch 2026 – 02.11.2026'
+
+def ds_icon(gross=False, lock=True):
+    """Dateisymbol einer .vtue-Datei (App-Farbe, Schloss = mit Passwort)."""
+    s = '<span class="ds-lock">' + ic('lock') + '</span>' if lock else ''
+    return f'<span class="ds-ico{" gross" if gross else ""}"><i></i><b>VTÜ</b>{s}</span>'
+
+def desktop_speichern_overlay_v1():
+    cb = lambda on: f'<span class="cbx{" on" if on else ""}">{ic("check") if on else ""}</span>'
+    punkte = '●' * 12
+    return f'''<div class="overlay"><div class="sheet ex1 ds1">
+<header><h2>{ic("monitor")} Auf Desktop speichern</h2><p>Familie Berger · Jahresgespräch 2026 · Stand von heute, 02.11.2026, 14:32 Uhr</p></header>
+<div class="body">
+ <div class="ds-datei">{ds_icon(True)}
+  <div class="ds-df">
+   <label>Dateiname</label>
+   <div class="kk-input"><span>{DS_NAME}</span><span class="spacer"></span><span class="es-hint">.vtue</span></div>
+   <div class="ds-ort">{ic("monitor")} Desktop <span class="ds-link">Anderer Ort …</span><span class="spacer"></span><span class="ds-gr">ca. 40 KB</span></div>
+  </div>
+ </div>
+ <div class="ex-sec">Enthält</div>
+ <div class="ex-box ds-inhalt">
+  <div class="ds-teile"><span class="ds-t">{ic("check")} Aktuell <small>{eur(GA)}</small></span><span class="ds-t">{ic("check")} Neu <small>{eur(GN)}</small></span><span class="ds-t">{ic("check")} Vorteile</span><span class="ds-t">{ic("check")} Ersparnis-Einstellung</span></div>
+  <div class="optrow"><div>Offene Aufgaben mitspeichern<small>Aus: Aufgaben sind intern und bleiben nur in der App</small></div>{es_sw(False)}</div>
+ </div>
+ <div class="ex-sec ex-sec-row"><span>{ic("lock")} Mit Passwort schützen</span><small>empfohlen, wenn die Datei das Büro verlässt</small><span class="spacer"></span>{es_sw(True)}</div>
+ <div class="ex-box ds-pw">
+  <div class="ds-pwf"><label>Passwort</label><div class="kk-input ds-mask fokus"><span>{punkte}</span><span class="spacer"></span>{ic("eye")}</div></div>
+  <div class="ds-pwf"><label>Passwort wiederholen</label><div class="kk-input ds-mask"><span>{punkte}</span><span class="spacer"></span><span class="ds-gleich">{ic("check")}</span></div></div>
+  <div class="ds-st"><span class="ds-bar"><i></i><i></i><i></i><i></i></span><b>Stark</b><span class="ds-link">{ic("wand")} Sicheres Passwort vorschlagen</span><span class="spacer"></span><span class="ds-gleich-t">{ic("check")} stimmt überein</span></div>
+  <div class="ds-warn">{ic("info")}<span><b>Passwort gut aufbewahren.</b> Ohne Passwort lässt sich die Datei nicht mehr öffnen, auch nicht durch die Agentur. Passwort nie in derselben E-Mail wie die Datei senden.</span></div>
+ </div>
+ <div class="ds-so">
+  <div><span class="kk-n">1</span><span><b>Fester Stand</b> – spätere Änderungen in der App ändern die Datei nicht.</span></div>
+  <div><span class="kk-n">2</span><span><b>Doppelklick</b> öffnet die Datei in einem eigenen Fenster, auch mehrere gleichzeitig.</span></div>
+  <div><span class="kk-n">3</span><span><b>Nur auf diesem Computer</b> – nicht im Agentur-Ordner. Das Original bleibt in der Kundenakte.</span></div>
+ </div>
+</div>
+<footer><span class="cbl ds-nach">{cb(False)}<span>Danach im Explorer zeigen</span></span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">{ic("lock")} Verschlüsselt speichern</button></footer>
+</div></div>'''
+
+def desktop_speichern_v1():
+    tb = toolbar_v1().replace(f'<button class="btn" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">',
+                              f'<button class="btn on" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">')
+    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL))
+    gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{tb}{bereichsleiste_v1()}<div class="content narrow">{bs}{gz}</div></main>')
+
+def datei_passwort_v1():
+    """Windows-Desktop: Doppelklick auf die .vtue-Datei → kleines App-Fenster mit Passwortabfrage."""
+    icons = [(f'<span class="dk-sys">{ic("trash")}</span>', 'Papierkorb', ''),
+             (ds_icon(), DS_NAME + '.vtue', 'sel'),
+             (ds_icon(lock=False), 'Lea Nowak – Beratung Altersvorsorge – 18.09.2026.vtue', ''),
+             (f'<span class="dk-sys dk-app">{ic("columns")}</span>', 'Vertragsübersicht', ''),
+             (f'<span class="dk-sys ordner">{ic("folder")}</span>', 'Scans', '')]
+    ih = ''.join(f'<div class="dk-i {c}">{s}<span>{n}</span></div>' for s, n, c in icons)
+    taskbar = (f'<div class="dk-bar"><span class="dk-start"><i></i><i></i><i></i><i></i></span>'
+               f'<span class="dk-tb">{ic("search")}</span><span class="dk-tb">{ic("folder")}</span><span class="dk-tb">{ic("mail")}</span>'
+               f'<span class="dk-tb on">{ic("columns")}</span><span class="spacer"></span><span class="dk-uhr">14:41<br>02.11.2026</span></div>')
+    dialog = f'''<div class="dk-win">
+ <div class="titlebar"><span>Vertragsübersicht</span><div class="winctl"><span>&#10005;</span></div></div>
+ <div class="dk-pw">
+  {ds_icon(True)}
+  <h2>Geschützte Datei öffnen</h2>
+  <p class="dk-name">{DS_NAME}.vtue</p>
+  <p class="dk-meta">Gespeichert am 02.11.2026, 14:32 Uhr von Tjark S.</p>
+  <div class="dk-feld"><label>Passwort</label><div class="kk-input ds-mask fokus"><span>●●●●●●●●●</span><i class="caret"></i><span class="spacer"></span>{ic("eye")}</div></div>
+  <div class="dk-hilfe"><span class="ds-link">Passwort vergessen?</span><span class="dk-tip">Das Original liegt weiter in der Kundenakte. Von dort einfach neu speichern.</span></div>
+  <div class="dk-btns"><button class="btn">Abbrechen</button><button class="btn primary">Öffnen</button></div>
+ </div>
+</div>'''
+    return f'''<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Datei öffnen – Passwort – Mockup</title><link rel="stylesheet" href="style.css"></head>
+<body class="dk"><div class="dk-desk"><div class="dk-icons">{ih}</div>
+<div class="dk-klick">Doppelklick auf die Datei</div>{dialog}</div>{taskbar}</body></html>'''
+
+def datei_geoeffnet_v1():
+    """Geöffnete .vtue-Datei: eigenes Fenster ohne Seitenleiste, nur ansehen, Wege zum Weiterarbeiten."""
+    seg = ''.join(f'<span class="{"on" if m == "Aktuell" else ""}">{m}</span>' for m in ('Aktuell', 'Neu', 'Nebeneinander'))
+    tb = f'''<div class="toolbar v1 ds-tb">
+  <span class="ds-ico mittel"><i></i><b>VTÜ</b><span class="ds-lock">{ic("lock")}</span></span>
+  <div class="crumb"><span class="kunde">Familie Berger · gespeicherter Stand</span><h1>Jahresgespräch 2026</h1></div>
+  <div class="seg" style="margin-left:6px">{seg}</div>
+  <span class="spacer"></span>
+  <button class="btn" title="Öffnet diese Übersicht in der App mit dem heutigen Stand">{ic("ext")} In der App öffnen</button>
+  <button class="btn" title="Legt in der Kundenakte eine neue Vertragsübersicht mit genau diesem Stand an">{ic("copy")} Als neue Übersicht übernehmen</button>
+  <button class="btn primary">{ic("pdf")} PDF / E-Mail</button>
+</div>'''
+    banner = (f'<div class="ds-banner">{ic("lock")}<span><b>Gespeicherter Stand vom 02.11.2026, 14:32 Uhr</b> · nur ansehen · mit Passwort geschützt</span>'
+              f'<span class="spacer"></span><span class="ds-seit">{ic("info")} In der App wurde die Übersicht seitdem 3-mal geändert</span></div>')
+    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL))
+    gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    body = f'<main class="main">{tb}{banner}{bereichsleiste_v1()}<div class="content narrow nurlesen">{bs}{gz}</div></main>'
+    return page('Gespeicherte Datei', body).replace('<div class="app">', '<div class="app ds-app">').replace(
+        '<span>Vertragsübersicht</span><div class="winctl">', f'<span>{DS_NAME}.vtue — Vertragsübersicht</span><div class="winctl">')
+
 # ---------------- PDF ----------------
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
@@ -1148,6 +1257,9 @@ def index_page():
              ('einstellungen-speicherort.html', 'Einstellungen: Speicherort', 'Gemeinsamer SharePoint/OneDrive-Ordner, Auf Desktop speichern (.vtue, Passwort), Sicherheit'),
              ('einstellungen-schnellstart.html', 'Einstellungen: Schnellstart', '5–8 Links bearbeiten, sortieren, App oder Webseite hinzufügen'),
              ('aufgaben.html', 'Aufgaben je Vertragsübersicht', 'Seitenfeld mit offenen Aufgaben, Aufgabe anlegen: Fällig, Priorität, Zuständig, Bezug, Outlook-Erinnerung'),
+             ('desktop-speichern.html', 'Auf Desktop speichern', 'Datei .vtue mit festem Stand, optional mit Passwort verschlüsselt'),
+             ('datei-passwort.html', 'Gespeicherte Datei öffnen: Passwort', 'Doppelklick auf die Datei auf dem Desktop, Passwortabfrage'),
+             ('datei-geoeffnet.html', 'Gespeicherte Datei geöffnet', 'Eigenes Fenster, nur ansehen, In der App öffnen / Als neue Übersicht übernehmen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1175,6 +1287,9 @@ files = {
  'einstellungen-schnellstart.html': page('Einstellungen – Schnellstart', start_body(), schnellstart_overlay_v1()),
  'aufgaben.html': page('Aufgaben', aufgaben_v1()),
  'aufgaben-liste.html': page('Aufgaben – Liste', aufgaben_v1(formular=False)),
+ 'desktop-speichern.html': page('Auf Desktop speichern', desktop_speichern_v1(), desktop_speichern_overlay_v1()),
+ 'datei-passwort.html': datei_passwort_v1(),
+ 'datei-geoeffnet.html': datei_geoeffnet_v1(),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
