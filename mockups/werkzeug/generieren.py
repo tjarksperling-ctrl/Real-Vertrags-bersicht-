@@ -425,6 +425,64 @@ def editor_v1(nur=None, mode='Aktuell', ersparnis=True):
     return (sidebar('Familie Berger', v2=True) +
             f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow">{bs}{gz}</div></main>')
 
+# ---------------- Bild 4 v1 (Sitzung 9): Nebeneinander im freigegebenen Design aus Bild 2/3 ----------------
+# Inhalt wie bisher (Kompaktansicht, Bereiche paarweise auf gleicher Höhe), aber mit Kopfzeile v1, Bereichsleiste,
+# Bereichsfarben, UG-Karten, Markierung „blau hinterlegt + vorher …“ und Schalter „Ersparnis anzeigen“.
+KOMPAKT = {'VERS': ('Beitrag', 'Zahlweise'), 'SPAR': ('Sparrate', 'Guthaben'), 'DARL': ('Rate', 'Restschuld'), 'AV': ('Beitrag', 'Leistung')}
+HAUPT = {'VERS': 'beitrag', 'SPAR': 'sparrate', 'DARL': 'rate', 'AV': 'beitrag'}
+CG_K = '<colgroup><col><col style="width:30%"><col style="width:30%"></colgroup>'
+
+def kompakt_table_v1(t, ug, mark, gegen=None):
+    h = f'<table class="vt">{CG_K}<tbody>'
+    for vi, v in enumerate(ug['v']):
+        key = HAUPT[t]; main = v.get(key, 0)
+        ms = opt(main)
+        if t == 'AV' and v['zw'] != 'monatlich' and main: ms += f' <small class="zwk">{v["zw"][:4]}.</small>'
+        if not main and v.get('einmal'): ms = f'{eur(v["einmal"])} <small class="zwk">einm.</small>'
+        if mark and key in v.get('vorher', {}):
+            ms = f'<span class="changed">{opt(main)}</span><span class="vorher">{eur(v["vorher"][key])}</span>'
+        elif gegen and key in gegen['v'][vi].get('vorher', {}):  # Platzhalter, damit die Zeile so hoch ist wie in „Neu“
+            ms += '<span class="vorher platz">–</span>'
+        if t == 'VERS': sec = v['zw']
+        elif t == 'SPAR': sec = opt(v['guthaben'])
+        elif t == 'DARL': sec = eur(v['rest'])
+        else: sec = f'{eur(v["leistung"][0])}<br><small class="zwk">{v["leistung"][1]}</small>'
+        h += f'<tr><td class="vname">{v["n"]}</td><td class="num">{ms}</td><td class="num zw">{sec}</td></tr>'
+    return h + '</tbody></table>'
+
+def bereich_kompakt_v1(b, i, fassung, other=None, mark=False, gegen=None):
+    t = b['typ']; title = META[t][0]; hd = KOMPAKT[t]
+    tag = f'<span class="fass {"neu" if fassung == "Neu" else ""}">{fassung}</span>'
+    h = (f'<section class="bereich v1 kompakt {FARBE[t]}"><header class="bereich-kopf"><span class="nr">{i+1}</span><h2>{title}</h2>'
+         f'<span class="spacer"></span>{tag}</header>')
+    h += (f'<div class="spaltenkopf"><table class="vt">{CG_K}<thead><tr><th>Vertrag</th><th class="num">{hd[0]}</th>'
+          f'<th class="num">{hd[1]}</th></tr></thead></table></div><div class="ugs">')
+    for ui, ug in enumerate(b['ug']):
+        h += (f'<div class="ug v1"><div class="ug-kopf"><span class="ug-icon">{ic(ug["icon"])}</span>'
+              f'<span class="name">{ug["name"]}</span></div>{kompakt_table_v1(t, ug, mark, gegen['ug'][ui] if gegen else None)}'
+              f'<div class="ug-fuss"><span></span><span class="summe"><small>{ug_label(t)} / Monat</small> {eur(ug_monat(t, ug))}</span></div></div>')
+    h += f'</div><footer class="bereich-summe v1"><span class="bs-label">Summe</span><span class="spacer"></span>{summen_html(b, other)}</footer></section>'
+    return h
+
+def side_v1(ersparnis=True):
+    n = sum(1 for b in NEU for ug in b['ug'] for v in ug['v'] if 'vorher' in v)
+    sw = lambda on, txt, tip: f'<span class="switch{" on" if on else ""}" title="{tip}"><i></i>{txt}</span>'
+    leiste = (f'<div class="aenderungen"><span class="ae-mark">28,90 €</span><span><b>{n} Änderungen</b> in „Neu“ · Kompaktansicht, Klick auf einen Vertrag öffnet alle Spalten zum Bearbeiten</span>'
+              f'<span class="spacer"></span>{sw(ersparnis, "Ersparnis anzeigen", "An: Ersparnis bzw. Mehrbeitrag ggü. Aktuell wird in der App und im PDF gezeigt. Aus: nirgends.")}</div>')
+    kopf = (f'<div class="side-head v1"><div><span class="fass">Aktuell</span> Bestand</div>'
+            f'<div><span class="fass neu">Neu</span> Vorschlag</div></div>')
+    h = ''
+    for i in range(4):
+        h += (f'<div class="side-row">{bereich_kompakt_v1(AKTUELL[i], i, "Aktuell", gegen=NEU[i])}'
+              f'{bereich_kompakt_v1(NEU[i], i, "Neu", other=AKTUELL[i] if ersparnis else None, mark=True)}</div>')
+    neben = f'<div class="neben"><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b><br>{eur(DIFF*12, True)} pro Jahr</div>' if ersparnis else ''
+    h += (f'<div class="side-row"><div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+          f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><span class="spacer"></span>{neben}<b>{eur(GN)}</b></div></div>')
+    total = (f'<div class="bl-total"><small>Aktuell</small><b>{eur(GA)}</b><small style="margin-left:6px">Neu</small><b>{eur(GN)}</b></div>')
+    bl = bereichsleiste_v1().rsplit('<div class="bl-total">', 1)[0] + total + '</div>'
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{toolbar_v1("Nebeneinander")}{bl}<div class="content neu2 side2">{leiste}{kopf}{h}</div></main>')
+
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
 # nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert,
@@ -673,7 +731,7 @@ files = {
  'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
  'neu.html': page('Neu', editor_v1(mode='Neu')),
  'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
- 'nebeneinander.html': page('Nebeneinander', side_body()),
+ 'nebeneinander.html': page('Nebeneinander', side_v1()),
  'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
  'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),
  'pdf.html': pdf_page(),

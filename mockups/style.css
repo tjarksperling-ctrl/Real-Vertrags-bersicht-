@@ -561,3 +561,32 @@ td.zw { position: relative; }
 .neu2 .vorher { text-decoration: none; margin-top: 2px; }
 .neu2 .vorher::before { content: "vorher "; }
 .ae-mark { white-space: nowrap; flex: none; }
+/* Bild 4 v1 (Sitzung 9): Nebeneinander im freigegebenen Design */
+.side2 .aenderungen { margin-bottom: 10px; }
+.side-head.v1 { top: -24px; padding: 8px 0 10px; }
+.side-head.v1 div { font-size: 13.5px; }
+.fass { display: inline-flex; align-items: center; padding: 2px 9px; border-radius: 99px; font-size: 12px; font-weight: 600; background: rgba(0,0,0,.07); color: var(--text); }
+.fass.neu { background: #dcebfc; color: #0052ad; }
+.bereich.v1.kompakt { margin-bottom: 18px; }
+.bereich.v1.kompakt .bereich-kopf { padding: 12px 16px 9px; }
+.bereich.v1.kompakt .spaltenkopf { padding: 0 31px 4px; }
+.bereich.v1.kompakt .ugs { padding: 10px 14px 2px; }
+.bereich.v1.kompakt .ug.v1 { margin-bottom: 10px; }
+.bereich.v1.kompakt .ug-fuss { padding: 6px 0 8px; }
+.bereich.v1.kompakt .bereich-summe.v1 { padding: 10px 16px; gap: 6px 24px; }
+.zwk { color: var(--muted); font-size: 11px; }
+.side2 .side-row { gap: 16px; }
+.side2 .gesamt.v1 { padding: 14px 20px; }
+
+.side2 .gesamt.v1 .neben { margin-right: 18px; text-align: right; opacity: .85; }
+.vorher.platz { visibility: hidden; }
+.side2 .side-row { align-items: start; }
+.side2 .gesamt.v1 > span:first-child { white-space: nowrap; }
+.side2 .gesamt.v1 > b { font-size: 21px; white-space: nowrap; }
+.side2 .gesamt.v1 .neben b { font-size: 13px; }
+.side2 .gesamt.v1 .neben { white-space: nowrap; }
+.side2 .side-row { align-items: stretch; }
+.side2 .bereich.v1.kompakt { display: flex; flex-direction: column; }
+.side2 .bereich.v1.kompakt .bereich-summe.v1 { flex: 1; align-items: flex-start; }
+.side2 .side-row > .gesamt.v1 { margin-bottom: 18px; }
+.bereich-kopf .fass { background: #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.06); }
