@@ -483,6 +483,72 @@ def side_v1(ersparnis=True):
     return (sidebar('Familie Berger', v2=True) +
             f'<main class="main">{toolbar_v1("Nebeneinander")}{bl}<div class="content neu2 side2">{leiste}{kopf}{h}</div></main>')
 
+# ---------------- Bild 4 v2 (Sitzung 9): Nebeneinander mit allen Spalten ----------------
+# Wunsch des Nutzers: „Alle Spalten anzeigen“ (wie in Bild 2/3). Damit es passt: Seitenleiste in dieser Ansicht schmal (Leiste mit Kundenkürzeln),
+# Spalten wie COLS, Zeilen von Aktuell und Neu per data-k paarweise gleich hoch (in der App: gemeinsames Raster).
+COLS_SEITE = {
+ 'VERS': [('Vertrag', '25%'), ('Bemerkung', ''), ('Beitrag', '19%', 1), ('Zahlweise', '20%')],
+ 'SPAR': [('Vertrag', '15%'), ('Bemerkung', ''), ('Sparrate', '12%', 1), ('Zahlweise', '13%'), ('Einmal-<br>betrag', '13%', 1), ('Guthaben', '14%', 1), ('Wertentw.', '12%', 1)],
+ 'DARL': [('Vertrag', '21%'), ('Bemerkung', ''), ('Rate/Tilgung', '17%', 1), ('Restschuld', '18%', 1), ('Zinsbindung', '15%')],
+ 'AV':   [('Vertrag', '16%'), ('Bemerkung', ''), ('Beitrag', '14%', 1), ('Einmal-<br>beitrag', '13%', 1), ('Zahlweise', '13%'), ('Leistung/<br>Guthaben', '15%', 1), ('Laufzeit<br>bis', '14%', 1)],
+}
+def cg_seite(t): return '<colgroup>' + ''.join(f'<col style="width:{c[1]}">' if c[1] else '<col>' for c in COLS_SEITE[t]) + '</colgroup>'
+
+def voll_table_v2(t, ug, key, mark, gegen=None):
+    h = f'<table class="vt">{cg_seite(t)}<tbody>'
+    for vi, v in enumerate(ug['v']):
+        cs = cells(t, v, True, mark)
+        if gegen and gegen['v'][vi].get('vorher') and not mark:
+            cs[0] += '<span class="vorher platz">–</span>'
+        h += f'<tr data-k="{key}-{vi}"><td class="vname">{v["n"]}</td><td class="bem{" bem-neu" if mark and gegen is None and v.get("vorher") else ""}">{v["b"]}</td>'
+        for c, val in zip(COLS_SEITE[t][2:], cs):
+            h += f'<td class="{"num" if len(c) > 2 else "zw"}">{val}</td>'
+        h += '</tr>'
+    return h + '</tbody></table>'
+
+def bereich_seite_v2(b, i, fassung, other=None, mark=False, gegen=None):
+    t = b['typ']; title = META[t][0]
+    h = (f'<section class="bereich v1 kompakt voll {FARBE[t]}"><header class="bereich-kopf"><span class="nr">{i+1}</span><h2>{title}</h2>'
+         f'<span class="spacer"></span><span class="fass {"neu" if fassung == "Neu" else ""}">{fassung}</span></header>')
+    th = ''.join(f'<th class="{"num" if len(c) > 2 else ""}">{c[0]}</th>' for c in COLS_SEITE[t])
+    h += f'<div class="spaltenkopf"><table class="vt">{cg_seite(t)}<thead><tr>{th}</tr></thead></table></div><div class="ugs">'
+    for ui, ug in enumerate(b['ug']):
+        h += (f'<div class="ug v1"><div class="ug-kopf"><span class="ug-icon">{ic(ug["icon"])}</span><span class="name">{ug["name"]}</span></div>'
+              f'{voll_table_v2(t, ug, f"{i}-{ui}", mark, gegen["ug"][ui] if gegen else None)}'
+              f'<div class="ug-fuss"><span class="add-v" style="padding-left:0">{ic("plus")} Vertrag</span><span class="summe"><small>{ug_label(t)} / Monat</small> {eur(ug_monat(t, ug))}</span></div></div>')
+    h += f'</div><footer class="bereich-summe v1"><span class="bs-label">Summe</span><span class="spacer"></span>{summen_html(b, other)}</footer></section>'
+    return h
+
+def rail(sel='Familie Berger'):
+    av = lambda n, k, a: f'<span class="avatar {a}{" sel" if n == sel else ""}" title="{n}">{k}</span>'
+    pins = ''.join(av(n, k, a) for n, k, a, _ in KUNDEN if n in PINNED)
+    rest = ''.join(av(n, k, a) for n, k, a, _ in KUNDEN if n not in PINNED)
+    return (f'<aside class="rail" title="Seitenleiste ist in „Nebeneinander“ eingeklappt, Klick auf ☰ klappt sie aus">'
+            f'<span class="r-btn">{ic("columns")}</span><span class="r-btn">{ic("search")}</span><span class="r-btn prim">{ic("plus")}</span>'
+            f'<span class="r-sep"></span><span class="r-btn">{ic("home")}</span><span class="r-btn">{ic("tasks")}</span><span class="r-sep"></span>'
+            f'{pins}<span class="r-sep"></span>{rest}</aside>')
+
+GLEICHE_HOEHE = """<script>/* Mockup: Zeilen von Aktuell und Neu gleich hoch (App: gemeinsames Raster) */
+const m={};document.querySelectorAll('tr[data-k]').forEach(r=>{(m[r.dataset.k]=m[r.dataset.k]||[]).push(r)});
+Object.values(m).forEach(rs=>{const h=Math.max(...rs.map(r=>r.getBoundingClientRect().height));rs.forEach(r=>r.style.height=h+'px')});</script>"""
+
+def side_v2(ersparnis=True):
+    n = sum(1 for b in NEU for ug in b['ug'] for v in ug['v'] if 'vorher' in v)
+    sw = lambda on, txt, tip: f'<span class="switch{" on" if on else ""}" title="{tip}"><i></i>{txt}</span>'
+    leiste = (f'<div class="aenderungen"><span class="ae-mark">28,90 €</span><span><b>{n} Änderungen</b> in „Neu“ · alle Spalten, direkt bearbeitbar</span>'
+              f'<span class="spacer"></span>{sw(ersparnis, "Ersparnis anzeigen", "An: Ersparnis bzw. Mehrbeitrag ggü. Aktuell wird in der App und im PDF gezeigt. Aus: nirgends.")}</div>')
+    kopf = '<div class="side-head v1"><div><span class="fass">Aktuell</span> Bestand</div><div><span class="fass neu">Neu</span> Vorschlag</div></div>'
+    h = ''
+    for i in range(4):
+        h += (f'<div class="side-row">{bereich_seite_v2(AKTUELL[i], i, "Aktuell", gegen=NEU[i])}'
+              f'{bereich_seite_v2(NEU[i], i, "Neu", other=AKTUELL[i] if ersparnis else None, mark=True)}</div>')
+    neben = f'<div class="neben"><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b><br>{eur(DIFF*12, True)} pro Jahr</div>' if ersparnis else ''
+    h += (f'<div class="side-row"><div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+          f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><span class="spacer"></span>{neben}<b>{eur(GN)}</b></div></div>')
+    total = f'<div class="bl-total"><small>Aktuell</small><b>{eur(GA)}</b><small style="margin-left:6px">Neu</small><b>{eur(GN)}</b></div>'
+    bl = bereichsleiste_v1().rsplit('<div class="bl-total">', 1)[0] + total + '</div>'
+    return (rail() + f'<main class="main">{toolbar_v1("Nebeneinander")}{bl}<div class="content neu2 side2">{leiste}{kopf}{h}</div></main>' + GLEICHE_HOEHE)
+
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
 # nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert,
@@ -731,7 +797,7 @@ files = {
  'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
  'neu.html': page('Neu', editor_v1(mode='Neu')),
  'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
- 'nebeneinander.html': page('Nebeneinander', side_v1()),
+ 'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
  'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
  'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),
  'pdf.html': pdf_page(),
