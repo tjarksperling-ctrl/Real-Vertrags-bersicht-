@@ -1113,6 +1113,179 @@ def datei_geoeffnet_v1():
         '<span>Vertragsübersicht</span><div class="winctl">', f'<span>{DS_NAME}.vtue — Vertragsübersicht</span><div class="winctl">')
 
 # ---------------- PDF ----------------
+# ---------------- Bild 11 v1 (Sitzung 16): Neuer Kunde + Vorlagen + Autovervollständigung ----------------
+# Fehlender Screen aus Abschnitt 2. (a) Dialog „Neuer Kunde“: nur Name, Titel der ersten Übersicht, Start leer / mit Vorlage / mit Unterlagen.
+# (b) Einstellungen → Vorlagen (Design Bild 8): Agentur-Vorlagen + eigene, Untergruppen mit Symbolen, Vertragsvorschläge, Autovervollständigung.
+# (c) Editor direkt nach dem Anlegen (Vorlage „Junge Familie“): Tippen im Feld „Vertrag“ zeigt Vorschläge.
+P.update({
+ 'userplus': '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>',
+ 'tpl': '<rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/>',
+ 'fileplus': '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M9 15h6"/><path d="M12 18v-6"/>',
+ 'star': '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
+ 'baby': '<path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/>',
+ 'activity': '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>',
+ 'briefcase': '<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/>',
+ 'umbrella': '<path d="M22 12a10.06 10.06 1 0 0-20 0Z"/><path d="M12 12v8a2 2 0 0 0 4 0"/><path d="M12 2v1"/>',
+ 'plane': '<path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/>',
+ 'paw': '<circle cx="11" cy="4" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="20" cy="16" r="2"/><path d="M9 10a5 5 0 0 1 5 5v3.5a3.5 3.5 0 0 1-6.84 1.045Q6.52 17.48 4.46 16.84A3.5 3.5 0 0 1 5.5 10Z"/>',
+ 'enter': '<polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+})
+
+# Vorlage „Junge Familie“ (Agentur): Bereich, an/aus, Untergruppen (Symbol, Name, Vertragsvorschläge)
+VORLAGE_JF = [
+ ('VERS', True, [('shield', 'Haftpflicht & Recht', ['Privathaftpflicht', 'Rechtsschutz']), ('home', 'Wohnen', ['Hausrat', 'Wohngebäude']),
+                 ('car', 'Kfz', ['Kfz-Versicherung']), ('activity', 'Gesundheit', ['Zahnzusatz', 'Kinder-Krankenzusatz'])]),
+ ('SPAR', True, [('trend', 'Fonds & ETF', ['ETF-Sparplan']), ('baby', 'Sparen für Kinder', ['Kinder-Depot', 'Juniorsparen'])]),
+ ('DARL', False, [('bank', 'Immobilie', []), ('cart', 'Konsum', [])]),
+ ('AV', True, [('hourglass', 'Altersvorsorge', ['Private Rente']), ('heart', 'Familienabsicherung', ['Risikoleben', 'Berufsunfähigkeit'])]),
+]
+VORLAGEN = [  # Name, Untertitel, Symbol, Standard, eigene
+ ('Agentur-Standard', '4 Bereiche · 9 Untergruppen', 'star', True, False),
+ ('Junge Familie', '3 Bereiche · 8 Untergruppen', 'baby', False, False),
+ ('Single & Berufsstart', '3 Bereiche · 6 Untergruppen', 'user', False, False),
+ ('Selbstständige', '4 Bereiche · 10 Untergruppen', 'briefcase', False, False),
+ ('Ruhestand', '3 Bereiche · 7 Untergruppen', 'hourglass', False, False),
+ ('Baufinanzierung', '4 Bereiche · 8 Untergruppen', 'bank', False, True),
+]
+
+def nk_overlay_v1():
+    kacheln = [('fileplus', 'Leer starten', '4 Bereiche, noch ohne Untergruppen', False),
+               ('tpl', 'Mit Vorlage', 'Untergruppen mit Symbolen fertig angelegt', True),
+               ('sparkles', 'Mit Unterlagen (KI)', 'KI liest PDFs/Scans, füllt „Aktuell“ vor', False)]
+    kh = ''.join(f'<div class="kk-anb{" on" if on else ""}"><span class="es-sym">{ic(i)}</span><div><b>{n}</b><small>{d}</small></div>'
+                 f'{"<span class=kk-sel>" + ic("check") + "</span>" if on else ""}</div>' for i, n, d, on in kacheln)
+    def vl(n, sub, sym, std, eigen):
+        on = n == 'Junge Familie'
+        tag = f'<span class="nk-std" title="Standard für neue Kunden">{ic("star")}</span>' if std else ''
+        return (f'<div class="nk-v{" on" if on else ""}"><span class="nk-radio{" on" if on else ""}"></span><span class="nk-vsym">{ic(sym)}</span>'
+                f'<div><b>{n}</b><small>{sub}</small></div>{tag}</div>')
+    liste = ('<div class="nk-gr">Agentur</div>' + ''.join(vl(*v) for v in VORLAGEN if not v[4]) +
+             '<div class="nk-gr">Meine Vorlagen</div>' + ''.join(vl(*v) for v in VORLAGEN if v[4]))
+    rows = ''
+    for i, (t, an, ugs) in enumerate(VORLAGE_JF):
+        if an:
+            chips = ''.join(f'<span class="nk-ug">{ic(s)}{n}</span>' for s, n, _ in ugs)
+        else:
+            chips = '<span class="nk-aus">nicht in dieser Vorlage · später zuschaltbar</span>'
+        rows += (f'<div class="nk-b {FARBE[t]}{"" if an else " off"}"><span class="nk-nr">{i+1}</span><div class="nk-bm"><b>{META[t][0]}</b>'
+                 f'<div class="nk-ugs">{chips}</div></div></div>')
+    return f'''<div class="overlay"><div class="sheet ex1 nk1">
+<header><h2>{ic("userplus")} Neuer Kunde</h2><p>Gespeichert wird nur der Name – keine Anschrift, kein Geburtsdatum.</p></header>
+<div class="body">
+ <div class="nk-kopf">
+  <span class="avatar a2 nk-av">FH</span>
+  <div class="nk-f nk-name"><label>Name des Kunden</label><div class="tin">Familie Hoffmann<span class="caret"></span></div>
+   <div class="nk-frei">{ic("check")} Noch kein Kunde mit diesem Namen</div></div>
+  <div class="nk-f"><label>Erste Vertragsübersicht</label><div class="kk-input">Erstberatung 2026<span class="spacer"></span><span class="es-hint">änderbar</span></div>
+   <div class="nk-tip">Vorschlag aus Anlass und Jahr</div></div>
+ </div>
+ <div class="ex-sec">Wie möchten Sie starten?</div>
+ <div class="kk-anbieter">{kh}</div>
+ <div class="nk-vorlage">
+  <div class="nk-liste">{liste}<div class="nk-verw">{ic("sliders")} Vorlagen verwalten {ic("chev")}</div></div>
+  <div class="nk-vor">
+   <div class="nk-vor-k"><b>Vorschau „Junge Familie“</b><span class="es-scope ag">{ic("user")} Agentur-Vorlage</span></div>
+   <p>Für Paare mit Kindern. Legt nur Bereiche und Untergruppen an, keine leeren Vertragszeilen.</p>
+   {rows}
+   <div class="nk-auto">{ic("wand")}<span><b>Autovervollständigung:</b> Beim Tippen im Feld „Vertrag“ schlägt die App passende Namen vor (z. B. „Hausrat“ in „Wohnen“).</span></div>
+  </div>
+ </div>
+</div>
+<footer><span class="kk-fuss">{ic("info")} Bereiche, Untergruppen und Symbole lassen sich danach jederzeit ändern.</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Kunde anlegen {ic("enter")}</button></footer>
+</div></div>'''
+
+def nk_start_v1():
+    """Startseite, Knopf „Neuer Kunde“ in der Seitenleiste gedrückt."""
+    return start_body()
+
+def vorlagen_overlay_v1():
+    titel = es_titel('tpl', 'Vorlagen', '<span class="es-anz">6 Vorlagen</span>', True)
+    def vk(n, sub, sym, std, eigen):
+        on = n == 'Junge Familie'
+        tag = f'<span class="nk-std">{ic("star")}</span>' if std else ''
+        return (f'<div class="vl-k{" on" if on else ""}"><span class="nk-vsym">{ic(sym)}</span><div><b>{n}</b><small>{sub}</small></div>{tag}</div>')
+    links = ('<div class="nk-gr">Agentur</div>' + ''.join(vk(*v) for v in VORLAGEN if not v[4]) +
+             f'<div class="nk-gr">Meine Vorlagen <span class="vl-nur">nur für Sie</span></div>' + ''.join(vk(*v) for v in VORLAGEN if v[4]) +
+             f'<div class="vl-neu">{ic("plus")}<div><b>Neue Vorlage</b><small>leer oder aus einer Übersicht</small></div></div>')
+    bl = ''
+    for i, (t, an, ugs) in enumerate(VORLAGE_JF):
+        rows = ''
+        if an:
+            for s, n, vor in ugs:
+                vh = ''.join(f'<span class="vl-vs">{v}</span>' for v in vor)
+                if n == 'Gesundheit':
+                    sy = ''.join(f'<span class="{"on" if x == s else ""}">{ic(x)}</span>' for x in
+                                 ['shield', 'home', 'car', 'activity', 'heart', 'umbrella', 'plane', 'paw', 'briefcase', 'baby', 'key', 'trend'])
+                    rows += (f'<div class="vl-ug edit"><span class="es-grip">{ic("grip")}</span><span class="vl-sym on">{ic(s)}{ic("down")}</span>'
+                             f'<div class="vl-ed"><div class="vl-ed-r"><div class="kk-input vl-n">{n}<span class="caret"></span></div><span class="vl-vor">{vh}<span class="vl-vs add">{ic("plus")}</span></span></div>'
+                             f'<div class="vl-ed-r"><span class="es-lab">Symbol</span><span class="es-syms">{sy}</span></div></div></div>')
+                    continue
+                rows += (f'<div class="vl-ug"><span class="es-grip">{ic("grip")}</span><span class="vl-sym">{ic(s)}</span><b>{n}</b>'
+                         f'<span class="vl-vor">{vh}</span><span class="es-akt">{ic("more")}</span></div>')
+        bl += (f'<div class="vl-b {FARBE[t]}{"" if an else " off"}"><div class="vl-bk"><span class="chk">{ic("check") if an else ""}</span><b>{META[t][0]}</b>'
+               f'{"" if an else "<span class=vl-aus>nicht in dieser Vorlage</span>"}<span class="spacer"></span>{"<span class=vl-addk>" + ic("plus") + " Untergruppe</span>" if an else "<span class=vl-addk>zuschalten</span>"}</div>{rows}</div>')
+    inhalt = f'''<p class="kk-lead">Vorlagen legen Bereiche und Untergruppen mit Symbolen an. Vertragsnamen erscheinen beim Tippen als Vorschlag.</p>
+  <div class="vl-grid">
+   <div class="vl-links">{links}
+    <div class="vl-auto"><div class="vl-auto-k">{ic("wand")} Autovervollständigung<span class="spacer"></span>{es_sw(True)}</div>
+     <div class="vl-auto-t">Schlägt beim Tippen Vertragsnamen mit üblicher Zahlweise vor – aus Vorlagen und allen Kunden der Agentur.</div>
+     <div class="vl-liste">{ic("file")} 148 Namen · <span class="ds-link">Liste bearbeiten …</span></div>
+    </div>
+   </div>
+   <div class="vl-ed-box">
+    <div class="vl-kopf"><span class="nk-vsym gross">{ic("baby")}</span><div class="kk-input vl-name">Junge Familie</div>
+     <span class="vl-std">{es_sw(False)} Standard für neue Kunden</span></div>
+    {bl}
+   </div>
+  </div>'''
+    fuss = (f'<span class="kk-fuss">{ic("info")} Änderungen gelten nur für neue Kunden. Bestehende Übersichten bleiben unverändert.</span>'
+            f'<span class="spacer"></span><button class="btn ghost">{ic("copy")} Duplizieren</button><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
+    return einst_overlay_v1('Vorlagen', titel, inhalt, fuss)
+
+def nk_editor_v1():
+    """Editor direkt nach „Kunde anlegen“ mit Vorlage „Junge Familie“; Tippen „Haus“ in „Wohnen“ zeigt Vorschläge."""
+    tb = (toolbar_v1().replace('avatar a1">FB', 'avatar a2">FH').replace('Familie Berger', 'Familie Hoffmann')
+          .replace('Jahresgespräch 2026 <span class="avatar a2 live" title="Sabine K. arbeitet gerade ebenfalls in dieser Übersicht">SK</span>', 'Erstberatung 2026')
+          .replace(' <span class="badge orange">1</span>', ''))
+    leiste = bereichsleiste_v1(g=790).replace('bl-item darl"', 'bl-item darl off" title="Nicht in der Vorlage – Klick auf das Kästchen schaltet den Bereich zu"')
+    leiste = leiste.replace('<span class="bl-item darl off"', '<span class="bl-item darl off"', 1)
+    # Darlehen-Häkchen leer
+    i0 = leiste.find('bl-item darl off')
+    seg = leiste[i0:]
+    seg = seg.replace(f'<span class="chk" title="Bereich an-/abwählen">{ic("check")}</span>', '<span class="chk" title="Bereich an-/abwählen"></span>', 1)
+    leiste = leiste[:i0] + seg
+    cg = colgroup_v1('VERS')
+    def ug(sym, name, body, summe):
+        return (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(sym)}</span>'
+                f'<span class="name">{name}</span><span class="ug-more">{ic("more")}</span></div>{body}'
+                f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span><span class="summe"><small>Beitrag / Monat</small> {summe}</span></div></div>')
+    phv = (f'<table class="vt">{cg}<tbody><tr><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Privathaftpflicht</span></td>'
+           f'<td class="bem"><span class="edit-cell">Familientarif, Deckung 20 Mio. €</span></td><td class="num">7,90 €</td>'
+           f'<td class="zw"><span class="zw-sel">monatlich{ic("down")}</span></td></tr></tbody></table>')
+    vors = [('Hausrat', 'Wohnen · meist jährlich', '214×', True, ''),
+            ('Haus- und Grundbesitzerhaftpflicht', 'gehört zu „Haftpflicht &amp; Recht“', '38×', False, f'<span class="ac-move">{ic("arrow")} wird dorthin verschoben</span>'),
+            ('Haus- und Wohnungsschutzbrief', 'Wohnen · meist jährlich', '12×', False, '')]
+    vh = ''.join(f'<div class="ac-i{" on" if on else ""}"><span class="ac-n"><b>Haus</b>{n[4:]}</span><span class="ac-m">{m}{mv}</span><span class="ac-z">{z}</span></div>' for n, m, z, on, mv in vors)
+    menu = (f'<div class="ac-menu"><div class="ac-k">{ic("wand")} Vorschläge aus der Agentur</div>{vh}'
+            f'<div class="ac-f"><span><kbd>↑</kbd><kbd>↓</kbd> auswählen</span><span><kbd>Enter</kbd> übernehmen</span><span><kbd>Esc</kbd> eigener Name „Haus“</span></div></div>')
+    wohnen = (f'<table class="vt">{cg}<tbody><tr class="focus"><td class="g grip">{ic("grip")}</td>'
+              f'<td class="vname ac-td"><span class="edit-cell active">Haus<span class="caret"></span><span class="ac-ghost">rat</span></span>{menu}</td>'
+              f'<td class="bem"><span class="ph">Bemerkung</span></td><td class="num"><span class="ph">0,00 €</span></td>'
+              f'<td class="zw"><span class="zw-sel ph">jährlich{ic("down")}</span></td></tr></tbody></table>')
+    leer = '<div class="ug-leer">Noch keine Verträge – erscheint erst im PDF, wenn ein Vertrag eingetragen ist</div>'
+    ugs = (ug('shield', 'Haftpflicht &amp; Recht', phv, '7,90 €') + ug('home', 'Wohnen', wohnen, '0,00 €') +
+           ug('car', 'Kfz', leer, '0,00 €') + ug('activity', 'Gesundheit', leer, '0,00 €'))
+    vers = (f'<section class="bereich v1 vers"><header class="bereich-kopf"><span class="nr">1</span><h2>Versicherungen</h2>'
+            f'<span class="spacer"></span><button class="btn icon ghost">{ic("more")}</button></header>{spaltenkopf_v1("VERS")}'
+            f'<div class="ugs">{ugs}<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
+            f'<footer class="bereich-summe v1"><span class="bs-label">Summe Versicherungen</span><span class="spacer"></span><div class="kv"><span>Beitrag / Monat</span><b>7,90 €</b></div></footer></section>')
+    hinweis = (f'<div class="nk-band">{ic("tpl")}<span><b>Familie Hoffmann</b> wurde mit der Vorlage „Junge Familie“ angelegt · Darlehen ist aus und lässt sich oben jederzeit zuschalten.</span>'
+               f'<span class="spacer"></span><span class="ds-link">Vorlage wechseln</span><span class="nk-x">{ic("x")}</span></div>')
+    sb = sidebar('Familie Hoffmann', v2=True)
+    sb = sb.replace('<ul class="nav">', '<ul class="nav"><li class="sel"><span class="avatar a2">FH</span>Familie Hoffmann<span class="nk-neu">neu</span></li>', 1)
+    return sb + f'<main class="main">{tb}{leiste}<div class="content narrow">{hinweis}{vers}</div></main>'
+
+
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
 def p_bereich(b, i):
@@ -1260,6 +1433,9 @@ def index_page():
              ('desktop-speichern.html', 'Auf Desktop speichern', 'Datei .vtue mit festem Stand, optional mit Passwort verschlüsselt'),
              ('datei-passwort.html', 'Gespeicherte Datei öffnen: Passwort', 'Doppelklick auf die Datei auf dem Desktop, Passwortabfrage'),
              ('datei-geoeffnet.html', 'Gespeicherte Datei geöffnet', 'Eigenes Fenster, nur ansehen, In der App öffnen / Als neue Übersicht übernehmen'),
+             ('neuer-kunde.html', 'Neuer Kunde', 'Nur Name, Titel der ersten Übersicht, Start leer / mit Vorlage / mit Unterlagen'),
+             ('einstellungen-vorlagen.html', 'Einstellungen: Vorlagen', 'Agentur- und eigene Vorlagen, Untergruppen mit Symbolen, Vertragsvorschläge, Autovervollständigung'),
+             ('neuer-kunde-editor.html', 'Neuer Kunde: Autovervollständigung', 'Übersicht nach dem Anlegen mit Vorlage, Vorschläge beim Tippen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1290,6 +1466,9 @@ files = {
  'desktop-speichern.html': page('Auf Desktop speichern', desktop_speichern_v1(), desktop_speichern_overlay_v1()),
  'datei-passwort.html': datei_passwort_v1(),
  'datei-geoeffnet.html': datei_geoeffnet_v1(),
+ 'neuer-kunde.html': page('Neuer Kunde', nk_start_v1(), nk_overlay_v1()),
+ 'einstellungen-vorlagen.html': page('Einstellungen – Vorlagen', start_body(), vorlagen_overlay_v1()),
+ 'neuer-kunde-editor.html': page('Neuer Kunde – Autovervollständigung', nk_editor_v1()),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
