@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 · Branch `claude/laughing-johnson-xm4jsw` · Phase 3 (Mockups) **in Überarbeitung**
+**Stand:** 02.11.2026 · Branch `claude/adoring-sagan-i8w0t7` (übernommen von `claude/laughing-johnson-xm4jsw`) · Phase 3 (Mockups) **in Überarbeitung**
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -79,6 +79,7 @@ Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit ei
 
 - Einstieg: `mockups/index.html` · Design: `mockups/style.css`
 - Generator: `mockups/werkzeug/generieren.py` → **Seiten nur dort ändern**, dann `python3 mockups/werkzeug/generieren.py mockups`
+- Bilder zum Zeigen im Chat: `mockups/bilder/` (z. B. `1-start-vorher.png`)
 - Bilder/PDF: `node mockups/werkzeug/pdf-und-screenshots.js <ordner>` (Fenster 1488×900; Pfad zum Repo ist im Skript fest eingetragen)
 
 ## 4. Bekannte Probleme
@@ -99,6 +100,7 @@ Konkret unübersichtlich:
 **Nicht funktioniert / Stolpersteine:**
 - HANDOFF.md lag zunächst auf einem anderen Branch (`claude/bold-curie-qxr2wd`). Er wurde in den Arbeitsbranch übernommen.
 - Erste Mockup-Fassung hatte Darstellungsfehler: Toolbar lief über, Änderungspunkt überdeckte Zahlen, Knopf im Export-Dialog abgeschnitten, Spalten im KI-Dialog schlecht verteilt, AV-Laufzeit ragte im PDF über den Rand, Betragsüberschriften falsch ausgerichtet. Alles behoben, aber Toolbar-Platz bleibt knapp.
+- Sitzung 3 startete auf einem leeren Branch (`claude/adoring-sagan-i8w0t7`). Stand per Fast-Forward von `claude/laughing-johnson-xm4jsw` übernommen.
 - Die Auswahl-Rückfrage zur Mockup-Freigabe wurde vom Nutzer geschlossen. Feedback kam stattdessen als Text.
 
 ## 6. Arbeitsweise für die neue Sitzung (verbindlich)
@@ -113,7 +115,7 @@ Konkret unübersichtlich:
 ## Fortschritt
 | Bild | Status | Offene Punkte |
 |---|---|---|
-| 1 Startseite | offen | – |
+| 1 Startseite | in Arbeit: gezeigt, Feedback ausstehend | – |
 | 2 Aktuell | offen | – |
 | 3 Neu | offen | – |
 | 4 Nebeneinander | offen | – |
