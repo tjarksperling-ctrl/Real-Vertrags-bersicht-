@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 4) · Branch `claude/blissful-knuth-3kirjs` (übernommen von `claude/adoring-sagan-i8w0t7`) · Phase 3 (Mockups) **in Überarbeitung** · Bild 1 (Startseite) v4 **freigegeben**, als Nächstes Bild 2 (Aktuell)
+**Stand:** 02.11.2026 (Sitzung 5) · Branch `claude/bild-2-ubersicht-aktuell-chgsyz` (übernommen von `claude/blissful-knuth-3kirjs`) · Phase 3 (Mockups) **in Überarbeitung** · Bild 1 (Startseite) v4 und **neu Bild 1b (Kundenakte) v1 freigegeben**, als Nächstes Bild 2 (Aktuell)
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -60,7 +60,7 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | Automatische Updates, Mac-Version | – (kein Layout nötig) |
 
 **Eigene Vorschläge aus dem Plan (freigegeben)**
-Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ · Übersichten anpinnen (max. 4, Wunsch Sitzung 4) ✅ Bild 1 v4 · Rückgängig ❌ · „Neu aus Aktuell kopieren“ ❌ · Hell/Dunkel ❌ · Tastatursteuerung ❌
+Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ · Übersichten anpinnen (max. 4, Wunsch Sitzung 4) ✅ Bild 1 v4 · **Kundenakte** je Kunde mit allen Vertragsübersichten über die Jahre + Kundenaufgaben (Wunsch Sitzung 5) ✅ Bild 1b · Rückgängig ❌ · „Neu aus Aktuell kopieren“ ❌ · Hell/Dunkel ❌ · Tastatursteuerung ❌
 
 **Ganz fehlende Screens:** Einstellungen (KI-Konto, Outlook, OneDrive-Ordner, Schnellstart), Aufgaben je Übersicht, Stand einfrieren/Datei öffnen, Neuer Kunde + Vorlagen, Untergruppe/Vertrag bearbeiten (Symbol, Zahlweise, AV-Art).
 
@@ -70,7 +70,8 @@ Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit ei
 | Nr | Bild | Datei |
 |---|---|---|
 | 1 | Startseite v4 **freigegeben** (Schnellstart, Aufgaben, Angepinnt max. 4, zuletzt bearbeitet) | `mockups/start.html` · Bilder `mockups/bilder/1-start-vorher.png`, `-v2.png`, `-v3.png`, `-v4.png` |
-| 2 | Übersicht „Aktuell“ bearbeiten | `mockups/aktuell.html` |
+| 1b | **neu** Kundenakte v1 **freigegeben** (alle Vertragsübersichten des Kunden, aktueller Stand, Aufgaben mit Schnelleingabe) | `mockups/kunde.html` · Bild `mockups/bilder/1b-kunde-v1.png` |
+| 2 | Übersicht „Aktuell“ bearbeiten | `mockups/aktuell.html` · Ausgangsbilder `mockups/bilder/2-aktuell-vorher.png` (Fenster) und `2-aktuell-vorher-ganz.png` (ganze Seite) |
 | 3 | Übersicht „Neu“ (Änderungen markiert, Vorteile) | `mockups/neu.html` |
 | 4 | Aktuell und Neu nebeneinander | `mockups/nebeneinander.html` |
 | 5 | Dialog PDF erstellen + Outlook-Versand | `mockups/export.html` |
@@ -81,6 +82,8 @@ Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit ei
 - Generator: `mockups/werkzeug/generieren.py` → **Seiten nur dort ändern**, dann `python3 mockups/werkzeug/generieren.py mockups`
 - Bilder zum Zeigen im Chat: `mockups/bilder/<nr>-<name>-v<n>.png`, nur die eine Seite fotografieren (Playwright, Fenster 1488×900, `file://…/mockups/start.html`) und per Datei-Versand zeigen
 - Startseite: `start_body()` + Konstante `PINNED` im Generator; Seitenleiste neu über `sidebar(sel, v2=True)` (Abschnitte „Angepinnt“/„Alle Kunden“, keine Zahlen an Kunden). CSS-Blöcke „Startseite v2“ und „v3“ am Ende von `style.css`. Alte Seiten nutzen noch `sidebar()` ohne v2
+- Kundenakte: `kunde_body()` + Konstante `UEBERSICHTEN` im Generator, CSS-Block „Kundenakte (Bild 1b, Sitzung 5)“ am Ende von `style.css`
+- Editor scrollt in `.content` (nicht die Seite): ganze Seite fotografieren mit Fensterhöhe 2600 statt `fullPage`
 - Bilder/PDF: `node mockups/werkzeug/pdf-und-screenshots.js <ordner>` (Fenster 1488×900; Pfad zum Repo ist im Skript fest eingetragen)
 
 ## 4. Bekannte Probleme
@@ -104,6 +107,7 @@ Konkret unübersichtlich:
 **Nicht funktioniert / Stolpersteine:**
 - HANDOFF.md lag zunächst auf einem anderen Branch (`claude/bold-curie-qxr2wd`). Er wurde in den Arbeitsbranch übernommen.
 - Erste Mockup-Fassung hatte Darstellungsfehler: Toolbar lief über, Änderungspunkt überdeckte Zahlen, Knopf im Export-Dialog abgeschnitten, Spalten im KI-Dialog schlecht verteilt, AV-Laufzeit ragte im PDF über den Rand, Betragsüberschriften falsch ausgerichtet. Alles behoben, aber Toolbar-Platz bleibt knapp.
+- Sitzung 5: Arbeitsbranch `claude/bild-2-ubersicht-aktuell-chgsyz`, Stand von `claude/blissful-knuth-3kirjs` per Fast-Forward übernommen. Bild 2 wurde gezeigt, dann wollte der Nutzer zurück zu Bild 1 → daraus entstand die Kundenakte (Bild 1b). Bild 2 ist nur gezeigt und beschrieben, Verbesserungsvorschläge des Nutzers stehen noch aus.
 - Sitzung 4: Arbeitsbranch `claude/blissful-knuth-3kirjs` aus `claude/adoring-sagan-i8w0t7` erzeugt. Jede neue Sitzung bekommt evtl. einen anderen Branch → zuerst den Stand dieses Branches übernehmen.
 - Sitzung 3 startete auf einem leeren Branch (`claude/adoring-sagan-i8w0t7`). Stand per Fast-Forward von `claude/laughing-johnson-xm4jsw` übernommen.
 - Die Auswahl-Rückfrage zur Mockup-Freigabe wurde vom Nutzer geschlossen. Feedback kam stattdessen als Text. Deshalb Verbesserungsvorschläge als offene Textfrage stellen.
@@ -124,7 +128,8 @@ Konkret unübersichtlich:
 | Bild | Status | Offene Punkte |
 |---|---|---|
 | 1 Startseite | ✅ **v4 freigegeben** (Sitzung 4) | v4: max. 4 angepinnte Übersichten („4 von 4“), bei vollem Platz fragt „Anpinnen“, welche ersetzt wird. v3: Anpinnen (Karten „Angepinnt“ rechts auf Start + Abschnitt „Angepinnt“ in der Seitenleiste; Anpinnen per Knopf beim Darüberfahren in „Zuletzt bearbeitet“, Rechtsklick, später Stecknadel in der Kunden-Toolbar; angepinnte nicht doppelt in „Zuletzt bearbeitet“), Aufgaben mit Pfeil › bzw. „Übersicht öffnen ›“. v2: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · Begrüßung + Datum statt Toolbar · unklare Zahlen an Kunden entfernt. Seitenleiste v2 später auf die anderen Seiten übertragen. |
-| 2 Aktuell | offen | – |
+| 1b Kundenakte (neu) | ✅ **v1 freigegeben** (Sitzung 5, „Ist so mega“) | Wunsch des Nutzers: Kunden haben über Jahre viele Vertragsübersichten, Klick auf Kunde darf nicht immer die letzte öffnen; Überblick über offene Aufgaben + neue Aufgaben in der Kundenakte anlegen. Umsetzung: Klick auf Kunde (Seitenleiste, Suche, Aufgabe) öffnet die Kundenakte. Kopf: Name, „Kunde seit“, Anzahl Übersichten, „Mit Unterlagen starten“ (KI), „+ Neue Vertragsübersicht ▾“ (Aus letzter Übersicht übernehmen = Neu der letzten wird Aktuell der neuen / Leer / Mit Unterlagen). Kacheln „Aktueller Stand“ (Beitrag/Monat, Gesamtvermögen, Restschuld, Verträge; aus neuester Übersicht, Fassung Aktuell). Liste Vertragsübersichten (neueste oben; Titel, Status In Arbeit/Umgesetzt + Datum, offene Aufgaben, angepinnt, eingefroren, wer gerade drin ist, Aktuell/Neu/Differenz pro Monat, „Öffnen ›“ beim Darüberfahren, ältere eingeklappt). Aufgaben rechts: Schnelleingabe mit Chips (Fälligkeit, Priorität, Übersicht oder allgemein, zuständig), gruppiert Überfällig/Diese Woche/Später, Übersicht + Zuständige je Aufgabe, Erledigte eingeklappt. **Offen:** (a) Frage des Nutzers „Kann ich die Vertragsübersichten beschriften?“ wurde noch nicht beantwortet/umgesetzt – Vorschlag: Titel frei wählbar beim Anlegen (Vorschlag z. B. „Jahresgespräch 2026“), Umbenennen per Doppelklick auf den Titel oder „…“ → Umbenennen; ggf. im Bild zeigen. (b) Vorschlag noch nicht bestätigt: auf der Startseite bei Angepinnt/Zuletzt bearbeitet zusätzlich den Übersichtstitel zeigen („Familie Berger · Jahresgespräch 2026“). |
+| 2 Aktuell | gezeigt + beschrieben (Sitzung 5), **Vorschläge des Nutzers ausstehend** | Bilder `2-aktuell-vorher*.png`. Beim Überarbeiten: Kopfzeile muss zur Kundenakte passen (Titel der Übersicht + Weg zurück zur Kundenakte, z. B. „Familie Berger › Jahresgespräch 2026“), Seitenleiste v2. |
 | 3 Neu | offen | – |
 | 4 Nebeneinander | offen | – |
 | 5 PDF/E-Mail-Dialog | offen | – |
@@ -132,4 +137,4 @@ Konkret unübersichtlich:
 | 7 PDF | offen | – |
 | neu: fehlende Screens | offen | siehe Abschnitt 2 |
 
-**Nächster Schritt:** Bild 2 (Übersicht „Aktuell“ bearbeiten, `mockups/aktuell.html`) fotografieren als `mockups/bilder/2-aktuell-vorher.png`, zeigen, beschreiben, nach Verbesserungsvorschlägen fragen (offene Textfrage) und warten. Eigene Vorschläge dazu: Kritik zum Editor in Abschnitt 4 (lange Scrollseite, Gesamtsumme nicht sichtbar, keine Bereichsnavigation, wiederholte Spaltenköpfe, überladene Toolbar, dichte Sparen-Tabelle) und fehlende Funktionen aus Abschnitt 2 (Umbenennen/Löschen, Drag & Drop, Zahlweise-Auswahl, Bereich abwählen, AV-Art, Rückgängig). Seitenleiste dabei auf `sidebar(sel, v2=True)` umstellen. Kein App-Code vor Freigabe aller Mockups.
+**Nächster Schritt:** Mit Bild 2 (Übersicht „Aktuell“ bearbeiten, `mockups/aktuell.html`) weitermachen: Bild `mockups/bilder/2-aktuell-vorher.png` (und `-ganz.png`) zeigen, kurz beschreiben, nach Verbesserungsvorschlägen fragen (offene Textfrage) und warten. Kurz die offene Frage zur Kundenakte klären (Übersichten beschriften/umbenennen, s. Fortschritt 1b) – ggf. zusammen mit Bild 2, denn der Titel der Übersicht gehört in deren Kopfzeile. Eigene Vorschläge für Bild 2: Kritik zum Editor in Abschnitt 4 (lange Scrollseite, Gesamtsumme nicht sichtbar, keine Bereichsnavigation, wiederholte Spaltenköpfe, überladene Toolbar, dichte Sparen-Tabelle) und fehlende Funktionen aus Abschnitt 2 (Umbenennen/Löschen, Drag & Drop, Zahlweise-Auswahl, Bereich abwählen, AV-Art, Rückgängig, Symbolwahl). Kopfzeile mit Brotkrumen zur Kundenakte, Seitenleiste auf `sidebar(sel, v2=True)` umstellen. Kein App-Code vor Freigabe aller Mockups.
