@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 19) · Branch `claude/bild-14-sync-schalter-ig41we` (übernommen von `claude/bild-13-abgewahlter-bereich-w7d477`) · Phase 3 (Mockups) **in Überarbeitung** · Bild 1 (Startseite) v4, Bild 1b (Kundenakte) v1 und **Bild 2 (Aktuell) v2 freigegeben** · **Bild 3 (Neu) v2 freigegeben** · **Bild 4 (Nebeneinander) v2 freigegeben** · **Bild 5 (PDF/E-Mail-Dialog) v1 freigegeben** · **Bild 6 (KI-Import) v1 + Bild 6b (KI-Konto verbinden) v1 freigegeben** · **Bild 7 (PDF-Vorschau) v1 freigegeben** · **Bild 8 (Einstellungen: Outlook, Speicherort, Schnellstart) v1 freigegeben** · **Bild 9 (Aufgaben je Übersicht) v1 freigegeben** · **Bild 10 (Auf Desktop speichern + Datei öffnen) v1 freigegeben** · **Bild 11 (Neuer Kunde + Vorlagen) v1 freigegeben** · **Bild 12 (Untergruppe/Vertrag bearbeiten) v4 freigegeben** · **Bild 13 (Abgewählter Bereich) v1 freigegeben** · **Bild 14 (Sync-Schalter „In „Neu“ übernehmen“) v2 freigegeben** · nächstes: Bilder 2–4 an Leitlinie aus Bild 12 anpassen
+**Stand:** 02.11.2026 (Sitzung 23) · Branch `claude/cleanup-gap-list-phase-3-2hyoia` (übernommen von `claude/beautiful-ramanujan-om0g1n`) · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v1, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2; Leitlinie aus Bild 12 überall umgesetzt) · Lückenliste bereinigt (Sitzung 23) · nächstes: offene Punkte vor Phase 4 einzeln klären (Abschnitt 2, „Offene Punkte vor Phase 4“), dann Freigabe Phase 3
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -19,7 +19,7 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | … umbenennen, löschen | ✅ Bild 12 v4 (Mülleimer/×, immer sichtbar) |
 | … per Drag & Drop verschieben/sortieren | ✅ Bild 12 (v1 Vorgang gezeigt, v4 Griff) |
 | Bemerkung immer mehrzeilig, nie abgeschnitten (auch im PDF) | ✅ |
-| Zahlweise überall: monatlich, vierteljährlich, halbjährlich, jährlich, einmalig (÷1/3/6/12) | ✅ Auswahlfeld Bild 2 v2 / Bild 12 |
+| Zahlweise überall: monatlich, vierteljährlich, halbjährlich, jährlich, einmalig (÷1/3/6/12) | ✅ Auswahlfeld Bild 2 v3 / Bild 12 v4 |
 | Einmalbeträge nie in Monatssummen, separat summiert, nur wenn vorhanden | ✅ |
 | 1 Versicherungen: Vertrag, Bemerkung, Beitrag, Zahlweise · Summe Beitrag/Monat (+ Einmal) | ✅ |
 | 2 Sparen & Investieren: Vertrag, Bemerkung, Sparrate, Zahlweise, Einmalbetrag, Guthaben, Wertentwicklung (€) · UG Sparrate/Monat · Bereich Gesamtvermögen, Sparrate/Monat, Einmal | ✅ |
@@ -34,19 +34,19 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | Funktion | Status |
 |---|---|
 | Zwei Fassungen je Kunde, einzeln und nebeneinander ansehen | ✅ |
-| … nebeneinander bearbeiten | ◐ nur Kompaktansicht mit Hinweistext |
-| Sync-Schalter (an: Aktuell → Neu live; aus: nichts rückwirkend) | ✅ Bild 14 v1 (Erklärkarte am Schalter, „auch in „Neu““ am geänderten Wert, Leiste „Übernehmen ist aus“) – v2: kein Einzel-Übernehmen, bei „aus“ nichts übertragen, wieder an = nur ab dann – **freigegeben** |
+| … nebeneinander bearbeiten | ✅ Bild 4 v2 (beide Hälften mit allen Spalten, direkt bearbeitbar wie Bild 2/3, Zeilen bleiben gleich hoch). Löschen (Mülleimer/×) dort nicht eingezeichnet → Annahme: wie Bild 2/3, bei Umsetzung bestätigen |
+| Sync-Schalter (an: Aktuell → Neu live; aus: nichts rückwirkend) | ✅ Bild 14 v2 (an: Änderungen werden übertragen; aus: für diese Zeit nichts, auch später nicht; wieder an: nur ab dann). Bereichsauswahl gilt je Fassung, bei Sync an wird Abwählen übernommen |
 | PDF-Export: nur Aktuell, nur Neu oder beide | ✅ |
 
 **Weitere Funktionen**
 | Funktion | Status |
 |---|---|
 | PDF (wichtigste Anforderung): gleiches Design wie App, saubere Seitenumbrüche | ✅ |
-| PDF-Kopf nur Kopfzeile: Vertragsübersicht, Kunde, Aktuell/Neu, Datum. Neutral, kein Deckblatt | ✅ · **Sitzung 8:** Übersichtstitel (z. B. „Jahresgespräch 2026“) nur **optional** im PDF-Kopf (Häkchen im PDF-Dialog, Standard aus) → in Bild 5 zeigen |
+| PDF-Kopf nur Kopfzeile: Vertragsübersicht, Kunde, Aktuell/Neu, Datum. Neutral, kein Deckblatt | ✅ Bild 7 v1 · Übersichtstitel nur **optional** (Häkchen „Titel im PDF-Kopf“ in Bild 5, Standard aus) |
 | PDF „Beide“ = Aktuell, dann Neu, Vergleichsseite optional | ✅ |
-| Mehrbenutzer gleichzeitig, auch am selben Kunden, ohne Blockade | ◐ nur Avatar „SK“ + OneDrive-Status |
-| Stand einfrieren → Datei auf Desktop, Doppelklick öffnet App mit diesem Stand, mehrere Dateien gleichzeitig offen | ✅ **Bild 10 v1** (Dialog „Auf Desktop speichern“, Passwortabfrage beim Doppelklick, geöffnete Datei im eigenen Fenster, nur ansehen). **Klarstellung Sitzung 6:** Gemeint ist vor allem: Übersicht ganz einfach **als Datei auf dem Desktop speichern** und per Klick auf die Datei in der App öffnen. Knopf daher verständlich benennen (z. B. „Auf Desktop speichern“) statt „Einfrieren“ |
-| Exportdateien optional verschlüsselt | ✅ Bild 8 v1 (Einstellung) + **Bild 10 v1** (Passwort beim Speichern, Abfrage beim Öffnen); PDF-Passwort im PDF-Dialog noch nicht gezeigt |
+| Mehrbenutzer gleichzeitig, auch am selben Kunden, ohne Blockade | ◐ nur Anwesenheit „SK“ in der Kopfzeile + OneDrive-Status → **offener Punkt 1** |
+| Stand einfrieren → Datei auf Desktop, Doppelklick öffnet App mit diesem Stand, mehrere Dateien gleichzeitig offen | ✅ Bild 10 v1 (Knopf „Auf Desktop speichern“, Passwortabfrage beim Doppelklick, geöffnete Datei im eigenen Fenster, nur ansehen) |
+| Exportdateien optional verschlüsselt | ✅ für `.vtue`: Bild 8 v1 (Einstellung) + Bild 10 v1 · ◐ PDF-Passwort im PDF-Dialog fehlt → **offener Punkt 4** |
 | KI-Konto (frei wählbar, jederzeit änderbar) verknüpfen | ✅ Bild 6b v1 (Einstellungen → KI-Konto) |
 | KI analysiert Unterlagen (PDF/Scans), füllt „Aktuell“ vor, Ergebnis vor Übernahme prüfbar | ✅ |
 | Unterlagen nur auswerten, nicht archivieren | ✅ (Hinweis im Dialog) |
@@ -54,15 +54,28 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | Aufgaben (To-dos) je Vertragsübersicht mit Fälligkeitsdatum | ✅ Bild 1 v3 (Start, gruppiert), Bild 1b (Kundenakte), **Bild 9 v1** (Seitenfeld je Übersicht + Aufgabe anlegen mit Fällig, Priorität, Zuständig, Bezug, Outlook-Erinnerung) |
 | Outlook einfach mit bestehendem Konto verknüpfen | ✅ Bild 8 v1 (Einstellungen → Outlook) |
 | E-Mails mit PDF aus der App senden, Anhang optional | ✅ |
-| Datenschutz/DSGVO (Speicherung, Zugriff, KI) | ◐ im Plan; im Layout nur KI-Hinweis |
+| Datenschutz/DSGVO (Speicherung, Zugriff, KI) | ◐ Konzept in `PLAN.md` Abschnitt 5; im Layout nur Hinweise (Bild 6, Bild 11) und Menüpunkt „Datenschutz“ in den Einstellungen ohne Inhalt → **offener Punkt 7** |
 | Kundendaten: nur Name | ✅ **Bild 11 v1** (Dialog „Neuer Kunde“, nur Name) |
 | Vorlagen: Standard-Untergruppen mit Symbolen, Autovervollständigung, eigene Vorlagen | ✅ **Bild 11 v1** (Vorlage beim Anlegen, Einstellungen → Vorlagen, Vorschläge beim Tippen) |
 | Automatische Updates, Mac-Version | – (kein Layout nötig) |
 
 **Eigene Vorschläge aus dem Plan (freigegeben)**
-Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ · Übersichten anpinnen (max. 4, Wunsch Sitzung 4) ✅ Bild 1 v4 · **Kundenakte** je Kunde mit allen Vertragsübersichten über die Jahre + Kundenaufgaben (Wunsch Sitzung 5) ✅ Bild 1b · Rückgängig ❌ · „Neu aus Aktuell kopieren“ ❌ · Hell/Dunkel ❌ · Tastatursteuerung ❌
+Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ (Anwesenheit in der Kopfzeile) · Übersichten anpinnen (max. 4) ✅ Bild 1 v4 · **Kundenakte** mit allen Vertragsübersichten + Kundenaufgaben ✅ Bild 1b · Rückgängig ◐ (nur Hinweis „Rückgängig (Strg+Z)“ nach Löschen/Abwählen in Bild 12/13) → **Punkt 3** · „Neu aus Aktuell kopieren“ ◐ (Kundenakte: „Aus letzter Übersicht übernehmen“; Sync-Schalter) → **Punkt 2** · Hell/Dunkel ❌ → **Punkt 5** · Tastatursteuerung ❌ → **Punkt 6**
 
-**Ganz fehlende Screens:** ~~Einstellungen (KI-Konto, Outlook, OneDrive-Ordner, Schnellstart)~~ (Bild 6b + 8), ~~Aufgaben je Übersicht~~ (Bild 9), ~~Stand einfrieren/Datei öffnen~~ (Bild 10), ~~Neuer Kunde + Vorlagen~~ (Bild 11), ~~Untergruppe/Vertrag bearbeiten (Symbol, Zahlweise, AV-Art)~~ (Bild 12, v1 gezeigt).
+**Fehlende Screens:** keine mehr (Einstellungen → Bild 6b + 8, Aufgaben → Bild 9, Desktop-Datei → Bild 10, Neuer Kunde + Vorlagen → Bild 11, Bearbeiten → Bild 12, abgewählter Bereich → Bild 13, Sync → Bild 14).
+
+**Offene Punkte vor Phase 4 (bereinigt Sitzung 23, je Punkt entscheidet der Nutzer: Bild oder kurze Festlegung)**
+| Nr | Punkt | Stand | Vorschlag | Entscheidung |
+|---|---|---|---|---|
+| 1 | Mehrbenutzer gleichzeitig (auch am selben Kunden) | ◐ Anwesenheit + OneDrive-Status | Bild 15: zwei Personen in derselben Übersicht (wer wo arbeitet, Sync-Status, offline) | offen |
+| 2 | „Neu aus Aktuell kopieren“ | ◐ Sync-Schalter, Kundenakte „Aus letzter Übersicht übernehmen“ | Festlegung | offen |
+| 3 | Rückgängig/Wiederholen | ◐ Hinweis Strg+Z in Bild 12/13 | Festlegung | offen |
+| 4 | PDF-Passwort im PDF-Dialog | ❌ | Bild 5 v2 (nur Ergänzung im Dialog) | offen |
+| 5 | Hell/Dunkel | ❌ | Festlegung | offen |
+| 6 | Tastatursteuerung | ❌ | Festlegung | offen |
+| 7 | Datenschutz/DSGVO | ◐ Konzept im Plan, Einstellungsseite leer | Bild: Einstellungen → Datenschutz (Design Bild 8) | offen |
+
+Kleinere offene Punkte (blockieren Phase 4 nicht, bei Umsetzung klären): Einstellungsseite „Allgemein“ nur angedeutet · Übersichtstitel auf der Startseite unbestätigt · Seitenleiste v2 auf alle Seiten übertragen · Bild 4 Löschen wie Bild 2/3 · nicht gewählte eigene Ideen (Bild 3: neue/entfernte Verträge kennzeichnen, „Auf Aktuell zurücksetzen“ je Vertrag; Bild 14: Kennzeichen ↻ in „Neu“).
 
 ## 3. Aktueller Stand der Layouts
 Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit einheitlichen Beispieldaten („Familie Berger“: Aktuell 2.033,25 €/Monat, Neu 2.007,85 €, Ersparnis 25,40 €/Monat = 304,80 €/Jahr). Screenshots und PDF mit Playwright/Chromium. Kein App-Code.
@@ -179,6 +192,8 @@ Konkret unübersichtlich:
 
 | 13 Abgewählter Bereich (neu) | ✅ **v1 freigegeben** (Sitzung 18, „Freigeben“, ohne Änderungswünsche) | Darlehen per Kästchen in der Bereichsleiste abgewählt: Kästchen leer, Name grau · Bereich klappt an seinem Platz zu einer grauen, gestrichelten Leiste zusammen (Nummer 3, „abgewählt“, „2 Untergruppen · 2 Verträge bleiben gespeichert“, durchgestrichen Rate 1.439,00 €/Monat · Restschuld, „zählt nicht zum Gesamtbetrag, nicht im PDF“, Knopf **Wieder zuschalten**) · Gesamtbetrag oben „ohne Darlehen“ 594,25 € statt 2.033,25 €, unten „3 von 4 Bereichen“ · Hinweis unten mit Rückgängig (Strg+Z) · keine Rückfrage, kein Menü („…“ im Bereichskopf entfällt). Festgelegt/zu bestätigen: Auswahl gilt je Fassung, bei Sync an wird sie in „Neu“ übernommen; PDF nummeriert die übrigen Bereiche neu (1–3); in der App bleibt die Nummer. Offene Frage (d) Bild 2–4 anpassen ebenfalls gestellt |
 | 14 Sync-Schalter „In „Neu“ übernehmen“ (neu) | ✅ **v2 freigegeben** (Sitzung 19, „Freigeben“) | **Regel des Nutzers zu v1 (verbindlich):** „Wenn der Schalter aktiviert ist, sollen Änderungen synchronisiert werden; sobald der Schalter aus ist, sollen für diese Zeit keine weiteren Änderungen übertragen werden. Nicht rückwirkend, sondern nur, wenn der Schalter aktiviert ist.“ → **v2:** Einzel-Übernehmen am Wert und Hinweis „seitdem geändert“ **entfernt** (was bei „aus“ geändert wird, kommt nie nach „Neu“, auch nicht beim Wiedereinschalten). Leiste in „Neu“: „Übernehmen ist aus – Änderungen in „Aktuell“ werden nicht nach „Neu“ übertragen“ · „Wieder eingeschaltet wird nur übernommen, was Sie ab dann ändern – nichts rückwirkend“ · Knopf Wieder einschalten. Erklärkarte „Aus“ entsprechend umformuliert. Bilder `14-sync-an-v2.png`, `14-sync-aus-v2.png`. Mit v2 freigegeben (im Bild sichtbar, ausdrücklich gefragt, ohne Widerspruch): in „Neu“ selbst geänderte Werte werden bei „an“ nicht überschrieben (Wohngebäude 540,00 €). Eigene Ideen (offen, Nutzer hat Auswahl-Dialog abgelehnt): Kennzeichen ↻ auch in „Neu“, nach PDF von „Neu“ Ausschalten vorschlagen. **Vorab beantwortet (Sitzung 19):** (a) Bereichsauswahl gilt **je Fassung** (bei Sync an wird Abwählen in „Neu“ übernommen) – bestätigt. (b) Bilder 2–4 **an Leitlinie aus Bild 12 anpassen** (Mülleimer statt „…“ an Untergruppen, × an Verträgen, kein „…“ im Bereichskopf) – ja, nach Bild 14. **v1, zwei Bilder.** (a) `14-sync-an-v1.png`: Ansicht „Aktuell“, Hausrat wird gerade von 145,20 € auf 158,40 € geändert (nur Cursor, kein Feld), darunter grün „↻ auch in „Neu““. Am Schalter (beim Darüberfahren und einmal beim ersten Öffnen) eine **Erklärkarte**: „gilt nur für diese Übersicht“ · **An** – was Sie in „Aktuell“ eintragen, ändern, löschen oder abwählen, passiert sofort auch in „Neu“; Ausnahme: in „Neu“ selbst geänderte Werte bleiben (z. B. Wohngebäude 540,00 €) · **Aus** – „Neu“ bleibt, nichts rückwirkend; wieder an = nur spätere Änderungen · Beispielzeile „Gerade: Hausrat 158,40 € → steht jetzt auch in „Neu““. (b) `14-sync-aus-v1.png`: Ansicht „Neu“, Schalter grau. Unter der Änderungsleiste graue gestrichelte Leiste (Stil wie Bild 13): „**Übernehmen ist aus** – „Neu“ bleibt, wie es ist …“, „Ausgeschaltet heute, 10:42 von Tjark S. · seitdem in „Aktuell“ geändert: 1 Wert (Hausrat)“, Knopf **Wieder einschalten**. Am Hausrat in „Neu“ (145,20 €) orange „in „Aktuell“ 158,40 €“ + Ein-Klick-Knopf **Übernehmen** (nur dieser Wert). Direkt nach dem Ausschalten Hinweis mit Rückgängig (Strg+Z), im Bild nicht gezeigt. Keine Rückfrage, kein Menü. Code: `sync_an_v1`, `sync_aus_v1`, CSS „Bild 14 v1“. |
+
+**Nächster Schritt (Sitzung 23):** Lückenliste in Abschnitt 2 **bereinigt** (veraltete Einträge wie „nebeneinander bearbeiten ◐“, „Ganz fehlende Screens“, Bild-Versionen aktualisiert; neue Tabelle „Offene Punkte vor Phase 4“ mit 7 Punkten und Vorschlag Bild/Festlegung). Jetzt die Punkte **einzeln** mit dem Nutzer klären, Ergebnis in Spalte „Entscheidung“ eintragen; danach Freigabe Phase 3.
 
 **Nächster Schritt (Sitzung 22):** Hintergründe Bild 5, 6, 9, 10, 11 **freigegeben** („Freigeben“). Weiter mit der **Lückenliste (Abschnitt 2) und den offenen Punkten vor Phase 4** (siehe „Nächster Schritt (Sitzung 20)“), dann Freigabe Phase 3.
 
