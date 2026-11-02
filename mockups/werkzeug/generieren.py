@@ -44,6 +44,7 @@ P = {
  'ext': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
  'flag': '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
  'pin': '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+ 'monitor': '<rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/>',
  'chev': '<path d="m9 18 6-6-6-6"/>',
  'user': '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 }
@@ -87,7 +88,7 @@ def gesamt(f): return sum(b_summen(b)['monat'] for b in f if b.get('aktiv', True
 
 # ---------------- Beispieldaten ----------------
 META = {
- 'VERS': ('Versicherungen', 'Sach, Vermögen, Komposit'),
+ 'VERS': ('Versicherung', ''),  # Sitzung 7: nur „Versicherung“, gilt auf allen Seiten inkl. PDF
  'SPAR': ('Sparen & Investieren', ''),
  'DARL': ('Darlehen', ''),
  'AV':   ('Altersvorsorge & Familienabsicherung', ''),
@@ -335,6 +336,87 @@ def side_body():
     hint = f'<div class="hint">{ic("columns")} Kompaktansicht: Bereiche stehen auf gleicher Höhe. Klick auf einen Vertrag öffnet alle Spalten zum Bearbeiten.</div>'
     return sidebar() + f'<main class="main">{toolbar("Nebeneinander")}<div class="content">{hint}{h}</div></main>'
 
+# ---------------- Editor v1 (Bild 2, Sitzung 7) ----------------
+# Wünsche des Nutzers: Bereiche farbig getrennt, Bereichsleiste oben (an-/abwählen + Navigation Gesamt/einzelner Bereich),
+# „Auf Desktop speichern“ statt „Einfrieren“, Untergruppen als getönte Karten, UG-Summe unten rechts, schlichter Gesamtbalken,
+# Bereich 1 heißt „Versicherung“. Eigene: Brotkrumen mit Übersichtstitel, Seitenleiste v2, Gesamtbetrag dauerhaft sichtbar,
+# Spaltenköpfe nur einmal je Bereich, „+ Vertrag“ dezent, Toolbar entschlackt, Sync verständlich, Zahlweise als Auswahlfeld.
+FARBE = {'VERS': 'vers', 'SPAR': 'spar', 'DARL': 'darl', 'AV': 'av'}
+ZW_OPT = ['monatlich', 'vierteljährlich', 'halbjährlich', 'jährlich', 'einmalig']
+
+def colgroup_v1(typ):
+    return '<colgroup><col style="width:22px">' + ''.join(f'<col style="width:{c[1]}">' if c[1] else '<col>' for c in COLS[typ]) + '</colgroup>'
+
+def spaltenkopf_v1(typ):
+    th = ''.join(f'<th class="{"num" if len(c) > 2 else ""}">{c[0]}</th>' for c in COLS[typ])
+    return f'<div class="spaltenkopf"><table class="vt">{colgroup_v1(typ)}<thead><tr><th class="g"></th>{th}</tr></thead></table></div>'
+
+def table_v1(typ, ug, focus=None):
+    cols = COLS[typ]
+    h = f'<table class="vt">{colgroup_v1(typ)}<tbody>'
+    for v in ug['v']:
+        fr = focus == v['n']
+        h += f'<tr class="{"focus" if fr else ""}"><td class="g grip">{ic("grip")}</td>'
+        h += f'<td class="vname"><span class="edit-cell">{v["n"]}</span></td><td class="bem"><span class="edit-cell">{v["b"]}</span></td>'
+        for c, val in zip(cols[2:], cells(typ, v, True, False)):
+            if c[0] == 'Zahlweise':
+                menu = ''
+                if fr:
+                    opts = ''.join(f'<span class="{"on" if o == v["zw"] else ""}"><i class="ck">{ic("check") if o == v["zw"] else ""}</i>{o}'
+                                   f'{"<small>nicht in Monatssumme</small>" if o == "einmalig" else ""}</span>' for o in ZW_OPT)
+                    menu = f'<div class="zw-menu">{opts}</div>'
+                h += f'<td class="zw"><span class="zw-sel{" open" if fr else ""}">{val}{ic("down")}</span>{menu}</td>'
+            else:
+                h += f'<td class="{"num" if len(c) > 2 else "zw"}">{val}</td>'
+        h += '</tr>'
+    return h + '</tbody></table>'
+
+def bereich_v1(b, i, focus=None):
+    t = b['typ']; title = META[t][0]
+    h = (f'<section class="bereich v1 {FARBE[t]}"><header class="bereich-kopf"><span class="nr">{i+1}</span><h2>{title}</h2>'
+         f'<span class="spacer"></span><button class="btn icon ghost" title="Bereich umbenennen, ausblenden …">{ic("more")}</button></header>')
+    h += spaltenkopf_v1(t) + '<div class="ugs">'
+    for ug in b['ug']:
+        h += (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(ug["icon"])}</span>'
+              f'<span class="name">{ug["name"]}</span><span class="ug-more">{ic("more")}</span></div>')
+        h += table_v1(t, ug, focus)
+        h += (f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span>'
+              f'<span class="summe"><small>{ug_label(t)} / Monat</small> {eur(ug_monat(t, ug))}</span></div></div>')
+    h += f'<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
+    h += f'<footer class="bereich-summe v1"><span class="bs-label">Summe {title}</span><span class="spacer"></span>{summen_html(b)}</footer></section>'
+    return h
+
+def toolbar_v1(mode='Aktuell'):
+    seg = ''.join(f'<span class="{"on" if m == mode else ""}">{m}</span>' for m in ('Aktuell', 'Neu', 'Nebeneinander'))
+    return f'''<div class="toolbar v1">
+  <span class="avatar a1">FB</span>
+  <div class="crumb"><span class="kunde">Familie Berger {ic("chev")}</span><h1 title="Doppelklick zum Umbenennen">Jahresgespräch 2026</h1></div>
+  <div class="seg" style="margin-left:14px">{seg}</div>
+  <span class="spacer"></span>
+  <div class="presence" title="Sabine K. arbeitet gerade ebenfalls in dieser Übersicht"><span class="avatar a2">SK</span></div>
+  <button class="btn">{ic("tasks")} Aufgaben <span class="badge orange">1</span></button>
+  <button class="btn" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">{ic("monitor")} Auf Desktop speichern</button>
+  <button class="btn primary">{ic("pdf")} PDF / E-Mail</button>
+  <button class="btn icon" title="Weitere: KI-Import, Umbenennen, Duplizieren">{ic("more")}</button>
+</div>'''
+
+def bereichsleiste_v1(nur=None):
+    h = f'<span class="bl-item bl-gesamt{" on" if not nur else ""}">{ic("columns")}Gesamt</span><span class="bl-sep"></span>'
+    for b in AKTUELL:
+        t = b['typ']
+        h += (f'<span class="bl-item {FARBE[t]}{" on" if nur == t else ""}"><span class="chk" title="Bereich an-/abwählen">{ic("check")}</span>'
+              f'{META[t][0]}</span>')
+    return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA)}</b></div></div>'
+
+def editor_v1(nur=None):
+    sync = (f'<div class="fassung"><span class="badge">Aktuell</span><span>Bestand des Kunden</span><span class="spacer"></span>'
+            f'<span class="switch on"><i></i>Änderungen auch in „Neu“ übernehmen</span>'
+            f'<span class="info" title="An: Was Sie hier ändern, wird sofort auch in „Neu“ geändert. Aus: „Neu“ bleibt unverändert.">{ic("info")}</span></div>')
+    bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
+    gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow">{sync}{bs}{gz}</div></main>')
+
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
 # nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert,
@@ -579,7 +661,8 @@ files = {
  'index.html': index_page(),
  'start.html': page('Startseite', start_body()),
  'kunde.html': page('Kundenakte', kunde_body()),
- 'aktuell.html': page('Aktuell', editor_body('Aktuell')),
+ 'aktuell.html': page('Aktuell', editor_v1()),
+ 'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
  'neu.html': page('Neu', editor_body('Neu')),
  'nebeneinander.html': page('Nebeneinander', side_body()),
  'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
