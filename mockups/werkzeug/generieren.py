@@ -757,6 +757,57 @@ def ki_overlay():
 <footer><span style="color:var(--muted)">3 von 4 ausgewählt</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">{ic("check")} 3 Verträge übernehmen</button></footer>
 </div></div>'''
 
+# ---------------- Bild 6 v1 (Sitzung 11): KI-Import im freigegebenen Design ----------------
+# Inhalt wie bisher (3 Unterlagen, 4 erkannte Verträge, 2 unsichere Werte, 1 abgewählt), aber Dialog im Stil von Bild 5 v1
+# (Abschnittsüberschriften, Kästen, Häkchen .cbx), erkannte Verträge nach Bereich gruppiert in Bereichsfarben,
+# Ziel-Untergruppe mit Symbol, Hinweise in normaler Schriftgröße statt kleiner grauer Zeile.
+def ki_overlay_v1():
+    docs = [('Police_Wohngebaeude.pdf', '3 Seiten'), ('Kfz_Beitragsrechnung_2026.pdf', '1 Seite'), ('Scan_BU_Nachtrag.jpg', 'Scan, 1 Seite')]
+    dh = ''.join(f'<div class="kd">{ic("file")}<div class="t"><b>{n}</b><small>{m} · ausgewertet</small></div><span class="ok">{ic("check")}</span></div>' for n, m in docs)
+    cb = lambda on: f'<span class="cbx{" on" if on else ""}">{ic("check") if on else ""}</span>'
+    gruppen = [('VERS', [
+        (True, 'Wohngebäude', 'Einfamilienhaus Bj. 1998, inkl. Elementar', '612,00 €', 'jährlich', ('home', 'Wohnen'), None, None),
+        (True, 'VW Golf', 'VK 300 € / TK 150 €, SF 12', '486,00 €', 'halbjährlich', ('car', 'Kfz'), 'zw', 'Zahlweise unsicher – in der Rechnung steht „1. Rate“. Bitte prüfen.'),
+        (False, 'Glasversicherung', 'Im Hausrat-Nachtrag erwähnt', '24,00 €', 'jährlich', ('home', 'Wohnen'), 'info', 'Vermutlich bereits gekündigt – daher nicht ausgewählt.')]),
+       ('AV', [
+        (True, 'Berufsunfähigkeit', 'BU-Rente 1.500 € mtl. bis 67', '86,40 €', 'monatlich', ('heart', 'Familienabsicherung'), 'betrag', 'Beitrag im Scan schlecht lesbar. Bitte prüfen.')])]
+    tb, dn = '', ic('down')
+    for i, (t, rows) in enumerate(gruppen):
+        nr = [b['typ'] for b in AKTUELL].index(t) + 1
+        rh = ''
+        for on, n, bem, betrag, zw, (icn, ug), feld, note in rows:
+            un = lambda f, v: f'<span class="unsure">{v}</span>' if feld == f else v
+            rh += (f'<tr class="{"" if on else "off"}{" hat-note" if note else ""}"><td>{cb(on)}</td><td class="vn">{n}</td><td class="bem">{bem}</td>'
+                   f'<td class="num">{un("betrag", betrag)}</td><td>{un("zw", f"<span class=sel>{zw} {dn}</span>")}</td>'
+                   f'<td><span class="sel ziel">{ic(icn)}{ug} {ic("down")}</span></td></tr>')
+            if note:
+                warn = feld in ('zw', 'betrag')
+                rh += f'<tr class="note{"" if on else " off"}"><td></td><td colspan="5"><span class="{"w" if warn else "i"}">{ic("info")}{note}</span></td></tr>'
+        tb += (f'<div class="kb {FARBE[t]}"><div class="kb-kopf"><span class="nr">{nr}</span>{META[t][0]}<small>{len(rows)} erkannt</small></div>'
+               f'<table class="review1"><colgroup><col style="width:34px"><col style="width:18%"><col><col style="width:11%"><col style="width:16%"><col style="width:26%"></colgroup>'
+               f'<thead><tr><th></th><th>Vertrag</th><th>Bemerkung</th><th class="num">Beitrag</th><th>Zahlweise</th><th>Untergruppe</th></tr></thead><tbody>{rh}</tbody></table></div>')
+    return f'''<div class="overlay"><div class="sheet ki1">
+<header><h2>{ic("sparkles")} Unterlagen per KI einlesen</h2><p>Familie Berger · Jahresgespräch 2026 · Ergebnis wird in „Aktuell“ eingetragen</p></header>
+<div class="body"><div class="ki1-grid">
+ <div class="ki1-links">
+  <div class="ex-sec">Unterlagen</div>
+  <div class="kd-liste">{dh}</div>
+  <div class="kdrop">{ic("upload")}<span>Weitere PDFs oder Scans hierher ziehen<br><u>oder auswählen</u></span></div>
+  <div class="ex-sec">Datenschutz</div>
+  <div class="kpriv">
+   <div>{ic("user")}<span>Der Kundenname wird vor dem Senden entfernt.</span></div>
+   <div>{ic("lock")}<span>Unterlagen werden nur ausgewertet und danach verworfen, nicht gespeichert.</span></div>
+   <div>{ic("sparkles")}<span>KI-Konto: frei wählbar, änderbar in den Einstellungen.</span></div>
+  </div>
+ </div>
+ <div class="ki1-rechts">
+  <div class="ex-sec ex-sec-row"><span>Erkannte Verträge</span><small>4 gefunden · 2 Werte bitte prüfen</small><span class="spacer"></span><span class="legende"><span class="unsure">86,40 €</span> unsicher · Klick auf einen Wert ändert ihn</span></div>
+  {tb}
+ </div>
+</div></div>
+<footer><span class="kfuss"><b>3 von 4</b> ausgewählt · nur ausgewählte Verträge werden übernommen</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">{ic("check")} 3 Verträge übernehmen</button></footer>
+</div></div>'''
+
 # ---------------- PDF ----------------
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
@@ -835,7 +886,7 @@ files = {
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
  'export.html': page('PDF erstellen', editor_v1(mode='Neu'), export_overlay_v1()),
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
- 'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),
+ 'ki-import.html': page('KI-Import', editor_v1(), ki_overlay_v1()),
  'pdf.html': pdf_page(),
 }
 for n, c in files.items():
