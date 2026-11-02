@@ -695,6 +695,41 @@ def export_overlay():
 <footer><button class="btn ghost">Vorschau öffnen</button><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn">{ic("pdf")} Nur speichern</button><button class="btn primary">{ic("mail")} Erstellen &amp; senden</button></footer>
 </div></div>'''
 
+# ---------------- Bild 5 v1 (Sitzung 10): PDF/E-Mail-Dialog im freigegebenen Design ----------------
+# Neu: Übersichtstitel im Kopf, Abschnitte „Inhalt“ / „Im PDF“ / „E-Mail“, Schalter „Ersparnis anzeigen“
+# (derselbe wie in „Neu“, wirkt auf App + PDF), Häkchen „Titel im PDF-Kopf“ (Standard aus) mit Kopfzeilen-Vorschau.
+def export_overlay_v1(titel=False, ersparnis=True):
+    sw = lambda on: f'<span class="switch{" on" if on else ""}"><i></i></span>'
+    cb = lambda on: f'<span class="cbx{" on" if on else ""}">{ic("check") if on else ""}</span>'
+    t = '<span class="kv-titel">Jahresgespräch 2026</span>' if titel else ''
+    ers = f'{eur(DIFF, True)} pro Monat · {eur(DIFF*12, True)} pro Jahr' if ersparnis else 'aus – keine Differenzen und keine Ersparnis im PDF'
+    return f'''<div class="overlay"><div class="sheet ex1">
+<header><h2>PDF erstellen</h2><p>Familie Berger · Jahresgespräch 2026 · 02.11.2026</p></header>
+<div class="body">
+ <div class="ex-sec">Inhalt</div>
+ <div class="choices">
+  <div class="choice"><div class="mini"><i></i></div><b>Nur Aktuell</b><small>2 Seiten</small></div>
+  <div class="choice"><div class="mini"><i class="b"></i></div><b>Nur Neu</b><small>2 Seiten</small></div>
+  <div class="choice on"><div class="mini"><i></i><i class="b"></i></div><b>Beide</b><small>Aktuell, dann Neu</small></div>
+ </div>
+ <div class="ex-sec">Im PDF</div>
+ <div class="ex-box">
+  <div class="optrow"><div>Vergleichsseite anhängen<small>Summen von Aktuell und Neu auf einer Seite gegenübergestellt</small></div>{sw(True)}</div>
+  <div class="optrow"><div>Vorteile der Änderungen<small>Stichpunkte nach dem Gesamtbetrag in „Neu“</small></div>{sw(True)}</div>
+  <div class="optrow"><div>Ersparnis anzeigen<small>{ers} · gleicher Schalter wie in der Ansicht „Neu“</small></div>{sw(ersparnis)}</div>
+  <div class="optrow cb"><div class="cbl">{cb(titel)}<div>Titel im PDF-Kopf<small>„Jahresgespräch 2026“ zusätzlich in der Kopfzeile jeder Seite</small></div></div></div>
+  <div class="kopf-vorschau"><span class="kv-l">Kopfzeile</span><span class="kv-t">Vertragsübersicht{t}</span><span class="kv-m"><b>Familie Berger</b><span class="kv-f">Neu</span>02.11.2026</span></div>
+ </div>
+ <div class="ex-sec ex-sec-row"><span>Per E-Mail senden</span><small>über Ihr Outlook-Konto · danach in „Gesendete Elemente“</small><span class="spacer"></span>{sw(True)}</div>
+ <div class="mailbox">
+  <div class="r"><span>An</span>berger.familie@example.de</div>
+  <div class="r"><span>Betreff</span>Ihre Vertragsübersicht – Jahresgespräch 2026</div>
+  <div class="r"><span>Anhang</span><span class="attach">{ic("pdf")} Vertragsuebersicht_Berger_2026-11-02.pdf · 5 Seiten</span><span class="spacer"></span>{sw(True)}</div>
+ </div>
+</div>
+<footer><button class="btn ghost">{ic("file")} Vorschau öffnen</button><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn">{ic("pdf")} Nur speichern</button><button class="btn primary">{ic("mail")} Erstellen &amp; senden</button></footer>
+</div></div>'''
+
 # ---------------- KI-Import ----------------
 def ki_overlay():
     docs = [('Police_Wohngebaeude.pdf', '3 Seiten · analysiert', True), ('Kfz_Beitragsrechnung_2026.pdf', '1 Seite · analysiert', True),
@@ -778,7 +813,7 @@ def index_page():
              ('aktuell.html', 'Übersicht „Aktuell“ bearbeiten', '4 Bereiche, Untergruppen mit Symbol, Drag & Drop, Summen, Gesamtbetrag'),
              ('neu.html', 'Übersicht „Neu“', 'Änderungen markiert, Differenzen je Bereich, Vorteile mit automatischer Ersparnis'),
              ('nebeneinander.html', 'Aktuell und Neu nebeneinander', 'Kompaktansicht, Bereiche auf gleicher Höhe'),
-             ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite optional, Anhang optional'),
+             ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite, Ersparnis und Titel im PDF-Kopf optional, Anhang optional'),
              ('ki-import.html', 'KI-Import mit Prüf-Dialog', 'Unterlagen auswerten, unsichere Werte markiert, nur bestätigte übernehmen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
@@ -798,7 +833,8 @@ files = {
  'neu.html': page('Neu', editor_v1(mode='Neu')),
  'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
- 'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
+ 'export.html': page('PDF erstellen', editor_v1(mode='Neu'), export_overlay_v1()),
+ 'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
  'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),
  'pdf.html': pdf_page(),
 }
