@@ -817,3 +817,69 @@ table.vgl.v1 tr.sum td.gruen { color: #7ee2a0; }
 table.vgl.v1 { border-collapse: separate; border-spacing: 0; }
 table.vgl.v1 td small { white-space: nowrap; }
 table.vgl.v1 tr.sum td { box-shadow: 1px 0 0 var(--text), -1px 0 0 var(--text); }
+
+/* ---------- Bild 8 v1 (Sitzung 13): Einstellungen → Outlook, Speicherort, Schnellstart ---------- */
+.es1 .kk-titel .spacer { flex: 1; }
+.es-scope { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); background: var(--line-soft); padding: 3px 9px; border-radius: 99px; }
+.es-scope svg { width: 13px; height: 13px; }
+.es-scope.ag { background: #f1ecfd; color: #5e3fc4; }
+.es-anz { font-size: 12px; color: var(--muted); background: var(--line-soft); padding: 3px 9px; border-radius: 99px; font-weight: 500; }
+.es-konto { display: flex; align-items: center; gap: 12px; padding: 10px 14px; }
+.es-konto .spacer { flex: 1; }
+.es-ms { width: 30px; height: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px; padding: 4px; border: 1px solid var(--line); border-radius: 8px; flex: none; }
+.es-ms i { display: block; } .es-ms i:nth-child(1) { background: #f25022; } .es-ms i:nth-child(2) { background: #7fba00; } .es-ms i:nth-child(3) { background: #00a4ef; } .es-ms i:nth-child(4) { background: #ffb900; }
+.es-konto-t b { display: block; font-weight: 600; }
+.es-konto-t small { color: var(--muted); font-size: 12px; }
+.es-vorlage { padding: 10px 14px; display: flex; flex-direction: column; gap: 8px; }
+.es-vz label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.es-vorlage .es-vz { display: grid; grid-template-columns: 60px 1fr; align-items: start; }
+.es-vorlage .es-vz label { margin-top: 7px; }
+.es-text { display: block; line-height: 1.55; }
+.es-ph { display: inline-block; background: var(--accent-soft); color: var(--accent); font-weight: 500; font-size: 12px; padding: 0 6px; border-radius: 5px; line-height: 18px; }
+.es-platz { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); padding-left: 60px; }
+.es-platz .spacer, .es-ordner .spacer, .es-stat .spacer { flex: 1; }
+.es-hint { font-size: 12px; color: var(--faint); }
+.es-sym { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; background: #f5f5f7; color: var(--accent); flex: none; }
+.kk-anb.on .es-sym { background: #fff; }
+.es-ordner { margin-top: 8px; padding: 10px 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.es-pfad { flex: 1; display: flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; background: #fafafc; color: var(--muted); }
+.es-pfad svg { width: 14px; height: 14px; } .es-pfad b { color: var(--text); font-weight: 600; }
+.es-stat { flex-basis: 100%; display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--muted); }
+.es-stat b { color: var(--text); font-weight: 600; }
+.es-wer { display: inline-flex; margin-right: -8px; } .es-wer .avatar { width: 22px; height: 22px; font-size: 9px; border: 2px solid #fff; margin-left: -6px; }
+.es-desk { padding: 10px 14px 0; display: grid; grid-template-columns: 200px 1fr; gap: 6px 14px; }
+.es-desk .kk-input svg { width: 14px; height: 14px; }
+.es-bsp { grid-column: 1 / -1; font-size: 12px; color: var(--muted); }
+.es-desk .optrow.es-voll { grid-column: 1 / -1; border-top: 1px solid var(--line-soft); border-bottom: 0; }
+.es-liste { margin-top: 12px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.es-l { display: flex; align-items: center; gap: 10px; padding: 7px 12px 7px 6px; border-bottom: 1px solid var(--line-soft); background: #fff; }
+.es-l:last-child { border-bottom: 0; }
+.es-l .sym { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; flex: none; }
+.es-l .sym svg.i { width: 17px; height: 17px; }
+.es-l b { font-weight: 600; width: 150px; flex: none; }
+.es-grip { color: var(--faint); display: grid; } .es-grip svg { width: 15px; height: 15px; }
+.es-typ { font-size: 11px; font-weight: 600; color: var(--muted); background: var(--line-soft); border-radius: 99px; padding: 1px 8px; width: 70px; text-align: center; flex: none; }
+.es-ziel { color: var(--muted); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.es-akt { color: var(--faint); display: grid; }
+.es-l.drag { box-shadow: 0 8px 22px rgba(0,0,0,.14); position: relative; z-index: 1; border-radius: 8px; outline: 1.5px solid var(--accent); outline-offset: -1.5px; }
+.es-l.drag .es-grip { color: var(--accent); }
+.es-l.edit { align-items: flex-start; background: var(--accent-soft); padding-top: 9px; padding-bottom: 9px; }
+.es-l.edit .es-grip, .es-l.edit .sym { margin-top: 3px; }
+.es-ed { flex: 1; display: flex; flex-direction: column; gap: 7px; }
+.es-ed-r { display: flex; align-items: center; gap: 8px; }
+.es-ed-r .spacer { flex: 1; }
+.es-ed .kk-input { padding: 5px 9px; }
+.es-ed .es-n { width: 150px; font-weight: 600; } .es-ed .es-z { flex: 1; color: var(--text); }
+.es-ed .es-z svg { width: 14px; height: 14px; color: var(--muted); }
+.es-lab { font-size: 12px; color: var(--muted); }
+.es-syms { display: inline-flex; gap: 3px; }
+.es-syms span { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: #fff; color: var(--muted); border: 1px solid var(--line); }
+.es-syms span.on { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.es-syms svg { width: 14px; height: 14px; }
+.es-farben { display: inline-flex; gap: 5px; margin-right: 4px; }
+.es-farben i { width: 16px; height: 16px; border-radius: 99px; display: block; }
+.es-farben i.on { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--text); }
+.es-ed .btn { padding: 4px 11px; }
+.es-add { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.es-add-b { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #c7c7cc; border-radius: 10px; padding: 8px 12px; color: var(--accent); }
+.es-add-b b { display: block; font-weight: 600; } .es-add-b small { color: var(--muted); font-size: 12px; }

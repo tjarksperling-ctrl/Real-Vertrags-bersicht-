@@ -847,6 +847,110 @@ def ki_konto_overlay_v1():
 <footer><span class="kk-fuss">{ic("lock")} Schlüssel wird verschlüsselt nur auf diesem Computer gespeichert, nicht in OneDrive.</span><span class="spacer"></span><button class="btn ghost kk-trennen">Verbindung trennen</button><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button></footer>
 </div></div>'''
 
+# ---------------- Bild 8 v1 (Sitzung 13): Einstellungen → Outlook, Speicherort, Schnellstart ----------------
+# Fehlender Screen aus Abschnitt 2. Gleicher Dialog wie Bild 6b (Navigation links), je Seite ein Bild.
+# Kennzeichnung je Seite, für wen die Einstellung gilt: „Nur für Sie“ oder „Ganze Agentur“.
+def einst_overlay_v1(sel, titel_html, inhalt, fuss):
+    nav = [('sliders', 'Allgemein', ''), ('sparkles', 'KI-Konto', 'ok'), ('mail', 'Outlook', 'ok'), ('cloud', 'Speicherort', 'ok'),
+           ('ext', 'Schnellstart', ''), ('file', 'Vorlagen', ''), ('lock', 'Datenschutz', '')]
+    nh = ''.join(f'<div class="kk-nav-i{" on" if n == sel else ""}">{ic(i)}{n}{"<span class=dot></span>" if s else ""}</div>' for i, n, s in nav)
+    return f'''<div class="overlay"><div class="sheet kk1 es1">
+<header><h2>Einstellungen</h2><p>Tjark S. · Inhaber · Was nur für Sie gilt und was für die ganze Agentur, steht neben jedem Titel.</p></header>
+<div class="kk-grid">
+ <nav class="kk-nav">{nh}</nav>
+ <div class="body">{titel_html}{inhalt}</div>
+</div>
+<footer>{fuss}</footer>
+</div></div>'''
+
+def es_titel(sym, name, status, scope_agentur=False):
+    sc = (f'<span class="es-scope ag">{ic("user")} Ganze Agentur</span>' if scope_agentur else f'<span class="es-scope">{ic("user")} Nur für Sie</span>')
+    return f'<div class="kk-titel"><h3>{ic(sym)} {name}</h3>{status}<span class="spacer"></span>{sc}</div>'
+
+def es_sw(on): return f'<span class="switch{" on" if on else ""}"><i></i></span>'
+
+def outlook_overlay_v1():
+    titel = es_titel('mail', 'Outlook', f'<span class="kk-status">{ic("check")} Verbunden</span>')
+    inhalt = f'''<p class="kk-lead">PDFs gehen direkt aus der App per E-Mail raus, über Ihr bestehendes Microsoft-365-Konto. Die Anmeldung läuft über Microsoft, die App kennt Ihr Passwort nicht.</p>
+  <div class="ex-sec"><span class="kk-n">1</span>Konto</div>
+  <div class="ex-box es-konto">
+   <span class="es-ms"><i></i><i></i><i></i><i></i></span>
+   <div class="es-konto-t"><b>Tjark Sperling</b><small>t.sperling@agentur-muster.de · Microsoft 365 · angemeldet seit 14.10.2026</small></div>
+   <span class="spacer"></span><button class="btn">Anderes Konto</button><button class="btn ghost kk-trennen">Abmelden</button>
+  </div>
+  <div class="ex-sec"><span class="kk-n">2</span>Senden</div>
+  <div class="ex-box">
+   <div class="optrow"><div>E-Mail vor dem Senden in Outlook öffnen<small>Aus: „Erstellen &amp; senden“ schickt sofort. An: Outlook öffnet die fertige Mail, Sie senden selbst.</small></div>{es_sw(False)}</div>
+   <div class="optrow"><div>Outlook-Signatur anhängen<small>Ihre Standard-Signatur aus Outlook („Tjark Sperling · Agentur Muster“)</small></div>{es_sw(True)}</div>
+   <div class="optrow"><div>Empfänger aus Outlook-Kontakten vorschlagen<small>Beim Tippen im Feld „An“ erscheinen passende Kontakte</small></div>{es_sw(True)}</div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">3</span>Vorlage für die E-Mail</div>
+  <div class="ex-box es-vorlage">
+   <div class="es-vz"><label>Betreff</label><div class="kk-input">Ihre Vertragsübersicht – <span class="es-ph">Titel</span></div></div>
+   <div class="es-vz"><label>Text</label><div class="kk-input es-text">Guten Tag <span class="es-ph">Kunde</span>,<br>anbei erhalten Sie Ihre Vertragsübersicht „<span class="es-ph">Titel</span>“ vom <span class="es-ph">Datum</span>. Bei Fragen melden Sie sich gern.<br>Viele Grüße<br><span class="es-ph">Mein Name</span></div></div>
+   <div class="es-platz">Platzhalter einfügen: <span class="es-ph">Kunde</span><span class="es-ph">Titel</span><span class="es-ph">Datum</span><span class="es-ph">Mein Name</span><span class="spacer"></span><span class="es-hint">Im PDF-Dialog vor dem Senden änderbar</span></div>
+  </div>'''
+    fuss = (f'<span class="kk-fuss">{ic("lock")} Anmeldung über Microsoft. Gesendete Mails liegen wie gewohnt in Outlook, die App speichert keine Kopie.</span>'
+            f'<span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
+    return einst_overlay_v1('Outlook', titel, inhalt, fuss)
+
+def speicherort_overlay_v1():
+    titel = es_titel('cloud', 'Speicherort', f'<span class="kk-status">{ic("check")} Synchronisiert · vor 1 Min.</span>', True)
+    art = [('cloud', 'SharePoint', 'Team-Ordner · empfohlen', True), ('cloud', 'OneDrive', 'freigegebener Ordner', False),
+           ('monitor', 'Nur dieser Computer', 'ohne Mehrbenutzer', False)]
+    ah = ''.join(f'<div class="kk-anb{" on" if on else ""}"><span class="es-sym">{ic(i)}</span><div><b>{n}</b><small>{d}</small></div>{"<span class=kk-sel>" + ic("check") + "</span>" if on else ""}</div>' for i, n, d, on in art)
+    inhalt = f'''<p class="kk-lead">Alle Kunden und Vertragsübersichten liegen in einem gemeinsamen Ordner der Agentur. Alle Mitarbeitenden verbinden denselben Ordner, Änderungen erscheinen bei den anderen nach wenigen Sekunden. Kein eigener Server nötig.</p>
+  <div class="ex-sec"><span class="kk-n">1</span>Gemeinsamer Ordner</div>
+  <div class="kk-anbieter">{ah}</div>
+  <div class="ex-box es-ordner">
+   <div class="es-pfad">{ic("cloud")}<span>Agentur Muster</span>{ic("chev")}<span>Dokumente</span>{ic("chev")}<b>Vertragsübersicht</b></div>
+   <button class="btn">Ordner ändern …</button><button class="btn ghost">Im Explorer öffnen {ic("ext")}</button>
+   <div class="es-stat"><span><b>128</b> Kunden</span><span><b>412</b> Übersichten</span><span><b>41 MB</b></span><span class="spacer"></span>
+    <span class="es-wer"><span class="avatar a4">TS</span><span class="avatar a2">SK</span><span class="avatar a1">MB</span></span>3 Mitarbeitende nutzen diesen Ordner</div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">2</span>Auf Desktop speichern</div>
+  <div class="ex-box es-desk">
+   <div class="es-vz"><label>Ziel</label><div class="kk-input">{ic("monitor")} Desktop<span class="spacer"></span>{ic("down")}</div></div>
+   <div class="es-vz"><label>Dateiname</label><div class="kk-input"><span class="es-ph">Kunde</span> – <span class="es-ph">Titel</span> – <span class="es-ph">Datum</span><span class="spacer"></span><span class="es-hint">.vtue</span></div></div>
+   <div class="es-bsp">z. B. „Familie Berger – Jahresgespräch 2026 – 02.11.2026.vtue“ · Doppelklick öffnet diesen Stand in der App</div>
+   <div class="optrow es-voll"><div>Beim Speichern ein Passwort anbieten<small>Die Datei wird verschlüsselt und lässt sich nur mit Passwort öffnen. Gilt auch für PDFs.</small></div>{es_sw(True)}</div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">3</span>Sicherheit</div>
+  <div class="ex-box">
+   <div class="optrow"><div>Ältere Stände wiederherstellen<small>SharePoint hebt jede Änderung 30 Tage lang auf</small></div><button class="btn">Verlauf öffnen …</button></div>
+   <div class="optrow"><div>Ohne Internet weiterarbeiten<small>Änderungen werden nachgeholt, sobald die Verbindung wieder da ist</small></div><span class="kk-fest">{ic("lock")} immer an</span></div>
+  </div>'''
+    fuss = (f'<span class="kk-fuss">{ic("lock")} Kundendaten bleiben im Microsoft-365-Konto der Agentur (Rechenzentrum EU).</span>'
+            f'<span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
+    return einst_overlay_v1('Speicherort', titel, inhalt, fuss)
+
+def schnellstart_overlay_v1():
+    titel = es_titel('ext', 'Schnellstart', '<span class="es-anz">7 von 8 Links</span>')
+    links = [('Outlook', 'mail', 'App', 'Microsoft Outlook (installiert)', '#0a64d0'), ('Teams', 'chat', 'App', 'Microsoft Teams (installiert)', '#4b53bc'),
+             ('Kalender', 'calendar', 'App', 'Outlook-Kalender', '#d63a5a'), ('Maklerportal', 'globe', 'Webseite', 'https://www.maklerportal.de/login', '#5e5ce6'),
+             ('Vergleichsrechner', 'calc', 'Webseite', 'https://www.vergleich.de/makler', '#c77800'), ('Tarifrechner Kfz', 'car', 'Webseite', 'https://www.kfz-tarif.de', '#1f8a4c'),
+             ('Bank-Portal', 'bank', 'Webseite', 'https://www.bank-partner.de/finanzierung', '#1f7f95')]
+    rows = ''
+    for k, (n, i, t, z, c) in enumerate(links):
+        if k == 3:  # aufgeklappt: bearbeiten
+            farben = ['#0a64d0', '#4b53bc', '#d63a5a', '#5e5ce6', '#c77800', '#1f8a4c', '#1f7f95', '#6e6e73']
+            fh = ''.join(f'<i class="{"on" if f == c else ""}" style="background:{f}"></i>' for f in farben)
+            sy = ''.join(f'<span class="{"on" if s == i else ""}">{ic(s)}</span>' for s in ['globe', 'calc', 'bank', 'shield', 'car', 'home', 'file', 'chat'])
+            rows += (f'<div class="es-l edit"><span class="es-grip">{ic("grip")}</span><span class="sym" style="color:{c};background:{c}14">{ic(i)}</span>'
+                     f'<div class="es-ed"><div class="es-ed-r"><div class="kk-input es-n">{n}</div><div class="kk-input es-z">{ic("globe")} {z}</div></div>'
+                     f'<div class="es-ed-r"><span class="es-lab">Symbol</span><span class="es-syms">{sy}</span><span class="es-lab">Farbe</span><span class="es-farben">{fh}</span>'
+                     f'<span class="spacer"></span><button class="btn ghost kk-trennen">Entfernen</button><button class="btn primary">Fertig</button></div></div></div>')
+            continue
+        rows += (f'<div class="es-l{" drag" if k == 5 else ""}"><span class="es-grip">{ic("grip")}</span><span class="sym" style="color:{c};background:{c}14">{ic(i)}</span>'
+                 f'<b>{n}</b><span class="es-typ">{t}</span><span class="es-ziel">{z}</span><span class="es-akt">{ic("more")}</span></div>')
+    inhalt = f'''<p class="kk-lead">Ihre Links oben auf der Startseite: 5 bis 8 Apps oder Webseiten, die Sie täglich brauchen. Reihenfolge durch Ziehen am Griff, Klick auf einen Link zum Bearbeiten.</p>
+  <div class="es-liste">{rows}</div>
+  <div class="es-add"><div class="es-add-b">{ic("monitor")}<div><b>App hinzufügen</b><small>aus den installierten Programmen</small></div></div>
+   <div class="es-add-b">{ic("globe")}<div><b>Webseite hinzufügen</b><small>Adresse eintragen, Symbol wird vorgeschlagen</small></div></div></div>'''
+    fuss = (f'<span class="kk-fuss">{ic("info")} Höchstens 8 Links, damit die Startseite übersichtlich bleibt.</span>'
+            f'<span class="spacer"></span><button class="btn ghost">Agentur-Standard laden</button><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
+    return einst_overlay_v1('Schnellstart', titel, inhalt, fuss)
+
 # ---------------- PDF ----------------
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
@@ -988,6 +1092,9 @@ def index_page():
              ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite, Ersparnis und Titel im PDF-Kopf optional, Anhang optional'),
              ('ki-import.html', 'KI-Import mit Prüf-Dialog', 'Unterlagen auswerten, unsichere Werte markiert, nur bestätigte übernehmen'),
              ('ki-konto.html', 'Einstellungen: KI-Konto verbinden', 'Anbieter wählen, API-Schlüssel eintragen und testen, Datenschutz (AVV)'),
+             ('einstellungen-outlook.html', 'Einstellungen: Outlook', 'Konto verbinden, Senden, Vorlage für die E-Mail'),
+             ('einstellungen-speicherort.html', 'Einstellungen: Speicherort', 'Gemeinsamer SharePoint/OneDrive-Ordner, Auf Desktop speichern (.vtue, Passwort), Sicherheit'),
+             ('einstellungen-schnellstart.html', 'Einstellungen: Schnellstart', '5–8 Links bearbeiten, sortieren, App oder Webseite hinzufügen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1010,6 +1117,9 @@ files = {
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
  'ki-import.html': page('KI-Import', editor_v1(), ki_overlay_v1()),
  'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
+ 'einstellungen-outlook.html': page('Einstellungen – Outlook', start_body(), outlook_overlay_v1()),
+ 'einstellungen-speicherort.html': page('Einstellungen – Speicherort', start_body(), speicherort_overlay_v1()),
+ 'einstellungen-schnellstart.html': page('Einstellungen – Schnellstart', start_body(), schnellstart_overlay_v1()),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
