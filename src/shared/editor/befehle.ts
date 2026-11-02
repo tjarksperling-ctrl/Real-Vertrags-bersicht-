@@ -156,12 +156,17 @@ export class Editor {
   }
 
   /** Sync-Schalter. Aus = nichts wird übertragen, auch später nicht; wieder an = nur ab dann. */
-  syncSetzen(an: boolean): void {
+  syncSetzen(an: boolean, wer?: string): void {
     this.tx(() => {
       const w = wurzel(this.doc);
       w.set('syncAktiv', an);
-      if (an) w.delete('syncAusSeit');
-      else w.set('syncAusSeit', this.zeit());
+      if (an) {
+        w.delete('syncAusSeit');
+        w.delete('syncAusVon');
+      } else {
+        w.set('syncAusSeit', this.zeit());
+        if (wer) w.set('syncAusVon', wer);
+      }
     });
   }
 

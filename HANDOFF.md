@@ -178,7 +178,8 @@ Konkret unübersichtlich:
 |---|---|
 | 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · ✅ **freigegeben** (Sitzung 24, „Freigeben“) |
 | 2 Editor | ✅ umgesetzt Sitzung 26 (ohne Zwischen-STOPP laut Sonderregel), `npm test` + `npm run typecheck` grün, Screenshots `mockups/bilder/app-m2-*.png` · ⏳ **Freigabe ausstehend** (Aufbau aus Sitzung 25 + vorläufige Entscheidungen unten) |
-| 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
+| 3 Aktuell/Neu + Sync + Vorteile | ✅ umgesetzt Sitzung 26, Tests + Typprüfung grün, Screenshots `mockups/bilder/app-m3-*.png` · ⏳ **Freigabe ausstehend** |
+| 4 PDF · 5 Zusatzfunktionen | offen |
 
 **Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
 - Struktur: `package.json`, `tsconfig.json`, `vitest.config.ts`; `src/shared/` reine Logik ohne Electron/React (`modell/` Typen, IDs, Standard-Vorlagen; `rechnen/` Geld/Cent, Zahlweise, Summen, Vorteile; `fassung/` Neu als Kopie von Aktuell mit `quelleId`); `src/main/` (Electron, ab M2), `src/renderer/` (React, ab M2). Tests neben dem Code (`*.test.ts`). M1-Abhängigkeiten nur `typescript` + `vitest` (dev).
@@ -222,6 +223,19 @@ Konkret unübersichtlich:
   14. Hinweisband nach dem Anlegen mit Vorlage nur mit Schließen; „Vorlage wechseln“ vorerst weggelassen.
   15. Dunkelmodus: Farben aus denselben Tokens abgeleitet (kein Mockup, Screenshot `app-m2-aktuell-dunkel.png`).
   16. Sync-Regel „in ‚Neu‘ selbst geändert bleibt“: je Feld – ein Wert in „Neu“ wird nur überschrieben, wenn er noch dem bisherigen Wert in „Aktuell“ entspricht (kein Zusatzspeicher). Neue Elemente erscheinen in „Neu“ an passender Stelle (nach dem Gegenstück des Vorgängers). Vorgezogen in M2, weil der Schalter in der Kopfzeile sitzt; sichtbar wird es mit M3.
+
+**Meilenstein 3 – umgesetzt (Sitzung 26, Freigabe ausstehend):**
+- **Umfang:** Ansichten „Aktuell“, „Neu“, „Nebeneinander“ (Kopfzeile + Strg+1/2/3) · „Neu“ wie Bild 3 v3: Leiste „n Änderungen gegenüber ‚Aktuell‘“ mit Schaltern „Nur Änderungen zeigen“ und „Ersparnis anzeigen“ (wirkt auch aufs PDF), geänderter Betrag blau hinterlegt mit „vorher …“, Differenz je Bereich „ggü. Aktuell“, Gesamt mit „Aktuell … / ±… pro Monat“, „Vorteile der Änderungen“ (Stichpunkte bearbeiten, Schalter „im PDF“, automatische Ersparnis/Mehrbeitrag Monat/Jahr) · „Nebeneinander“ wie Bild 4 v2: schmale Leiste mit Kundenkürzeln (☰ klappt aus), alle Spalten, beide Hälften direkt bearbeitbar, Zeilen paarweise gleich hoch, Gesamt Aktuell/Neu oben · Sync-Schalter wie Bild 14 v2: Erklärkarte beim Darüberfahren (mit „Gerade … steht jetzt auch in ‚Neu‘“), „auch in ‚Neu‘“ unter dem geänderten Wert, Leiste „Übernehmen ist aus – Ausgeschaltet heute, hh:mm von …“ mit „Wieder einschalten“, Hinweis mit Rückgängig beim Ausschalten · Menü „…“: Umbenennen, „Neu wieder wie Aktuell“.
+- **Dateien:** `src/shared/fassung/vergleich.ts` (+Test: geänderte Hauptbeträge über `quelleId`) · `src/renderer/src/seiten/Editor.tsx` (Ansichten, Sync-Karte, Vorteile) · `src/renderer/src/komponenten/Leiste.tsx` · Erweiterungen in `editor/` (Variante „seite“) · `Uebersicht.syncAusSeit/syncAusVon`.
+- **Geprüft per Playwright:** Hausrat in „Aktuell“ auf 158,40 € → steht bei Sync an auch in „Neu“; nach Ausschalten auf 170,00 € → „Neu“ bleibt 158,40 €.
+- **Vorläufige Entscheidungen M3 (vorläufig – Freigabe ausstehend):**
+  1. „Geändert“-Markierung nur für den Hauptbetrag (Beitrag/Sparrate/Rate) wie im Mockup; Zähler = Verträge mit geändertem Hauptbetrag; das blaue Beispiel in der Leiste ist der erste geänderte Wert. Neue/entfernte Verträge werden nicht gekennzeichnet (nicht gewählte eigene Idee).
+  2. „Nebeneinander“: wie Bild 4 v2 ohne × und Mülleimer, ohne Griff/Drag & Drop, ohne „+ Untergruppe“; Löschen dort über Entf auf markierter Zeile (mit Rückgängig). Zahlweise ohne Pfeil.
+  3. „Nebeneinander“: Kästchen in der Bereichsleiste wirkt auf beide Fassungen; in „Aktuell“/„Neu“ nur auf die gezeigte (bei Sync an wird Abwählen in „Aktuell“ übernommen).
+  4. Erklärkarte am Sync-Schalter nur beim Darüberfahren (nicht zusätzlich beim ersten Öffnen); Zeile „Gerade …“ nur nach einer tatsächlich übertragenen Änderung; „auch in ‚Neu‘“ bleibt 5 Sekunden sichtbar.
+  5. Leiste „Übernehmen ist aus“ in „Neu“ und „Nebeneinander“, nicht in „Aktuell“.
+  6. „Neu wieder wie Aktuell“ im Menü „…“ in allen Ansichten, mit Hinweis + Rückgängig.
+  7. Mehrbeitrag: Kacheln „Mehrbeitrag pro Monat/Jahr“ in Orange; bei gleichem Betrag keine Kacheln. Vorteile: Enter legt den nächsten Stichpunkt an, × beim Darüberfahren.
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |

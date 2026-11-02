@@ -154,6 +154,9 @@ export interface Uebersicht {
   neu: Fassung;
   /** Sync-Schalter „In ‚Neu‘ übernehmen“. */
   syncAktiv: boolean;
+  /** Seit wann und von wem „In ‚Neu‘ übernehmen“ ausgeschaltet ist (Bild 14 v2). */
+  syncAusSeit?: Zeitstempel;
+  syncAusVon?: string;
   /** „Ersparnis anzeigen“ – wirkt auf App und PDF. */
   ersparnisAnzeigen: boolean;
   vorteile: Vorteile;

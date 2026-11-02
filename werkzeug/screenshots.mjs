@@ -145,7 +145,69 @@ async function m2() {
   }
 }
 
-const schritte = { m2 };
+/** Wert eines Betragsfelds in einer Fassung: Vertragszeile über den Vertragsnamen. */
+async function betrag(win, fassung, name) {
+  return win.evaluate(
+    ([f, n]) => {
+      const box = document.querySelector(`[data-fassung="${f}"]`) ?? document;
+      const tr = [...box.querySelectorAll('tr[data-vertrag]')].find((r) => r.querySelector('td.vname input')?.value === n);
+      return tr?.querySelector('input.betrag')?.value;
+    },
+    [fassung, name],
+  );
+}
+
+async function m3() {
+  const { app, win, daten } = await starten();
+  try {
+    await win.click('.nav li:has-text("Familie Berger")');
+    await win.waitForSelector('.bereich.v1.vers');
+    await win.click('.seg button:has-text("Neu")');
+    await pause(300);
+    await bild(win, 'm3-neu');
+    await win.evaluate(() => document.querySelector('.vorteile')?.scrollIntoView({ block: 'end' }));
+    await pause(200);
+    await bild(win, 'm3-neu-vorteile');
+    await win.mouse.move(700, 600);
+    await win.keyboard.press('Control+3');
+    await pause(400);
+    await bild(win, 'm3-nebeneinander');
+
+    // Bild 14 (a): Sync an – Hausrat in Aktuell ändern, Erklärkarte am Schalter
+    await win.keyboard.press('Control+1');
+    await pause(200);
+    const hausrat = win.locator('tr[data-vertrag]').filter({ has: win.locator('td.vname input[value="Hausrat"]') }).locator('input.betrag');
+    await hausrat.click();
+    await win.keyboard.press('Control+a');
+    await win.keyboard.type('158,40');
+    await win.keyboard.press('Tab');
+    await win.hover('.sync-wrap .switch');
+    await pause(700);
+    await bild(win, 'm3-sync-an');
+    await win.mouse.move(700, 600);
+    await win.keyboard.press('Control+2');
+    await pause(200);
+    console.log('  Neu Hausrat nach Änderung bei Sync an:', await betrag(win, 'neu', 'Hausrat'));
+
+    // Bild 14 (b): Sync aus – Änderung bleibt in Aktuell
+    await win.click('.sync-wrap .switch');
+    await win.keyboard.press('Control+1');
+    await pause(200);
+    await hausrat.click();
+    await win.keyboard.press('Control+a');
+    await win.keyboard.type('170,00');
+    await win.keyboard.press('Tab');
+    await win.keyboard.press('Control+2');
+    await pause(300);
+    console.log('  Neu Hausrat nach Änderung bei Sync aus:', await betrag(win, 'neu', 'Hausrat'));
+    await bild(win, 'm3-sync-aus');
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+  }
+}
+
+const schritte = { m2, m3 };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

@@ -95,6 +95,8 @@ export function schreibeUebersicht(doc: Y.Doc, u: Uebersicht): void {
     w.set('erstellt', u.erstellt);
     w.set('geaendert', u.geaendert);
     w.set('syncAktiv', u.syncAktiv);
+    if (u.syncAusSeit !== undefined) w.set('syncAusSeit', u.syncAusSeit);
+    if (u.syncAusVon !== undefined) w.set('syncAusVon', u.syncAusVon);
     w.set('ersparnisAnzeigen', u.ersparnisAnzeigen);
     const vt = new Y.Map<unknown>();
     vt.set('aktiv', u.vorteile.aktiv);
@@ -169,6 +171,10 @@ export function leseUebersicht(doc: Y.Doc): Uebersicht {
     },
     aufgaben: af ? (af.map((m) => m.toJSON()) as Aufgabe[]) : [],
   };
+  const seit = w.get('syncAusSeit');
+  if (typeof seit === 'string') u.syncAusSeit = seit;
+  const von = w.get('syncAusVon');
+  if (typeof von === 'string') u.syncAusVon = von;
   const titel = w.get('titel');
   if (typeof titel === 'string') u.titel = titel;
   return u;

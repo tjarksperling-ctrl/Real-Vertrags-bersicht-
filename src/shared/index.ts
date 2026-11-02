@@ -13,3 +13,4 @@ export * from './editor/dokument';
 export * from './editor/befehle';
 export * from './editor/bestand';
 export * from './editor/vorschlaege';
+export * from './fassung/vergleich';

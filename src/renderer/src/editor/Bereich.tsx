@@ -106,7 +106,13 @@ export function Bereich({
   vergleich,
   zusatz,
   ugSummeZusatz,
+  seite = false,
+  fassTag,
+  nurIds,
 }: {
+  seite?: boolean;
+  fassTag?: 'Aktuell' | 'Neu' | undefined;
+  nurIds?: Set<string> | null | undefined;
   typ: BereichTyp;
   b: BereichDaten;
   s: BereichSumme;
@@ -162,18 +168,19 @@ export function Bereich({
   };
 
   return (
-    <section className={`bereich v1 ${FARBE[typ]}`} id={`bereich-${typ}`}>
+    <section className={`bereich v1 ${FARBE[typ]} ${seite ? 'kompakt voll' : ''}`} id={seite ? undefined : `bereich-${typ}`}>
       <header className="bereich-kopf">
         <span className="nr">{NUMMER[typ]}</span>
         <h2>{BEREICH_NAME[typ]}</h2>
         <span className="spacer" />
+        {fassTag && <span className={`fass ${fassTag === 'Neu' ? 'neu' : ''}`}>{fassTag}</span>}
       </header>
       <div className="spaltenkopf">
         <table className="vt">
-          <Colgroup typ={typ} />
+          <Colgroup typ={typ} seite={seite} />
           <thead>
             <tr>
-              <th className="g" />
+              {!seite && <th className="g" />}
               {SPALTEN[typ].map((sp) => (
                 <th key={sp.feld} className={sp.num ? 'num' : ''}>
                   {sp.titel}
@@ -186,8 +193,10 @@ export function Bereich({
       <div className="ugs">
         <DndContext sensors={sensoren} collisionDetection={kollision} onDragOver={ueber} onDragEnd={ende} onDragCancel={() => setZielUg(null)}>
           <SortableContext items={b.untergruppen.map((u) => `ug:${u.id}`)} strategy={verticalListSortingStrategy}>
-            {b.untergruppen.map((ug, i) => (
+            {b.untergruppen.map((ug, i) => (nurIds && !ug.vertraege.some((v) => nurIds.has(v.id))) ? null : (
               <Untergruppe
+                seite={seite}
+                nurIds={nurIds}
                 key={ug.id}
                 typ={typ}
                 ug={ug}
@@ -200,12 +209,14 @@ export function Bereich({
             ))}
           </SortableContext>
         </DndContext>
-        <button type="button" className="add-ug v1 knopf-rein" onClick={ugHinzu}>
-          <Sym n="plus" /> Untergruppe hinzufügen
-        </button>
+        {!seite && !nurIds && (
+          <button type="button" className="add-ug v1 knopf-rein" onClick={ugHinzu}>
+            <Sym n="plus" /> Untergruppe hinzufügen
+          </button>
+        )}
       </div>
       <footer className="bereich-summe v1">
-        <span className="bs-label">Summe {BEREICH_NAME[typ]}</span>
+        <span className="bs-label">{seite ? 'Summe' : `Summe ${BEREICH_NAME[typ]}`}</span>
         <span className="spacer" />
         <BereichSummen s={s} vergleich={vergleich} />
       </footer>

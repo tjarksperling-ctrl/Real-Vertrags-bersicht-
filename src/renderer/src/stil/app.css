@@ -164,3 +164,43 @@ input.vl-vs.add { width: 90px; }
 .vl-ed .es-syms > button { width: 24px; height: 24px; }
 .datum-feld .zelle { min-width: 0; }
 .rate-reihe .zelle, td .zelle { min-width: 0; }
+
+/* ---------- M3: Neu, Nebeneinander, Sync, Vorteile ---------- */
+.app.mit-leiste { grid-template-columns: 56px 1fr; }
+.rail { overflow-y: auto; }
+.r-av { display: grid; place-items: center; }
+/* geänderter Hauptbetrag in „Neu“: blau hinterlegt, vorheriger Wert darunter (Bild 3 v3) */
+.neu2 td:has(> .vorher) .zelle.betrag, .neu2 td:has(> .vorher) .rate-reihe .zelle { display: inline-block; width: auto; max-width: 100%; float: right; background: #dcebfc; color: #0052ad; border-radius: 5px; padding: 1px 6px; margin: -1px -6px -1px 0; font-weight: 600; field-sizing: content; min-width: 40px; }
+.neu2 td:has(> .vorher) .rate-reihe .zelle { float: none; }
+.neu2 td > .vorher { clear: both; text-align: right; }
+.neu2 td:has(> .vorher)::after { content: ""; display: block; clear: both; }
+.sync-wrap { position: relative; display: inline-flex; }
+.sync-wrap .sy-karte { top: 34px; left: -100px; cursor: default; }
+.sync-wrap .sy-pfeil { left: 150px; }
+.sy-zeile.aus { background: #f5f5f7; }
+td .sy-tag { justify-content: flex-end; }
+.mehr-menu { position: relative; display: inline-flex; }
+.mehr-menu .ub-menu { top: 38px; right: 0; }
+.ub-mi { width: 100%; text-align: left; }
+.ub-mi:hover { background: var(--accent); color: #fff; }
+.ub-mi:hover svg.i, .ub-mi:hover small { color: #fff; }
+.vorteile li { align-items: flex-start; }
+.vorteile li .zelle.stichpunkt { flex: 1; width: auto; margin: -3px 0; }
+.vorteile li .sp-x { position: static; opacity: 0; display: grid; place-items: center; color: var(--faint); }
+.vorteile li:hover .sp-x { opacity: 1; }
+.vorteile .add { cursor: default; }
+.vorteile.aus h3 ~ * { opacity: .6; }
+.ersparnis.mehrbeitrag div { background: var(--orange-soft); color: var(--orange); }
+.side-row > div { min-width: 0; }
+.side2 .bereich.voll .zelle { font-size: 12px; }
+.side2 td .v2-del.x, .side2 .ug-kopf .v2-del { display: none; }
+.side2 .ug.v1 { padding-right: 10px; }
+.side2 .ug.v1 .ug-fuss { margin-right: 0; }
+.side2 .zw-sel svg.i { display: none; }
+.side2 .datum-feld .kal { display: none; }
+.side2 .zelle { margin: -3px -4px; padding: 3px 4px; width: calc(100% + 8px); }
+:root.dunkel .neu2 td:has(> .vorher) .zelle.betrag, :root.dunkel .ae-mark, :root.dunkel .fass.neu { background: #1d3557; color: #8cc0ff; }
+:root.dunkel .aenderungen, :root.dunkel .sy-karte, :root.dunkel .sy-an, :root.dunkel .ub-menu { background: var(--card); color: var(--text); }
+:root.dunkel .sy-aus { background: var(--side); border-color: var(--line); color: var(--text); }
+:root.dunkel .sy-zeile.on { background: #183224; }
+.toolbar.v1 { position: relative; z-index: 20; }

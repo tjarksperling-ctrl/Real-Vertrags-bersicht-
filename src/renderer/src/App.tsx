@@ -11,7 +11,6 @@ import {
   neueUebersicht,
   neuerKunde,
   leseUebersicht,
-  type FassungName,
   type Katalog,
 } from '../../shared';
 import type { AppInfo } from '../../shared/api';
@@ -21,7 +20,8 @@ import { darstellungAnwenden } from './daten/darstellung';
 import { Seitenleiste } from './komponenten/Seitenleiste';
 import { Sym } from './komponenten/ui';
 import { Start } from './seiten/Start';
-import { EditorSeite } from './seiten/Editor';
+import { EditorSeite, type Ansicht } from './seiten/Editor';
+import { Leiste } from './komponenten/Leiste';
 import { NeuerKundeDialog, type NeuerKundeErgebnis } from './dialoge/NeuerKunde';
 import { EinstellungenDialog, KuerzelListe, type EinstSeite } from './dialoge/Einstellungen';
 
@@ -66,11 +66,12 @@ function Oberflaeche({
   const bestandVersion = useDocVersion(speicher.bestand);
   const bestand = useMemo(() => leseBestand(speicher.bestand), [speicher, bestandVersion]);
   const [offen, setOffen] = useState<{ id: string; doc: Y.Doc } | null>(null);
-  const [ansicht, setAnsicht] = useState<FassungName>('aktuell');
+  const [ansicht, setAnsicht] = useState<Ansicht>('aktuell');
   const [dialog, setDialog] = useState<Dialog>(null);
   const [katalog, setKatalog] = useState<Katalog | null>(null);
   const [band, setBand] = useState<Band | null>(null);
   const [neuId, setNeuId] = useState<string | null>(null);
+  const [leisteOffen, setLeisteOffen] = useState(false);
   const suche = useRef<HTMLInputElement>(null);
 
   const oeffnen = useCallback(
@@ -139,7 +140,21 @@ function Oberflaeche({
   const vorname = info.benutzer.split(' ')[0] ?? info.benutzer;
 
   return (
-    <div className="app">
+    <div className={`app ${offen && ansicht === 'neben' && !leisteOffen ? 'mit-leiste' : ''}`}>
+      {offen && ansicht === 'neben' && !leisteOffen ? (
+        <Leiste
+          bestand={bestand}
+          auswahl={kunde?.id ?? ''}
+          onAusklappen={() => setLeisteOffen(true)}
+          onSuche={() => {
+            setLeisteOffen(true);
+            requestAnimationFrame(() => suche.current?.focus());
+          }}
+          onStart={() => setOffen(null)}
+          onKunde={kundeOeffnen}
+          onNeuerKunde={() => setDialog({ art: 'neuerKunde' })}
+        />
+      ) : (
       <Seitenleiste
         ref={suche}
         bestand={bestand}
@@ -151,6 +166,7 @@ function Oberflaeche({
         onNeuerKunde={() => setDialog({ art: 'neuerKunde' })}
         onEinstellungen={() => setDialog({ art: 'einstellungen', seite: 'Allgemein' })}
       />
+      )}
       {offen && kunde ? (
         <EditorSeite
           key={offen.id}
@@ -158,7 +174,11 @@ function Oberflaeche({
           kunde={kunde}
           katalog={katalog}
           ansicht={ansicht}
-          setAnsicht={setAnsicht}
+          setAnsicht={(a) => {
+            setAnsicht(a);
+            setLeisteOffen(false);
+          }}
+          benutzer={info.benutzer}
           band={
             band?.uebersichtId === offen.id ? (
               <div className="nk-band">

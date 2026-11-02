@@ -50,6 +50,14 @@ export const SPALTEN: Record<BereichTyp, Spalte[]> = {
   ],
 };
 
+/** Spaltenbreiten in „Nebeneinander“ (Bild 4 v2, ohne Griff-Spalte). */
+export const BREITEN_SEITE: Record<BereichTyp, string[]> = {
+  VERS: ['25%', '', '19%', '20%'],
+  SPAR: ['15%', '', '12%', '13%', '13%', '14%', '12%'],
+  DARL: ['21%', '', '17%', '18%', '15%'],
+  AV: ['16%', '', '14%', '13%', '13%', '15%', '14%'],
+};
+
 /** Bezeichnung der Untergruppen-Summe (Bild 2): „Beitrag / Monat“ usw. */
 export const UG_SUMME: Record<BereichTyp, string> = { VERS: 'Beitrag', SPAR: 'Sparrate', DARL: 'Rate', AV: 'Beitrag' };
 

@@ -45,6 +45,8 @@ export interface EditorKontextWert {
   /** Zuletzt per „+ Vertrag“/Enter angelegte Zeile (Tastenhinweis im Fuß). */
   neueZeile: string | null;
   setNeueZeile: (id: string | null) => void;
+  /** Nach dem Speichern eines Feldes (z. B. Hinweis „auch in ‚Neu‘“, Bild 14). */
+  nachAenderung?: (vertragId: string, feld: import('../../../shared').VertragFeld) => void;
 }
 
 export const EditorKontext = createContext<EditorKontextWert | null>(null);

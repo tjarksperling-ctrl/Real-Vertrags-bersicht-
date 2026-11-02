@@ -44,7 +44,9 @@ export function VertragZeile({
   ugNamen,
   ziehbar = true,
   zusatz,
+  seite = false,
 }: {
+  seite?: boolean;
   typ: BereichTyp;
   ugId: string;
   v: Vertrag;
@@ -56,13 +58,16 @@ export function VertragZeile({
 }) {
   const k = useEditorKontext();
   const { editor, fassung, fokus } = k;
-  const sortable = useSortable({ id: `v:${v.id}`, data: { typ: 'v', ugId }, disabled: !ziehbar });
+  const sortable = useSortable({ id: `v:${v.id}`, data: { typ: 'v', ugId }, disabled: !ziehbar || seite });
   const stil: CSSProperties = {
     transform: CSS.Translate.toString(sortable.transform),
     transition: sortable.transition,
   };
 
-  const aendern = (feld: VertragFeld, wert: FeldWert) => editor.vertragAendern(fassung, v.id, feld, wert);
+  const aendern = (feld: VertragFeld, wert: FeldWert) => {
+    editor.vertragAendern(fassung, v.id, feld, wert);
+    k.nachAenderung?.(v.id, feld);
+  };
   const key = (feld: VertragFeld) => `${v.id}:${feld}`;
   const ref = (feld: VertragFeld) => (el: HTMLElement | null) => fokus.setze(key(feld), el);
 
@@ -110,14 +115,17 @@ export function VertragZeile({
       style={stil}
       className={`${k.markiert === v.id ? 'focus markiert' : ''} ${sortable.isDragging ? 'zieht' : ''}`}
       data-vertrag={v.id}
+      data-paar={v.quelleId ?? v.id}
       onMouseDown={(e) => {
         if (!(e.target as HTMLElement).closest('input,textarea,button')) k.setMarkiert(v.id);
       }}
       onFocus={() => k.setMarkiert(null)}
     >
-      <td className="g grip" ref={sortable.setActivatorNodeRef} {...(ziehbar ? sortable.listeners : {})} {...sortable.attributes} title="Ziehen zum Verschieben">
-        <Sym n="grip" />
-      </td>
+      {!seite && (
+        <td className="g grip" ref={sortable.setActivatorNodeRef} {...(ziehbar ? sortable.listeners : {})} {...sortable.attributes} title="Ziehen zum Verschieben">
+          <Sym n="grip" />
+        </td>
+      )}
       {spalten.map((s, i) => (
         <Zelle
           key={s.feld}

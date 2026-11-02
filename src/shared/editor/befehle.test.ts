@@ -193,8 +193,8 @@ describe('Sync „In Neu übernehmen“ (Bild 14 v2)', () => {
 
   it('aus: nichts wird übertragen – auch nicht nach dem Wiedereinschalten', () => {
     const e = editor();
-    e.syncSetzen(false);
-    expect(e.lesen().syncAktiv).toBe(false);
+    e.syncSetzen(false, 'Tjark S.');
+    expect(e.lesen()).toMatchObject({ syncAktiv: false, syncAusSeit: '2026-11-02T10:00:00.000Z', syncAusVon: 'Tjark S.' });
     const hausrat = vers(e)[1]!.vertraege[0]!;
     e.vertragAendern('aktuell', hausrat.id, 'beitrag', 15840);
     e.untergruppeAnlegen('aktuell', 'VERS', 'Gesundheit', 'activity');

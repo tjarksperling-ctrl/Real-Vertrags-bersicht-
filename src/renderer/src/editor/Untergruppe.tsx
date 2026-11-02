@@ -8,16 +8,17 @@ import type { Vertrag } from '../../../shared';
 import { Sym } from '../komponenten/ui';
 import { TextFeld } from './felder';
 import { useEditorKontext } from './kontext';
-import { SPALTEN, SYMBOLE, UG_SUMME } from './spalten';
+import { BREITEN_SEITE, SPALTEN, SYMBOLE, UG_SUMME } from './spalten';
 import { VertragZeile } from './VertragZeile';
 
-export function Colgroup({ typ, griff = true }: { typ: BereichTyp; griff?: boolean }) {
+export function Colgroup({ typ, seite = false }: { typ: BereichTyp; seite?: boolean }) {
   return (
     <colgroup>
-      {griff && <col style={{ width: 22 }} />}
-      {SPALTEN[typ].map((s) => (
-        <col key={s.feld} style={s.breite ? { width: s.breite } : undefined} />
-      ))}
+      {!seite && <col style={{ width: 22 }} />}
+      {SPALTEN[typ].map((s, i) => {
+        const b = seite ? BREITEN_SEITE[typ][i] : s.breite;
+        return <col key={s.feld} style={b ? { width: b } : undefined} />;
+      })}
     </colgroup>
   );
 }
@@ -30,7 +31,12 @@ export function Untergruppe({
   dropZiel,
   zusatz,
   summeZusatz,
+  seite = false,
+  nurIds,
 }: {
+  seite?: boolean;
+  /** Nur diese Verträge zeigen („Nur Änderungen zeigen“). */
+  nurIds?: Set<string> | null | undefined;
   typ: BereichTyp;
   ug: UG;
   summe: UntergruppenSumme;
@@ -47,6 +53,7 @@ export function Untergruppe({
   const neu = k.neueUg === ug.id;
   const symbole = k.symbolOffen === ug.id;
   const zeilenHinweis = ug.vertraege.some((v) => v.id === k.neueZeile);
+  const sichtbar = nurIds ? ug.vertraege.filter((v) => nurIds.has(v.id)) : ug.vertraege;
 
   const vertragHinzu = () => {
     const id = editor.vertragAnlegen(fassung, ug.id);
@@ -83,9 +90,11 @@ export function Untergruppe({
       data-ug={ug.id}
     >
       <div className="ug-kopf">
-        <span className="grip" ref={sortable.setActivatorNodeRef} {...sortable.listeners} {...sortable.attributes} title="Ziehen zum Verschieben">
-          <Sym n="grip" />
-        </span>
+        {!seite && (
+          <span className="grip" ref={sortable.setActivatorNodeRef} {...sortable.listeners} {...sortable.attributes} title="Ziehen zum Verschieben">
+            <Sym n="grip" />
+          </span>
+        )}
         <button
           type="button"
           className={`ug-icon knopf-rein ${symbole ? 'v2-sym' : ''}`}
@@ -143,19 +152,19 @@ export function Untergruppe({
         </div>
       )}
       <div ref={drop.setNodeRef} className="ug-inhalt">
-        {ug.vertraege.length > 0 ? (
+        {sichtbar.length > 0 ? (
           <table className="vt">
-            <Colgroup typ={typ} />
+            <Colgroup typ={typ} seite={seite} />
             <tbody>
-              <SortableContext items={ug.vertraege.map((v) => `v:${v.id}`)} strategy={verticalListSortingStrategy}>
-                {ug.vertraege.map((v) => (
-                  <VertragZeile key={v.id} typ={typ} ugId={ug.id} v={v} ugNamen={ugNamen} zusatz={zusatz?.(v)} />
+              <SortableContext items={sichtbar.map((v) => `v:${v.id}`)} strategy={verticalListSortingStrategy}>
+                {sichtbar.map((v) => (
+                  <VertragZeile key={v.id} typ={typ} ugId={ug.id} v={v} ugNamen={ugNamen} zusatz={zusatz?.(v)} seite={seite} />
                 ))}
               </SortableContext>
             </tbody>
           </table>
         ) : (
-          !neu && <div className="ug-leer">Noch keine Verträge – erscheint erst im PDF, wenn ein Vertrag eingetragen ist</div>
+          !neu && !nurIds && <div className="ug-leer">Noch keine Verträge – erscheint erst im PDF, wenn ein Vertrag eingetragen ist</div>
         )}
         {!neu && (
           <div className="ug-fuss">
