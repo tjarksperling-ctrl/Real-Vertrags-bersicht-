@@ -1,7 +1,7 @@
 # Projektstand – Vertragsübersicht (Desktop-App)
 
-**Aktueller Stand:** Phase 1–3 ✅ · Phase 4 Meilenstein 1 (Datenmodell & Berechnungen + Tests) umgesetzt, wartet auf Freigabe. Details siehe `HANDOFF.md`.
-**Nächster Schritt:** Freigabe Meilenstein 1 → Meilenstein 2 (Editor).
+**Aktueller Stand:** Phase 1–3 ✅ · Phase 4 Meilenstein 1 (Datenmodell & Berechnungen + Tests) umgesetzt und freigegeben. Details siehe `HANDOFF.md`.
+**Nächster Schritt:** Meilenstein 2 (Editor).
 
 > Fortsetzen in neuer Sitzung: „Lies HANDOFF.md und mach beim nächsten Schritt weiter."
 

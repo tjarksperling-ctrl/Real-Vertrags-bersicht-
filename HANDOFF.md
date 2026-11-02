@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 24) · Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 Meilenstein 1 umgesetzt (88 Tests grün), wartet auf Freigabe** (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
+**Stand:** 02.11.2026 (Sitzung 24) · Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 Meilenstein 1 umgesetzt (88 Tests grün) und vom Nutzer freigegeben** · nächstes: Meilenstein 2 (Editor) (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -176,7 +176,7 @@ Konkret unübersichtlich:
 ## Phase 4 – Fortschritt
 | Meilenstein | Status |
 |---|---|
-| 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · **wartet auf Freigabe** |
+| 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · ✅ **freigegeben** (Sitzung 24, „Freigeben“) |
 | 2 Editor · 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
 
 **Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
@@ -429,7 +429,8 @@ Konkret unübersichtlich:
 - **Erledigt:** Projektstruktur + Datenmodell vorgeschlagen und **freigegeben**; Rundung **„sichtbar stimmig“** gewählt. Meilenstein 1 umgesetzt: TypeScript-Projekt (`package.json`, `tsconfig.json` streng, `vitest.config.ts`, `.gitignore`), nur Dev-Abhängigkeiten `typescript` + `vitest`. Reine Logik in `src/shared/` (Details unter „Phase 4 – Fortschritt“). Tests: 7 Dateien, 88 Tests grün; Typprüfung fehlerfrei.
 - **Befehle:** `npm install` · `npm test` · `npm run typecheck`.
 - **Stolpersteine:** Mockup-Generator rundet je Bereich, die freigegebene Regel rundet je Untergruppe – für den Beispielkunden identisch, in Tests abgesichert (3 UGs à 1 €/Jahr → 0,24 €, nicht 0,25 €).
-- **Offen:** Freigabe Meilenstein 1 durch den Nutzer. Danach Meilenstein 2 (Editor: Electron + React-Grundgerüst, Bereiche, Untergruppen, Verträge, Drag & Drop mit dnd-kit, Vorlagen, Tastatursteuerung laut Festlegung 6, Rückgängig laut Festlegung 3). Kleinere Punkte aus Abschnitt 2 und „Phase 4 – Fortschritt“ (DARL-Zahlweise, weitere Agentur-Vorlagen, Einstellungsseite „Allgemein“) bei Meilenstein 2 klären. Vom Nutzer später: Entra-ID-Registrierung, KI-API-Schlüssel, optional Code-Signatur.
+- **Meilenstein 1 freigegeben** (Nutzer, Sitzung 24, „Freigeben“).
+- **Offen:** Meilenstein 2 (Editor: Electron + React-Grundgerüst, Bereiche, Untergruppen, Verträge, Drag & Drop mit dnd-kit, Vorlagen, Tastatursteuerung laut Festlegung 6, Rückgängig laut Festlegung 3). Kleinere Punkte aus Abschnitt 2 und „Phase 4 – Fortschritt“ (DARL-Zahlweise, weitere Agentur-Vorlagen, Einstellungsseite „Allgemein“) bei Meilenstein 2 klären. Vom Nutzer später: Entra-ID-Registrierung, KI-API-Schlüssel, optional Code-Signatur.
 
 **Prompt für den nächsten Chat:**
 > Lies HANDOFF.md auf dem Branch claude/epic-hawking-njwxvq und arbeite genau nach CLAUDE.md und dem Übergabeprotokoll Sitzung 24. Übernimm zuerst den Stand dieses Branches in deinen Arbeitsbranch und prüfe mit `npm install && npm test && npm run typecheck`, dass alles grün ist. Meilenstein 1 (Datenmodell & Berechnungen) habe ich freigegeben. Beginne Meilenstein 2 (Editor, siehe PLAN.md Abschnitt 7, Bilder 2, 11, 12, 13 und die Festlegungen 3 und 6 in HANDOFF.md Abschnitt 2): Schlag mir zuerst kurz den Aufbau (Electron + React-Grundgerüst, Komponenten, Datenfluss) vor, kläre die offenen Kleinpunkte aus „Phase 4 – Fortschritt“ per Auswahl-Rückfrage und warte auf meine Freigabe, bevor du Code schreibst. Nach dem Meilenstein: STOPP, Ergebnis zeigen, Freigabe abwarten. Halte den Fortschritt laufend in HANDOFF.md fest und erstelle am Ende ein Übergabeprotokoll mit dem Prompt für den nächsten Chat.
