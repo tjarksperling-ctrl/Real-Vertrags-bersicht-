@@ -1556,6 +1556,80 @@ def vertrag_bearbeiten_v1():
     return ub_editor(nur='AV', ersetzen=[(zeile_alt, zeile_neu)], extra_cls='vd')
 
 
+# ---------------- Bild 12 v2 (Sitzung 17): einfacher bearbeiten – alles direkt an Ort und Stelle ----------------
+# Wunsch des Nutzers zu v1: „viel einfacher, ohne 5 Untermenüs“. Keine Menüs „…“, kein Detail-Dialog, keine Rückfragen:
+# Name anklicken = tippen · Symbol anklicken = Symbolreihe · Papierkorb beim Darüberfahren = sofort löschen + „Rückgängig“ ·
+# „+ Vertrag“ / „+ Untergruppe“ legt eine leere Zeile/Karte an, Cursor steht im Namen · Verschieben nur am Griff.
+def v2_editor(nur=None, ersetzen=(), extra_cls=''):
+    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
+    for alt, neu in ersetzen:
+        assert alt in bs, alt[:90]
+        bs = bs.replace(alt, neu, 1)
+    bs = bs.replace(f'<span class="ug-more">{ic("more")}</span>', '')  # keine „…“-Menüs mehr an Untergruppen
+    gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow ub v2e {extra_cls}">{bs}{gz}</div></main>')
+
+V2_DEL = f'<span class="v2-del" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
+V2_SYMS = ['shield', 'home', 'car', 'bike', 'plane', 'paw', 'activity', 'tooth', 'umbrella', 'briefcase', 'heart', 'star']
+
+def einfach_bearbeiten_v2():
+    """Versicherungen: alle Bedienelemente auf einen Blick (Darüberfahren, neuer Vertrag, neue Untergruppe, Rückgängig)."""
+    b = AKTUELL[0]; wohnen = b['ug'][1]
+    dn = ic('down')
+    # 1) Untergruppe „Wohnen“ beim Darüberfahren: Name als Feld, Papierkorb rechts
+    wk_alt = ug_kopf_alt(wohnen)
+    wk_neu = (f'<div class="ug v1 v2-hover"><div class="ug-kopf"><span class="grip">{ic("grip")}</span>'
+              f'<span class="ug-icon v2-sym" title="Symbol ändern">{ic("home")}</span>'
+              f'<span class="name v2-name" title="Klicken zum Umbenennen">Wohnen</span>'
+              f'<span class="v2-tip">Name anklicken zum Umbenennen</span>{V2_DEL}</div>')
+    # 2) Vertrag „Wohngebäude“ beim Darüberfahren: Papierkorb am Zeilenende
+    r_alt = (f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Wohngebäude</span></td>')
+    r_neu = (f'<tr class="v2-row"><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Wohngebäude</span></td>')
+    z_alt = f'<td class="num">612,00 €</td><td class="zw"><span class="zw-sel">jährlich{dn}</span></td></tr>'
+    z_neu = f'<td class="num">612,00 €</td><td class="zw"><span class="zw-sel">jährlich{dn}</span>{V2_DEL}</td></tr>'
+    # 3) „+ Vertrag“ in Kfz geklickt: neue leere Zeile, Cursor im Namen
+    k_alt = f'halbjährlich{dn}</span></td></tr></tbody></table>'
+    k_neu = (f'halbjährlich{dn}</span></td></tr>'
+             f'<tr class="focus v2-neu"><td class="g grip">{ic("grip")}</td>'
+             f'<td class="vname"><span class="edit-cell active">Mot<span class="caret"></span><span class="ac-ghost">orrad</span></span></td>'
+             f'<td class="bem"><span class="ph">Bemerkung</span></td><td class="num"><span class="ph">0,00 €</span></td>'
+             f'<td class="zw"><span class="zw-sel ph">jährlich{dn}</span></td></tr></tbody></table>')
+    kf_alt = f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span><span class="summe"><small>Beitrag / Monat</small> 81,00 €'
+    kf_neu = (f'<div class="ug-fuss"><span class="v2-keys"><kbd>Tab</kbd> nächstes Feld · <kbd>Enter</kbd> noch ein Vertrag · <kbd>Esc</kbd> fertig</span>'
+              f'<span class="summe"><small>Beitrag / Monat</small> 81,00 €')
+    # 4) „+ Untergruppe“ geklickt: neue Karte, Cursor im Namen, Symbole in einer Reihe darunter
+    sy = ''.join(f'<span class="{"on" if s == "activity" else ""}">{ic(s)}</span>' for s in V2_SYMS)
+    neu_ug = (f'<div class="ug v1 v2-ugneu"><div class="ug-kopf"><span class="grip">{ic("grip")}</span>'
+              f'<span class="ug-icon">{ic("activity")}</span><span class="name"><span class="tin v2-ugname">Gesundheit<span class="caret"></span></span></span>{V2_DEL}</div>'
+              f'<div class="v2-symrow"><span class="es-lab">Symbol</span><span class="ub-syms v2">{sy}</span>'
+              f'<span class="v2-keys"><kbd>Enter</kbd> fertig – danach direkt den ersten Vertrag eintragen</span></div></div>')
+    add_alt = f'<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
+    add_neu = neu_ug + add_alt
+    toast = (f'<div class="ub-toast">{ic("check")}<span>Vertrag „Glasversicherung“ gelöscht</span>'
+             f'<span class="ub-toast-a">{ic("undo")} Rückgängig</span><span class="v2-tk">Strg + Z</span></div>')
+    return v2_editor(nur='VERS', ersetzen=[(wk_alt, wk_neu), (r_alt, r_neu), (z_alt, z_neu), (k_alt, k_neu), (kf_alt, kf_neu), (add_alt, add_neu)]) + toast
+
+def einfach_av_v2():
+    """Altersvorsorge: Zahlweise, Leistung mit Art und Laufzeit-Enddatum direkt in der Zeile."""
+    dn = ic('down')
+    reps = []
+    # Art der Leistung in allen Zeilen als kleines Auswahlfeld unter dem Betrag
+    for a in ('Rente mtl.', 'Rente mtl.', 'Todesfall'):
+        reps.append((f'<br><small style="color:var(--muted)">{a}</small>', f'<br><span class="v2-art">{a}{dn}</span>'))
+    arten = ''.join(f'<span class="{"on" if a == "Rente mtl." else ""}"><i class="ck">{ic("check") if a == "Rente mtl." else ""}</i>{a}</span>'
+                    for a in ('Rente mtl.', 'Kapital', 'Guthaben', 'Todesfall'))
+    erste = (f'<td class="num">412,00 €<br><small style="color:var(--muted)">Rente mtl.</small></td><td class="num">01.07.2052</td></tr>')
+    erste_neu = (f'<td class="num v2-lz"><span class="edit-cell">412,00 €</span><span class="v2-art open">Rente mtl.{dn}</span>'
+                 f'<div class="zw-menu v2-artmenu">{arten}</div></td>'
+                 f'<td class="num"><span class="v2-datum">01.07.2052{ic("calendar")}</span>{V2_DEL}</td></tr>')
+    zeile_alt = f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Private Rente</span></td>'
+    zeile_neu = f'<tr class="focus v2-row"><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Private Rente</span></td>'
+    tipp = (f'<div class="ub-tipp">{ic("pencil")}<span>Alles direkt in der Zeile: anklicken und tippen · '
+            f'<kbd>Tab</kbd> nächstes Feld · Datum tippen oder {ic("calendar")} wählen</span></div>')
+    return v2_editor(nur='AV', ersetzen=[(erste, erste_neu), (zeile_alt, zeile_neu)] + reps, extra_cls='v2av') + tipp
+
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -1576,8 +1650,9 @@ def index_page():
              ('neuer-kunde.html', 'Neuer Kunde', 'Nur Name, Titel der ersten Übersicht, Start leer / mit Vorlage / mit Unterlagen'),
              ('einstellungen-vorlagen.html', 'Einstellungen: Vorlagen', 'Agentur- und eigene Vorlagen, Untergruppen mit Symbolen, Vertragsvorschläge, Autovervollständigung'),
              ('neuer-kunde-editor.html', 'Neuer Kunde: Autovervollständigung', 'Übersicht nach dem Anlegen mit Vorlage, Vorschläge beim Tippen'),
-             ('untergruppe-bearbeiten.html', 'Untergruppe bearbeiten', 'Menü „…“: Name &amp; Symbol, sortieren, duplizieren, löschen · Varianten: verschieben (Drag &amp; Drop), löschen'),
-             ('vertrag-bearbeiten.html', 'Vertrag bearbeiten', 'Vertragsdetails: Zahlweise, Leistung mit Art, Laufzeit-Enddatum, Untergruppe wechseln, löschen'),
+             ('einfach-bearbeiten.html', 'Untergruppen &amp; Verträge bearbeiten (v2)', 'Alles direkt an Ort und Stelle: anklicken und tippen, Papierkorb beim Darüberfahren, + Vertrag / + Untergruppe, Rückgängig'),
+             ('untergruppe-bearbeiten.html', 'Untergruppe bearbeiten (v1, abgelöst)', 'Menü „…“: Name &amp; Symbol, sortieren, duplizieren, löschen · Varianten: verschieben (Drag &amp; Drop), löschen'),
+             ('vertrag-bearbeiten.html', 'Vertrag bearbeiten (v1, abgelöst)', 'Vertragsdetails: Zahlweise, Leistung mit Art, Laufzeit-Enddatum, Untergruppe wechseln, löschen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1615,6 +1690,8 @@ files = {
  'untergruppe-verschieben.html': page('Untergruppe verschieben', ug_verschieben_v1()),
  'untergruppe-loeschen.html': page('Untergruppe löschen', ug_loeschen_v1()),
  'vertrag-bearbeiten.html': page('Vertrag bearbeiten', vertrag_bearbeiten_v1()),
+ 'einfach-bearbeiten.html': page('Einfach bearbeiten', einfach_bearbeiten_v2()),
+ 'einfach-bearbeiten-av.html': page('Einfach bearbeiten – Altersvorsorge', einfach_av_v2()),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),

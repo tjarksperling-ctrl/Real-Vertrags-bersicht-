@@ -1339,3 +1339,37 @@ tr.vd-zeile td:last-child { box-shadow: inset -1.5px 1.5px 0 var(--accent), inse
 .ug-kopf .name .caret { display: inline-block; width: 1.5px; height: 15px; background: var(--accent); vertical-align: -2px; margin-left: 1px; }
 .vd-rest { font-size: 11.5px; color: var(--faint); }
 .vd-datum .spacer { flex: 1; }
+
+/* ---------- Bild 12 v2 (Sitzung 17): einfacher bearbeiten (Präfix .v2-) ---------- */
+.v2-del { display: none; }
+.v2-hover .v2-del, .v2-row .v2-del, .v2-ugneu .v2-del { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: var(--red); background: #fff; box-shadow: 0 0 0 1px #f3c7c7; }
+.v2-del svg.i { width: 14px; height: 14px; }
+.ug-kopf .v2-del { margin-left: auto; }
+td.zw .v2-del, td.num .v2-del { position: absolute; right: -34px; top: 3px; }
+.v2e .ug.v1 { padding-right: 44px; }
+.v2e .ug.v1 .ug-fuss { margin-right: -30px; }
+.v2-hover { box-shadow: 0 0 0 1.5px var(--bc); }
+.v2-name { border-bottom: 1.5px dashed color-mix(in srgb, var(--bc) 55%, transparent); padding-bottom: 1px; }
+.v2-sym { box-shadow: 0 0 0 1.5px var(--bc) !important; }
+.v2-tip { font-size: 11.5px; color: var(--faint); font-weight: 400; }
+tr.v2-row td { background: #fff; }
+tr.v2-neu td { background: #fff; }
+.v2-keys { font-size: 11.5px; color: var(--muted); padding-left: 22px; }
+.v2-keys kbd { font: 10.5px var(--font); color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; background: #fff; }
+.v2-ugneu { box-shadow: 0 0 0 2px var(--accent); background: #fff !important; padding-bottom: 10px !important; }
+.v2-ugname { display: inline-flex; padding: 4px 10px; font-weight: 600; min-width: 260px; }
+.v2-symrow { display: flex; align-items: center; gap: 10px; padding: 4px 0 0 32px; }
+.ub-syms.v2 { display: flex; gap: 5px; }
+.ub-syms.v2 span { width: 32px; height: 30px; }
+.v2-symrow .v2-keys { padding-left: 6px; }
+.v2-art { display: inline-flex; align-items: center; gap: 2px; font-size: 11.5px; color: var(--muted); border-radius: 5px; padding: 0 4px; margin-right: -4px; }
+.v2-art svg.i { width: 11px; height: 11px; }
+.v2-art.open { box-shadow: 0 0 0 1.5px var(--accent); color: var(--text); background: #fff; }
+td.v2-lz { position: relative; }
+td.v2-lz .edit-cell { display: block; }
+.v2-artmenu { top: 48px; right: 0; width: 170px; z-index: 10; }
+.v2-datum { display: inline-flex; align-items: center; gap: 5px; border-radius: 6px; padding: 2px 6px; margin: -2px -6px; box-shadow: 0 0 0 1px var(--line); background: #fff; }
+.v2-datum svg.i { width: 13px; height: 13px; color: var(--muted); }
+.v2av td.num:last-child { position: relative; }
+.v2-tk { color: #999; font-size: 11.5px; }
+.ub-tipp svg.i { width: 14px; height: 14px; vertical-align: -2px; }
