@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 7) · Branch `claude/bild-2-uebersicht-aktuell-9fc3nh` (übernommen von `claude/sleepy-hawking-ks7fp3`) · Phase 3 (Mockups) **in Überarbeitung** · Bild 1 (Startseite) v4 und Bild 1b (Kundenakte) v1 freigegeben · **Bild 2 (Aktuell) v2 umgesetzt (Wünsche zu v1 eingearbeitet), Freigabe + Antwort zur Titel-Frage (PDF-Kopf) stehen aus**
+**Stand:** 02.11.2026 (Sitzung 8) · Branch `claude/bild-2-uebersicht-freigabe-spohqz` (übernommen von `claude/bild-2-uebersicht-aktuell-9fc3nh`) · Phase 3 (Mockups) **in Überarbeitung** · Bild 1 (Startseite) v4 und Bild 1b (Kundenakte) v1 freigegeben · **Bild 2 (Aktuell) v2 umgesetzt (Wünsche zu v1 eingearbeitet), Freigabe + Antwort zur Titel-Frage (PDF-Kopf) stehen aus**
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -108,6 +108,7 @@ Konkret unübersichtlich:
 **Nicht funktioniert / Stolpersteine:**
 - HANDOFF.md lag zunächst auf einem anderen Branch (`claude/bold-curie-qxr2wd`). Er wurde in den Arbeitsbranch übernommen.
 - Erste Mockup-Fassung hatte Darstellungsfehler: Toolbar lief über, Änderungspunkt überdeckte Zahlen, Knopf im Export-Dialog abgeschnitten, Spalten im KI-Dialog schlecht verteilt, AV-Laufzeit ragte im PDF über den Rand, Betragsüberschriften falsch ausgerichtet. Alles behoben, aber Toolbar-Platz bleibt knapp.
+- Sitzung 8: Arbeitsbranch `claude/bild-2-uebersicht-freigabe-spohqz`, Stand von `claude/bild-2-uebersicht-aktuell-9fc3nh` per Fast-Forward übernommen. Bild 2 v2 erneut gezeigt, Freigabe + Titel-im-PDF-Kopf-Frage gestellt, Antwort steht aus.
 - Sitzung 7: Arbeitsbranch `claude/bild-2-uebersicht-aktuell-9fc3nh`, Stand von `claude/sleepy-hawking-ks7fp3` per Fast-Forward übernommen. Bild 2 v1 umgesetzt. Stolperstein: Klasse `.gesamt` ist schon für den dunklen Gesamtbalken vergeben (weiße Schrift) → in der Bereichsleiste `bl-gesamt` verwenden. Zahlweise-Menü am rechten Kartenrand abgeschnitten (`overflow:hidden` der Karte) → Menü rechtsbündig. Ganze Seite: Fensterhöhe 2650 (v2). Bei v2 lief die Kopfzeile zuerst über (PDF-Knopf abgeschnitten) → Anwesenheit „SK“ neben den Titel verschoben, Abstände/Polster verkleinert, Sync-Text „In „Neu“ übernehmen“.
 - Sitzung 6: Arbeitsbranch `claude/sleepy-hawking-ks7fp3`, Stand von `claude/bild-2-ubersicht-aktuell-chgsyz` per Fast-Forward übernommen. Bild 2 gezeigt + beschrieben, Nutzer hat Vorschläge geschickt (Fortschritt Bild 2). Auf Wunsch des Nutzers zuerst nur das Übergabeprotokoll geschrieben, **Umsetzung im neuen Chat**.
 - Sitzung 5: Arbeitsbranch `claude/bild-2-ubersicht-aktuell-chgsyz`, Stand von `claude/blissful-knuth-3kirjs` per Fast-Forward übernommen. Bild 2 wurde gezeigt, dann wollte der Nutzer zurück zu Bild 1 → daraus entstand die Kundenakte (Bild 1b). Bild 2 ist nur gezeigt und beschrieben, Verbesserungsvorschläge des Nutzers stehen noch aus.
