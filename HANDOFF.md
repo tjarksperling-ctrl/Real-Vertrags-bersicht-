@@ -115,7 +115,7 @@ Konkret unübersichtlich:
 ## Fortschritt
 | Bild | Status | Offene Punkte |
 |---|---|---|
-| 1 Startseite | v2 gezeigt (`mockups/bilder/1-start-v2.png`), Freigabe ausstehend | Umgesetzt: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start (nur im Kunden, Datei auf Kunde ziehen, oder über „Neuer Kunde“) · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · „Zuletzt bearbeitet“ als Liste · unklare Zahlen an Kunden entfernt. Seitenleiste v2 (`sidebar(v2=True)`) später auf die anderen Seiten übertragen. |
+| 1 Startseite | v3 gezeigt (`mockups/bilder/1-start-v3.png`), Freigabe ausstehend | v3: Anpinnen von 3–5 Übersichten (Karten auf Start + Abschnitt „Angepinnt“ in der Seitenleiste, Anpinnen per Knopf in „Zuletzt bearbeitet“/Kunden-Toolbar/Rechtsklick), Aufgaben mit Sprung „Übersicht öffnen ›“. v2: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start (nur im Kunden, Datei auf Kunde ziehen, oder über „Neuer Kunde“) · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · „Zuletzt bearbeitet“ als Liste · unklare Zahlen an Kunden entfernt. Seitenleiste v2 (`sidebar(v2=True)`) später auf die anderen Seiten übertragen. |
 | 2 Aktuell | offen | – |
 | 3 Neu | offen | – |
 | 4 Nebeneinander | offen | – |

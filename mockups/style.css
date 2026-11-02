@@ -354,3 +354,52 @@ table.vt th.num, table.pt th.num, table.review th.num { text-align: right; }
 .diff0 { font-size: 12px; color: var(--faint); }
 .content.start .section-title .btn.ghost { font-size: 13px; }
 .crow .cmain small { white-space: nowrap; }
+/* v3: Anpinnen + Sprung aus Aufgaben */
+.trow .go { display: grid; place-items: center; color: var(--faint); margin-left: -2px; }
+.trow .go.on { display: inline-flex; align-items: center; gap: 2px; background: var(--accent); color: #fff; border-radius: 7px; padding: 4px 6px 4px 10px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.trow .go.on svg.i { width: 14px; height: 14px; }
+.trow.hover { background: #f7faff; }
+.trow.hover .tside .prio { display: none; }
+.trow.hover .kunde { color: var(--accent); }
+svg.pin-t { width: 15px; height: 15px; color: var(--muted); }
+.section-title .hdr-note { margin-left: 2px; }
+.pins { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pcard { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 11px 14px; display: flex; flex-direction: column; gap: 8px; }
+.pcard .ptop { display: flex; align-items: center; gap: 10px; }
+.pcard .ptop > .avatar { width: 30px; height: 30px; }
+.pcard .cmain { flex: 1; min-width: 0; }
+.pcard .cmain b { display: block; font-size: 14.5px; font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pcard .cmain small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 11.5px; white-space: nowrap; }
+.pcard .live { display: inline-flex; align-items: center; gap: 5px; color: var(--orange); font-weight: 500; }
+.pcard .live .avatar { width: 15px; height: 15px; font-size: 7px; }
+.pcard svg.pin { width: 15px; height: 15px; color: var(--accent); fill: var(--accent-soft); align-self: flex-start; }
+.pcard .pvals { display: flex; align-items: flex-end; justify-content: space-between; }
+.pcard .pvals small { display: block; font-size: 11px; color: var(--muted); }
+.pcard .pvals b { font-size: 15px; font-weight: 650; font-variant-numeric: tabular-nums; }
+.pcard .pfoot { border-top: 1px solid var(--line-soft); padding-top: 7px; font-size: 12px; color: var(--muted); }
+.pt.over { color: var(--red); font-weight: 600; } .pt.today { color: var(--orange); font-weight: 600; }
+.crow { padding: 10px 14px; }
+.crow.hover { background: #f7faff; }
+.pinbtn { display: grid; place-items: center; width: 22px; color: transparent; }
+.pinbtn.on { display: inline-flex; width: auto; gap: 4px; color: var(--accent); font-size: 12px; font-weight: 600; white-space: nowrap; border: 1px solid var(--accent); border-radius: 7px; padding: 3px 8px; background: #fff; }
+.pinbtn svg.i { width: 13px; height: 13px; }
+.crow.hover .cdiff { display: none; }
+.pcard { gap: 9px; }
+.pcard .pvals { align-items: center; gap: 8px; }
+.pcard .pvals .spacer { flex: 1; }
+.pt { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.pt svg.i { width: 13px; height: 13px; }
+.pcard { gap: 9px; }
+.pcard .pvals { align-items: center; gap: 8px; justify-content: flex-start; }
+.pcard .pvals .spacer { flex: 1; }
+.pt { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.pt svg.i { width: 13px; height: 13px; }
+.pcard .pvals b { font-size: 14.5px; white-space: nowrap; }
+.pcard .pvals .badge { white-space: nowrap; }
+.crow { position: relative; }
+.pinbtn { display: none; }
+.pinbtn.on { display: inline-flex; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+.crow.hover .cdiff { display: block; visibility: hidden; }
+.grid-start { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+.crow .cdiff { width: 96px; }
+.pins { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }

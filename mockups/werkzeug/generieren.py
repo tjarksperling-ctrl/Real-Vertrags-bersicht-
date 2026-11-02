@@ -43,6 +43,8 @@ P = {
  'chat': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
  'ext': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
  'flag': '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
+ 'pin': '<path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>',
+ 'chev': '<path d="m9 18 6-6-6-6"/>',
  'user': '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 }
 def ic(n, cls='i'):
@@ -272,6 +274,12 @@ def sidebar(sel='Familie Berger', v2=False):
     for n, k, a, badge in KUNDEN:
         b = f'<span class="badge orange">{badge}</span>' if badge and not v2 else ''
         li += f'<li class="{"sel" if n == sel else ""}"><span class="avatar {a}">{k}</span>{n}{b}</li>'
+    kunden_titel = 'Kunden'
+    if v2:  # angepinnte Übersichten oben, Rest darunter
+        mk = lambda n, k, a: f'<li class="{"sel" if n == sel else ""}"><span class="avatar {a}">{k}</span>{n}</li>'
+        pin_li = ''.join(mk(n, k, a) for n, k, a, _ in KUNDEN if n in PINNED)
+        li = ''.join(mk(n, k, a) for n, k, a, _ in KUNDEN if n not in PINNED)
+        kunden_titel = 'Angepinnt</div><ul class="nav" style="flex:none">' + pin_li + '</ul><div class="nav-title">Alle Kunden'
     return f'''<aside class="sidebar">
   <div class="top">
     <div class="search">{ic("search")} Kunde suchen <kbd>Strg K</kbd></div>
@@ -279,7 +287,7 @@ def sidebar(sel='Familie Berger', v2=False):
   </div>
   <div class="nav-title" style="display:flex">Start</div>
   <ul class="nav" style="flex:none"><li class="{"sel" if sel == "start" else ""}">{ic("home")} Übersicht</li><li>{ic("tasks")} Aufgaben <span class="badge orange">{"3" if v2 else "2"}</span></li></ul>
-  <div class="nav-title">Kunden</div>
+  <div class="nav-title">{kunden_titel}</div>
   <ul class="nav">{li}</ul>
   <div class="bottom">
     <div class="row">{ic("cloud")} OneDrive · synchronisiert <span class="dot" style="margin-left:auto"></span></div>
@@ -329,7 +337,10 @@ def side_body():
 
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
-# nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert.
+# nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert,
+# v3: angepinnte Übersichten (max. 5), Aufgaben mit direktem Sprung in die Übersicht.
+PINNED = ['Familie Berger', 'Thomas Brandt', 'Jonas & Mira Albers', 'Elif Yılmaz']
+
 def start_body():
     links = [('Outlook', 'mail', 'App', '#0a64d0'), ('Teams', 'chat', 'App', '#4b53bc'), ('Kalender', 'calendar', 'App', '#d63a5a'),
              ('Maklerportal', 'globe', 'maklerportal.de', '#5e5ce6'), ('Vergleichsrechner', 'calc', 'vergleich.de', '#c77800'),
@@ -337,12 +348,13 @@ def start_body():
     lh = ''.join(f'<div class="lnk"><span class="sym" style="color:{c};background:{c}14">{ic(i)}</span><div><b>{n}</b><small>{t}</small></div>{ic("ext", "i ext")}</div>' for n, i, t, c in links)
     lh += f'<div class="lnk add"><span class="sym">{ic("plus")}</span><div><b>Link hinzufügen</b><small>App oder Webseite</small></div></div>'
 
-    def trow(kunde, kz, av, text, due, cls, prio=False):
+    def trow(kunde, kz, av, text, due, cls, prio=False, hover=False):
         p = f'<span class="prio">{ic("flag")} Hoch</span>' if prio else ''
-        return (f'<div class="trow"><span class="box"></span><div class="tmain"><div class="kunde"><span class="avatar {av}">{kz}</span>{kunde}</div>'
-                f'<div class="ttext">{text}</div></div><div class="tside">{p}<span class="due {cls}">{due}</span></div></div>')
+        go = (f'<span class="go on">Übersicht öffnen {ic("chev")}</span>' if hover else f'<span class="go">{ic("chev")}</span>')
+        return (f'<div class="trow{" hover" if hover else ""}"><span class="box"></span><div class="tmain"><div class="kunde"><span class="avatar {av}">{kz}</span>{kunde}</div>'
+                f'<div class="ttext">{text}</div></div><div class="tside">{p}<span class="due {cls}">{due}</span></div>{go}</div>')
     groups = [('Überfällig', 'rot', [trow('Familie Berger', 'FB', 'a1', 'Kfz-Angebot senden', 'seit 2 Tagen', 'over', True)]),
-              ('Heute', 'orange', [trow('Thomas Brandt', 'TB', '', 'Unterlagen BU-Antrag anfordern', 'heute', 'today', True),
+              ('Heute', 'orange', [trow('Thomas Brandt', 'TB', '', 'Unterlagen BU-Antrag anfordern', 'heute', 'today', True, hover=True),
                                    trow('Lea Nowak', 'LN', 'a3', 'Rückruf wegen Bausparvertrag', 'heute', 'today')]),
               ('Diese Woche', '', [trow('Jonas & Mira Albers', 'JA', 'a4', 'Termin Baufinanzierung vorbereiten', 'Do, 05.11.', ''),
                                    trow('Elif Yılmaz', 'EY', 'a5', 'Hausrat-Angebot nachfassen', 'Fr, 06.11.', '')])]
@@ -351,17 +363,26 @@ def start_body():
         tk += f'<div class="tgroup {c}"><span>{g}</span><em>{len(rows)}</em></div>' + ''.join(rows)
     tk += '<div class="tmore">Später: 2 weitere Aufgaben anzeigen</div>'
 
-    cards = [('Familie Berger', 'FB', 'a1', '<span class="live"><span class="avatar a2">SK</span>Sabine K. ist gerade drin</span>', GA, GN),
-             ('Lea Nowak', 'LN', 'a3', 'heute, 09:12 · Tjark S.', 84730, 79910),
-             ('Andreas Köhler', 'AK', 'a2', 'gestern · Sabine K.', 31240, 31240),
-             ('Thomas Brandt', 'TB', '', '29.10. · Tjark S.', 152900, 148320),
-             ('Katharina Vogt', 'KV', 'a3', '27.10. · Tjark S.', 46815, 46815)]
+    pins = [('Familie Berger', 'FB', 'a1', GA, GN, '<span class="live"><span class="avatar a2">SK</span>Sabine K. ist gerade drin</span>', ('over', 'überfällig')),
+            ('Thomas Brandt', 'TB', '', 152900, 148320, '29.10. · Tjark S.', ('today', 'heute fällig')),
+            ('Jonas & Mira Albers', 'JA', 'a4', 241560, 238810, '26.10. · Sabine K.', ('', 'Do, 05.11.')),
+            ('Elif Yılmaz', 'EY', 'a5', 38950, 36120, '22.10. · Tjark S.', ('', 'Fr, 06.11.'))]
+    ph = ''
+    for n, k, a, ga, gn, meta, (tc, tt) in pins:
+        ph += (f'<div class="pcard"><div class="ptop"><span class="avatar {a}">{k}</span><div class="cmain"><b>{n}</b><small>{meta}</small></div>{ic("pin", "i pin")}</div>'
+               f'<div class="pvals"><b>{eur(gn)}</b><span class="badge green">{eur(gn - ga, True)}</span><span class="spacer"></span>'
+               f'<span class="pt {tc}">{ic("tasks")} {tt}</span></div></div>')
+
+    recent = [('Lea Nowak', 'LN', 'a3', 'heute, 09:12 · Tjark S.', 84730, 79910, True),
+              ('Andreas Köhler', 'AK', 'a2', 'gestern · Sabine K.', 31240, 31240, False),
+              ('Katharina Vogt', 'KV', 'a3', '27.10. · Tjark S.', 46815, 46815, False)]
     ch = ''
-    for n, k, a, meta, ga, gn in cards:
+    for n, k, a, meta, ga, gn, hov in recent:
         d = gn - ga
         dd = f'<span class="badge green">{eur(d, True)}</span>' if d < 0 else '<span class="diff0">gleich</span>'
-        ch += (f'<div class="crow"><span class="avatar {a}">{k}</span><div class="cmain"><b>{n}</b><small>{meta}</small></div>'
-               f'<div class="cval"><small>Aktuell</small>{eur(ga)}</div><div class="cval"><small>Neu</small>{eur(gn)}</div><div class="cdiff">{dd}</div></div>')
+        pin = f'<span class="pinbtn on">{ic("pin")} Anpinnen</span>' if hov else f'<span class="pinbtn">{ic("pin")}</span>'
+        ch += (f'<div class="crow{" hover" if hov else ""}"><span class="avatar {a}">{k}</span><div class="cmain"><b>{n}</b><small>{meta}</small></div>'
+               f'<div class="cval"><small>Aktuell</small>{eur(ga)}</div><div class="cval"><small>Neu</small>{eur(gn)}</div><div class="cdiff">{dd}</div>{pin}</div>')
 
     body = (f'<div class="toolbar start"><div><h1>Guten Morgen, Tjark</h1><div class="datum">Montag, 2. November 2026</div></div></div>'
             f'<div class="content narrow start">'
@@ -369,7 +390,8 @@ def start_body():
             f'<div class="links">{lh}</div>'
             f'<div class="grid-start">'
             f'<div><div class="section-title">Aufgaben<span class="spacer"></span><span class="btn ghost" style="padding:0">{ic("plus")} Aufgabe</span></div><div class="panel">{tk}</div></div>'
-            f'<div><div class="section-title">Zuletzt bearbeitet<span class="spacer"></span><span class="hdr-note">Beitrag pro Monat</span></div><div class="panel">{ch}</div></div>'
+            f'<div><div class="section-title">{ic("pin", "i pin-t")} Angepinnt<span class="hdr-note">4 von 5</span><span class="spacer"></span><span class="hdr-note">Neu pro Monat</span></div><div class="pins">{ph}</div>'
+            f'<div class="section-title" style="margin-top:18px">Zuletzt bearbeitet<span class="spacer"></span><span class="hdr-note">Beitrag pro Monat</span></div><div class="panel">{ch}</div></div>'
             f'</div></div>')
     return sidebar('start', v2=True) + f'<main class="main">{body}</main>'
 
