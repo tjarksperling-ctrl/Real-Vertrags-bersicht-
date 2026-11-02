@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 23) · Branch `claude/cleanup-gap-list-phase-3-2hyoia` (übernommen von `claude/beautiful-ramanujan-om0g1n`) · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
+**Stand:** 02.11.2026 (Sitzung 24) · Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 M1: Vorschlag Projektstruktur + Datenmodell vorgelegt, wartet auf Freigabe** (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -172,6 +172,18 @@ Konkret unübersichtlich:
 - Übernimm meine Vorschläge, ergänze eigene Verbesserungsvorschläge (Übersichtlichkeit, fehlende Funktionen aus Punkt 2) und zeige das überarbeitete Bild.
 - Erst wenn ich das Bild freigebe, geh zum nächsten.
 - Halte den Fortschritt (freigegebene Bilder, offene Punkte) laufend in HANDOFF.md fest.
+
+## Phase 4 – Fortschritt
+| Meilenstein | Status |
+|---|---|
+| 1 Datenmodell & Berechnungen + Tests | ◐ Sitzung 24: Vorschlag Projektstruktur + Datenmodell vorgelegt, **wartet auf Freigabe** (noch kein Code) |
+| 2 Editor · 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
+
+**Vorschlag M1 (Sitzung 24, zur Freigabe):**
+- Struktur: `package.json`, `tsconfig.json`, `vitest.config.ts`; `src/shared/` reine Logik ohne Electron/React (`modell/` Typen, IDs, Standard-Vorlagen; `rechnen/` Geld/Cent, Zahlweise, Summen, Vorteile; `fassung/` Neu als Kopie von Aktuell mit `quelleId`); `src/main/` (Electron, ab M2), `src/renderer/` (React, ab M2). Tests neben dem Code (`*.test.ts`). M1-Abhängigkeiten nur `typescript` + `vitest` (dev).
+- Abweichungen zu PLAN.md Abschnitt 3: kein Feld `reihenfolge` (Position im Array = Reihenfolge, passt zu Yjs) · `Fassung.bereiche` als feste Zuordnung VERS/SPAR/DARL/AV statt Liste · zusätzlich `Uebersicht.titel?`, `ersparnisAnzeigen`, Aufgabe mit Priorität/Zuständig/Bezug/Outlook-Erinnerung (Bild 9), Einstellungen mit Darstellung, PDF-Passwort-Standard, Aufbewahrung 10 Jahre, angepinnt (max. 4).
+- Leeres Betragsfeld = `null` (zählt als 0). Wertentwicklung darf negativ sein. Zinsbindung `JJJJ-MM` (Anzeige MM/JJJJ), AV-Laufzeit `JJJJ-MM-TT`.
+- Rundung: offen (Rückfrage an den Nutzer, Empfehlung „sichtbar stimmig“).
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |
