@@ -351,14 +351,14 @@ def spaltenkopf_v1(typ):
     th = ''.join(f'<th class="{"num" if len(c) > 2 else ""}">{c[0]}</th>' for c in COLS[typ])
     return f'<div class="spaltenkopf"><table class="vt">{colgroup_v1(typ)}<thead><tr><th class="g"></th>{th}</tr></thead></table></div>'
 
-def table_v1(typ, ug, focus=None):
+def table_v1(typ, ug, focus=None, mark=False):
     cols = COLS[typ]
     h = f'<table class="vt">{colgroup_v1(typ)}<tbody>'
     for v in ug['v']:
         fr = focus == v['n']
         h += f'<tr class="{"focus" if fr else ""}"><td class="g grip">{ic("grip")}</td>'
         h += f'<td class="vname"><span class="edit-cell">{v["n"]}</span></td><td class="bem"><span class="edit-cell">{v["b"]}</span></td>'
-        for c, val in zip(cols[2:], cells(typ, v, True, False)):
+        for c, val in zip(cols[2:], cells(typ, v, True, mark)):
             if c[0] == 'Zahlweise':
                 menu = ''
                 if fr:
@@ -371,7 +371,7 @@ def table_v1(typ, ug, focus=None):
         h += '</tr>'
     return h + '</tbody></table>'
 
-def bereich_v1(b, i, focus=None):
+def bereich_v1(b, i, focus=None, other=None):
     t = b['typ']; title = META[t][0]
     h = (f'<section class="bereich v1 {FARBE[t]}"><header class="bereich-kopf"><span class="nr">{i+1}</span><h2>{title}</h2>'
          f'<span class="spacer"></span><button class="btn icon ghost" title="Bereich umbenennen, ausblenden …">{ic("more")}</button></header>')
@@ -379,11 +379,11 @@ def bereich_v1(b, i, focus=None):
     for ug in b['ug']:
         h += (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(ug["icon"])}</span>'
               f'<span class="name">{ug["name"]}</span><span class="ug-more">{ic("more")}</span></div>')
-        h += table_v1(t, ug, focus)
+        h += table_v1(t, ug, focus, mark=other is not None)
         h += (f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span>'
               f'<span class="summe"><small>{ug_label(t)} / Monat</small> {eur(ug_monat(t, ug))}</span></div></div>')
     h += f'<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
-    h += f'<footer class="bereich-summe v1"><span class="bs-label">Summe {title}</span><span class="spacer"></span>{summen_html(b)}</footer></section>'
+    h += f'<footer class="bereich-summe v1"><span class="bs-label">Summe {title}</span><span class="spacer"></span>{summen_html(b, other)}</footer></section>'
     return h
 
 def toolbar_v1(mode='Aktuell'):
@@ -400,15 +400,22 @@ def toolbar_v1(mode='Aktuell'):
   <button class="btn icon" title="Weitere: KI-Import, Umbenennen, Duplizieren">{ic("more")}</button>
 </div>'''
 
-def bereichsleiste_v1(nur=None):
+def bereichsleiste_v1(nur=None, g=None):
     h = f'<span class="bl-item bl-gesamt{" on" if not nur else ""}">{ic("columns")}Gesamt</span><span class="bl-sep"></span>'
     for b in AKTUELL:
         t = b['typ']
         h += (f'<span class="bl-item {FARBE[t]}{" on" if nur == t else ""}"><span class="chk" title="Bereich an-/abwählen">{ic("check")}</span>'
               f'{META[t][0]}</span>')
-    return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA)}</b></div></div>'
+    return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA if g is None else g)}</b></div></div>'
 
-def editor_v1(nur=None):
+def editor_v1(nur=None, mode='Aktuell'):
+    if mode == 'Neu':  # Bild 3, Sitzung 8: Ausgangsstand = v2-Bausteine aus Bild 2 + bisherige Neu-Markierungen
+        bs = ''.join(bereich_v1(b, i, other=AKTUELL[i]) for i, b in enumerate(NEU) if not nur or b['typ'] == nur)
+        hint = f'<div class="hint">{ic("info")} Geänderte Werte sind mit einem blauen Punkt markiert, der vorherige Wert steht klein darunter (nur in der App, nicht im PDF).</div>'
+        gz = '' if nur else (f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><span class="spacer"></span>'
+                             f'<div class="neben">Aktuell {eur(GA)}<br><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b></div><b>{eur(GN)}</b></div>' + vorteile_html())
+        return (sidebar('Familie Berger', v2=True) +
+                f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="content narrow">{hint}{bs}{gz}</div></main>')
     bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
@@ -660,7 +667,7 @@ files = {
  'kunde.html': page('Kundenakte', kunde_body()),
  'aktuell.html': page('Aktuell', editor_v1()),
  'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
- 'neu.html': page('Neu', editor_body('Neu')),
+ 'neu.html': page('Neu', editor_v1(mode='Neu')),
  'nebeneinander.html': page('Nebeneinander', side_body()),
  'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
  'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),

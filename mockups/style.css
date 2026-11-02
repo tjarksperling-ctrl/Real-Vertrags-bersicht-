@@ -547,3 +547,6 @@ td.zw { position: relative; }
 .crumb h1 .avatar.live { width: 18px; height: 18px; font-size: 8px; }
 .toolbar.v1 { gap: 7px; padding: 9px 16px; }
 .toolbar.v1 .crumb h1 { font-size: 16.5px; } .toolbar.v1 .switch.sync { margin-left: 2px; gap: 6px; }
+/* Bild 3 v1 (Sitzung 8): Neu im v2-Design */
+.gesamt.v1 .neben { margin-right: 22px; font-size: 12px; }
+.gesamt.v1 .neben b { font-size: 13px; font-weight: 600; letter-spacing: 0; }
