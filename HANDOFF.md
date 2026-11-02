@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 · Branch `claude/adoring-sagan-i8w0t7` (übernommen von `claude/laughing-johnson-xm4jsw`) · Phase 3 (Mockups) **in Überarbeitung**
+**Stand:** 02.11.2026 · Branch `claude/adoring-sagan-i8w0t7` (übernommen von `claude/laughing-johnson-xm4jsw`) · Phase 3 (Mockups) **in Überarbeitung**, aktuell Bild 1 (Startseite) v3
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -50,8 +50,8 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | KI-Konto (frei wählbar, jederzeit änderbar) verknüpfen | ❌ |
 | KI analysiert Unterlagen (PDF/Scans), füllt „Aktuell“ vor, Ergebnis vor Übernahme prüfbar | ✅ |
 | Unterlagen nur auswerten, nicht archivieren | ✅ (Hinweis im Dialog) |
-| Schnellstart: 5–8 frei konfigurierbare Links zu Apps/Webseiten | ◐ Kacheln ja, Konfiguration fehlt |
-| Aufgaben (To-dos) je Vertragsübersicht mit Fälligkeitsdatum | ◐ Liste auf Startseite, Aufgaben je Übersicht/Anlegen fehlt |
+| Schnellstart: 5–8 frei konfigurierbare Links zu Apps/Webseiten | ◐ Bild 1 v3: Symbol-Kacheln mit App/Domain + „Anpassen“, Einstellungsdialog fehlt |
+| Aufgaben (To-dos) je Vertragsübersicht mit Fälligkeitsdatum | ◐ Bild 1 v3: nach Dringlichkeit gruppiert, Priorität, Sprung in die Übersicht. Aufgaben je Übersicht/Anlegen-Dialog fehlt |
 | Outlook einfach mit bestehendem Konto verknüpfen | ❌ |
 | E-Mails mit PDF aus der App senden, Anhang optional | ✅ |
 | Datenschutz/DSGVO (Speicherung, Zugriff, KI) | ◐ im Plan; im Layout nur KI-Hinweis |
@@ -60,7 +60,7 @@ Hinweis: Der Originalwortlaut des Briefings stammt aus einer früheren Sitzung. 
 | Automatische Updates, Mac-Version | – (kein Layout nötig) |
 
 **Eigene Vorschläge aus dem Plan (freigegeben)**
-Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ · Rückgängig ❌ · „Neu aus Aktuell kopieren“ ❌ · Hell/Dunkel ❌ · Tastatursteuerung ❌
+Kundensuche Strg+K ✅ · „Wer ist gerade hier“ ✅ · Übersichten anpinnen (3–5, Wunsch Sitzung 3) ◐ in Überarbeitung · Rückgängig ❌ · „Neu aus Aktuell kopieren“ ❌ · Hell/Dunkel ❌ · Tastatursteuerung ❌
 
 **Ganz fehlende Screens:** Einstellungen (KI-Konto, Outlook, OneDrive-Ordner, Schnellstart), Aufgaben je Übersicht, Stand einfrieren/Datei öffnen, Neuer Kunde + Vorlagen, Untergruppe/Vertrag bearbeiten (Symbol, Zahlweise, AV-Art).
 
@@ -69,7 +69,7 @@ Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit ei
 
 | Nr | Bild | Datei |
 |---|---|---|
-| 1 | Startseite (Schnellstart, zuletzt bearbeitet, fällige Aufgaben) | `mockups/start.html` |
+| 1 | Startseite v3 (Schnellstart, Aufgaben, Angepinnt, zuletzt bearbeitet) | `mockups/start.html` · Bilder `mockups/bilder/1-start-vorher.png`, `-v2.png`, `-v3.png` |
 | 2 | Übersicht „Aktuell“ bearbeiten | `mockups/aktuell.html` |
 | 3 | Übersicht „Neu“ (Änderungen markiert, Vorteile) | `mockups/neu.html` |
 | 4 | Aktuell und Neu nebeneinander | `mockups/nebeneinander.html` |
@@ -79,10 +79,14 @@ Technik: statisches HTML + gemeinsames CSS, **erzeugt per Python-Skript** mit ei
 
 - Einstieg: `mockups/index.html` · Design: `mockups/style.css`
 - Generator: `mockups/werkzeug/generieren.py` → **Seiten nur dort ändern**, dann `python3 mockups/werkzeug/generieren.py mockups`
-- Bilder zum Zeigen im Chat: `mockups/bilder/` (z. B. `1-start-vorher.png`)
+- Bilder zum Zeigen im Chat: `mockups/bilder/<nr>-<name>-v<n>.png`, nur die eine Seite fotografieren (Playwright, Fenster 1488×900, `file://…/mockups/start.html`) und per Datei-Versand zeigen
+- Startseite: `start_body()` + Konstante `PINNED` im Generator; Seitenleiste neu über `sidebar(sel, v2=True)` (Abschnitte „Angepinnt“/„Alle Kunden“, keine Zahlen an Kunden). CSS-Blöcke „Startseite v2“ und „v3“ am Ende von `style.css`. Alte Seiten nutzen noch `sidebar()` ohne v2
 - Bilder/PDF: `node mockups/werkzeug/pdf-und-screenshots.js <ordner>` (Fenster 1488×900; Pfad zum Repo ist im Skript fest eingetragen)
 
 ## 4. Bekannte Probleme
+**Startseite (Bild 1, v3), offen:** Dem Nutzer gefällt das **Anpinnen noch nicht ganz**, es soll überarbeitet werden. Was genau stört, ist noch nicht gesagt. Zuerst nachfragen. Mögliche Ansatzpunkte: Doppelung Karten (Start) + Abschnitt in der Seitenleiste, Platz der 2×2-Karten rechts neben den Aufgaben, Inhalt der Karten (Neu/Monat, Ersparnis, nächste Aufgabe), Bedienung des Anpinnens (Knopf beim Darüberfahren, Rechtsklick), Grenze 5. Der Rest von Bild 1 (Schnellstart, ein „Neuer Kunde“, Aufgaben-Gruppierung, „Übersicht öffnen“) hat kein neues Feedback bekommen.
+
+**Ursprüngliche Kritik an allen Layouts:**
 Feedback des Nutzers: **zu unübersichtlich, nicht alle gewünschten Funktionen enthalten** (fehlende Funktionen siehe Abschnitt 2, ◐/❌).
 Konkret unübersichtlich:
 - **Editor (Bild 2/3):** sehr lange Scrollseite, alle 4 Bereiche untereinander. Gesamtsumme nur ganz unten, beim Bearbeiten nicht sichtbar. Keine Navigation zwischen Bereichen.
@@ -101,7 +105,10 @@ Konkret unübersichtlich:
 - HANDOFF.md lag zunächst auf einem anderen Branch (`claude/bold-curie-qxr2wd`). Er wurde in den Arbeitsbranch übernommen.
 - Erste Mockup-Fassung hatte Darstellungsfehler: Toolbar lief über, Änderungspunkt überdeckte Zahlen, Knopf im Export-Dialog abgeschnitten, Spalten im KI-Dialog schlecht verteilt, AV-Laufzeit ragte im PDF über den Rand, Betragsüberschriften falsch ausgerichtet. Alles behoben, aber Toolbar-Platz bleibt knapp.
 - Sitzung 3 startete auf einem leeren Branch (`claude/adoring-sagan-i8w0t7`). Stand per Fast-Forward von `claude/laughing-johnson-xm4jsw` übernommen.
-- Die Auswahl-Rückfrage zur Mockup-Freigabe wurde vom Nutzer geschlossen. Feedback kam stattdessen als Text.
+- Die Auswahl-Rückfrage zur Mockup-Freigabe wurde vom Nutzer geschlossen. Feedback kam stattdessen als Text. Deshalb Verbesserungsvorschläge als offene Textfrage stellen.
+- Generator-Änderungen per Python-Heredoc mit `f'''…'''` brechen (verschachtelte Anführungszeichen). Besser: neuen Funktionstext in eine Datei im Scratchpad schreiben und einsetzen, oder das Edit-Werkzeug nutzen.
+- Startseite war in v3 zunächst zu hoch für 900 px (rechte Spalte lief über). Gelöst mit kompakten Pin-Karten (eine Zeile mit Betrag, Ersparnis und nächster Aufgabe) und `minmax(0,1fr)`-Spalten.
+- Entscheidung Sitzung 3: KI-Import nicht auf der Startseite, weil der Kunde dort nicht eindeutig ist (die KI kennt den Namen nicht). Wege: KI-Import in der Kundenübersicht, Datei auf Kunden in der Seitenleiste ziehen oder „Neuer Kunde“ → „Mit Unterlagen starten“.
 
 ## 6. Arbeitsweise für die neue Sitzung (verbindlich)
 - Gehe die Layouts Bild für Bild durch, immer nur EIN Bild pro Schritt (Reihenfolge: Tabelle Abschnitt 3, danach die fehlenden Screens aus Abschnitt 2).
@@ -115,7 +122,7 @@ Konkret unübersichtlich:
 ## Fortschritt
 | Bild | Status | Offene Punkte |
 |---|---|---|
-| 1 Startseite | v3 gezeigt (`mockups/bilder/1-start-v3.png`), Freigabe ausstehend | v3: Anpinnen von 3–5 Übersichten (Karten auf Start + Abschnitt „Angepinnt“ in der Seitenleiste, Anpinnen per Knopf in „Zuletzt bearbeitet“/Kunden-Toolbar/Rechtsklick), Aufgaben mit Sprung „Übersicht öffnen ›“. v2: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start (nur im Kunden, Datei auf Kunde ziehen, oder über „Neuer Kunde“) · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · „Zuletzt bearbeitet“ als Liste · unklare Zahlen an Kunden entfernt. Seitenleiste v2 (`sidebar(v2=True)`) später auf die anderen Seiten übertragen. |
+| 1 Startseite | **v3 gezeigt, NICHT freigegeben.** Anpinnen soll überarbeitet werden (siehe Abschnitt 4) | v3: Anpinnen von 3–5 Übersichten (Karten „Angepinnt 4 von 5“ rechts auf Start + Abschnitt „Angepinnt“ in der Seitenleiste; Anpinnen per Knopf beim Darüberfahren in „Zuletzt bearbeitet“, Rechtsklick, später Stecknadel in der Kunden-Toolbar; angepinnte nicht doppelt in „Zuletzt bearbeitet“), Aufgaben mit Pfeil › bzw. „Übersicht öffnen ›“. v2: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · Begrüßung + Datum statt Toolbar · unklare Zahlen an Kunden entfernt. Seitenleiste v2 später auf die anderen Seiten übertragen. |
 | 2 Aktuell | offen | – |
 | 3 Neu | offen | – |
 | 4 Nebeneinander | offen | – |
@@ -124,4 +131,4 @@ Konkret unübersichtlich:
 | 7 PDF | offen | – |
 | neu: fehlende Screens | offen | siehe Abschnitt 2 |
 
-**Nächster Schritt:** Freigabe Bild 1 abwarten, danach Bild 2 (Aktuell). Kein App-Code vor Freigabe aller Mockups.
+**Nächster Schritt:** Bild 1 v3 zeigen (`mockups/bilder/1-start-v3.png`), fragen, was am Anpinnen nicht gefällt, überarbeiten und als v4 zeigen. Nach Freigabe von Bild 1 weiter mit Bild 2 (Aktuell). Kein App-Code vor Freigabe aller Mockups.
