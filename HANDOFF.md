@@ -99,7 +99,6 @@ Konkret unübersichtlich:
 **Nicht funktioniert / Stolpersteine:**
 - HANDOFF.md lag zunächst auf einem anderen Branch (`claude/bold-curie-qxr2wd`). Er wurde in den Arbeitsbranch übernommen.
 - Erste Mockup-Fassung hatte Darstellungsfehler: Toolbar lief über, Änderungspunkt überdeckte Zahlen, Knopf im Export-Dialog abgeschnitten, Spalten im KI-Dialog schlecht verteilt, AV-Laufzeit ragte im PDF über den Rand, Betragsüberschriften falsch ausgerichtet. Alles behoben, aber Toolbar-Platz bleibt knapp.
-- Ein erster Ansatz, alle Screens auf einmal zu bauen und gesammelt zu zeigen, war zu viel auf einmal. Daher künftig Bild für Bild (Abschnitt 6).
 - Die Auswahl-Rückfrage zur Mockup-Freigabe wurde vom Nutzer geschlossen. Feedback kam stattdessen als Text.
 
 ## 6. Arbeitsweise für die neue Sitzung (verbindlich)
