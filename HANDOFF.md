@@ -198,6 +198,7 @@ Konkret unübersichtlich:
 - **Tastatur (Festlegung 6):** Enter/Tab/⇧Tab/Esc, Entf, Strg+Z/Y, Strg+/ Kürzel-Übersicht. Strg+K/P/1/2/3 folgen mit M3/M4.
 - **Nicht in M2:** Neu/Nebeneinander/Sync/Vorteile (M3), PDF (M4), Mehrbenutzer, Dateien, KI, Outlook, Aufgaben, Schnellstart (M5).
 - **Prüfung:** Vitest für die Editor-Befehle und Undo, Typprüfung, App per Playwright (Electron) starten und Screenshots gegen Bild 2/12/13 vergleichen.
+- **Entscheidungen Sitzung 25 (Auswahl-Rückfrage):** DARL-Rate mit **wählbarer Zahlweise** wie die anderen Bereiche (Mockup „mtl.“ = Anzeige der Zahlweise) · weitere Agentur-Vorlagen (Single & Berufsstart, Selbstständige, Ruhestand) **vorerst weglassen**, nur Agentur-Standard + Junge Familie · **Yjs von Anfang an**, lokal im Benutzerprofil · Einstellungsseite **„Allgemein“ schlicht mit M2** (Automatisch/Hell/Dunkel + Kürzelliste, Stil Bild 8).
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |
