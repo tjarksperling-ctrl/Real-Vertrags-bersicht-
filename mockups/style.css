@@ -1447,3 +1447,7 @@ td.v2-lz .edit-cell { display: block; }
 .sy-an svg.i { width: 14px; height: 14px; }
 .sy-diff { display: flex; justify-content: flex-end; align-items: center; gap: 6px; font-size: 11px; color: var(--orange); margin-top: 2px; white-space: nowrap; }
 .sy-mini { font-weight: 600; color: var(--accent); background: #eef5fd; border-radius: 5px; padding: 0 6px; }
+
+/* ---------- Bild 2 v3 (Sitzung 20): Leitlinie aus Bild 12 auf „Aktuell“ – keine weiße Zeile, kein weißes Auswahlfeld ---------- */
+.v2e .ug.v1 tr.focus td { background: transparent; }
+.v2e .zw-sel.open { box-shadow: none; background: transparent; color: var(--accent); }

@@ -408,7 +408,7 @@ def bereichsleiste_v1(nur=None, g=None):
               f'{META[t][0]}</span>')
     return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA if g is None else g)}</b></div></div>'
 
-def editor_v1(nur=None, mode='Aktuell', ersparnis=True):
+def editor_v1(nur=None, mode='Aktuell', ersparnis=True, leitlinie=False):
     if mode == 'Neu':  # Bild 3 v2 (Sitzung 8): Ersparnis optional (Schalter, gilt für App + PDF), ruhigere Markierungen, Änderungsleiste
         bs = ''.join(bereich_v1(b, i, other=AKTUELL[i] if ersparnis else None, mark=True) for i, b in enumerate(NEU) if not nur or b['typ'] == nur)
         n = sum(1 for b in NEU for ug in b['ug'] for v in ug['v'] if 'vorher' in v)
@@ -421,9 +421,12 @@ def editor_v1(nur=None, mode='Aktuell', ersparnis=True):
         return (sidebar('Familie Berger', v2=True) +
                 f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="content narrow neu2">{leiste}{bs}{gz}</div></main>')
     bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
+    cls = 'content narrow'
+    if leitlinie:  # Bild 2 v3 (Sitzung 20): Leitlinie aus Bild 12 – Mülleimer an Untergruppen, × an Verträgen, kein „…“ im Bereichskopf, keine weißen Felder
+        bs = v2_bereiche(bs); cls += ' ub v2e'
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
-            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow">{bs}{gz}</div></main>')
+            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="{cls}">{bs}{gz}</div></main>')
 
 # ---------------- Bild 4 v1 (Sitzung 9): Nebeneinander im freigegebenen Design aus Bild 2/3 ----------------
 # Inhalt wie bisher (Kompaktansicht, Bereiche paarweise auf gleicher Höhe), aber mit Kopfzeile v1, Bereichsleiste,
@@ -1767,8 +1770,8 @@ files = {
  'index.html': index_page(),
  'start.html': page('Startseite', start_body()),
  'kunde.html': page('Kundenakte', kunde_body()),
- 'aktuell.html': page('Aktuell', editor_v1()),
- 'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
+ 'aktuell.html': page('Aktuell', editor_v1(leitlinie=True)),
+ 'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL', leitlinie=True)),
  'neu.html': page('Neu', editor_v1(mode='Neu')),
  'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
