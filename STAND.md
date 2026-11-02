@@ -1,7 +1,7 @@
 # Projektstand – Vertragsübersicht (Desktop-App)
 
-**Aktueller Stand:** Phase 1 ✅ · Phase 2 (Plan) **erstellt → `PLAN.md`, wartet auf Freigabe**.
-**Nächster Schritt:** Freigabe + Entscheidungen zu PLAN.md einholen → Spezifikation kompakt in CLAUDE.md → Phase 3 (Mockups).
+**Aktueller Stand:** Phase 1 ✅ · Phase 2 ✅ freigegeben (`PLAN.md`) · Phase 3 (Mockups) in Arbeit.
+**Nächster Schritt:** Mockups in `/mockups` fertigstellen → STOPP, Feedback/Freigabe abwarten.
 
 > Fortsetzen in neuer Sitzung: „Lies HANDOFF.md und mach beim nächsten Schritt weiter."
 
@@ -60,7 +60,7 @@ Versicherungsagentur (Versicherungen, Investment, Finanzierungen). App erstellt 
 | 6 | E-Mail | Outlook, ganz einfach mit bestehendem Konto verknüpfbar; Anhang optional |
 | 7 | Branding | Neutral |
 | 8 | PDF-Kopf | Nur Kopfzeile: „Vertragsübersicht", Kundenname, Aktuell/Neu, Datum. Kein Deckblatt, keine Fußzeile, keine Zusammenfassung, keine Unterschrift |
-| 9 | PDF „Beide" | Nacheinander (Aktuell, dann Neu) + Vergleichsseite optional zuschaltbar (Antwort „optimal" als „optional" interpretiert – kurz bestätigen lassen) |
+| 9 | PDF „Beide" | Nacheinander (Aktuell, dann Neu) + Vergleichsseite optional zuschaltbar (bestätigt) |
 | 10 | Darlehen Untergruppe | Nur Rate/Monat |
 | 11 | Altersvorsorge | Streng strukturiert: Leistung = Betrag + Art (Rente mtl./Kapital/Guthaben/Todesfall), Laufzeit = Enddatum |
 | 12 | Sparen | Kein „Stand vom", keine %-Anzeige |
@@ -68,6 +68,9 @@ Versicherungsagentur (Versicherungen, Investment, Finanzierungen). App erstellt 
 | 14 | Vorlagen | Standard-Untergruppen mit Symbolen, Autovervollständigung, eigene Vorlagen speichern |
 | 15 | Betrieb | Exportdateien optional verschlüsselt, automatische Updates, zusätzlich Mac-Version. (Kein Änderungsprotokoll gewählt) |
 
-## Offene Punkte für Phase 2
-- **Konflikt 1 ↔ 2:** OneDrive-Dateiablage erlaubt keine zuverlässige Live-Co-Bearbeitung → Lösung vorschlagen (z. B. Sync-Backend/CRDT mit EU-Hosting, OneDrive für Export-Dateien/Backup).
-- Frage 9 („optional") bestätigen.
+## Phase-2-Entscheidungen
+| Thema | Entscheidung |
+|---|---|
+| Technologie | Electron + React/TypeScript |
+| Mehrbenutzer | M2: nur OneDrive/SharePoint, Yjs-Änderungsdateien je Nutzer, nahezu live, kein Server |
+| Plan | PLAN.md vollständig freigegeben (inkl. Kann-Vorschläge) |

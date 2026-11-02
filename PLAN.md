@@ -1,6 +1,6 @@
 # Phase 2 – Plan: Vertragsübersicht (Desktop-App)
 
-**Status:** Entwurf · wartet auf Freigabe · Stand 02.11.2026
+**Status:** ✅ freigegeben 02.11.2026 · Entscheidungen: Electron · Mehrbenutzer **M2 (nur OneDrive)** · Vergleichsseite optional
 Grundlage: `STAND.md` (Briefing + 15 Entscheidungen aus Phase 1).
 
 ---
@@ -40,7 +40,7 @@ Wenn mehrere Personen gleichzeitig dieselbe Datei auf OneDrive speichern, entste
 | OneDrive-Rolle | Exportdateien + tägliches Backup | Hauptspeicher |
 
 Beide Varianten nutzen dasselbe Datenmodell (Yjs), daher ist ein späterer Wechsel M2 → M1 ohne Datenverlust möglich.
-**Empfehlung M1**, weil „live, auch am selben Kunden“ ausdrücklich gewünscht ist. **M2 ist eine gute Wahl**, wenn wenige Sekunden Verzögerung reichen und kein Server gewünscht ist.
+**Entschieden: M2 (nur OneDrive).** Umstieg auf M1 ist später ohne Datenverlust möglich.
 
 ## 3. Datenmodell (vereinfacht)
 
@@ -87,7 +87,7 @@ Felder je Bereich (Beträge intern als **ganze Cent**, nie Kommazahlen):
 ## 5. DSGVO-Konzept
 
 - **Datensparsamkeit:** Nur der Kundenname wird gespeichert. Unterlagen werden nur ausgewertet und danach verworfen.
-- **Speicherorte:** Microsoft 365 der Agentur (Export, Backup), dazu bei M1 ein Sync-Server in Deutschland. Verschlüsselte Übertragung (TLS), verschlüsselte Exportdateien optional.
+- **Speicherorte:** Ausschließlich Microsoft 365 der Agentur (SharePoint/OneDrive), kein weiterer Server. Verschlüsselte Übertragung (TLS), verschlüsselte Exportdateien optional.
 - **Zugriff:** Nur Konten der Agentur (Microsoft-Login). Lokaler Zwischenspeicher liegt im Benutzerprofil (Windows-Anmeldung schützt).
 - **KI:** Vor dem Senden wird der **Kundenname automatisch entfernt** (Pseudonymisierung). Empfehlung: Anbieter mit EU-Verarbeitung und AVV, ohne Training mit Kundendaten. Vor dem ersten KI-Import erscheint ein Hinweis.
 - **Löschen:** Kunde löschen entfernt alle Daten auf allen Geräten und dem Server. Backups rotieren nach 30 Tagen.
@@ -100,7 +100,7 @@ Felder je Bereich (Beträge intern als **ganze Cent**, nie Kommazahlen):
 - Alle Spalten und Summen laut Briefing, Einmalbeträge getrennt, Gesamt/Monat
 - Aktuell/Neu: einzeln und nebeneinander, Sync-Schalter
 - PDF: Aktuell / Neu / Beide (+ optionale Vergleichsseite), mehrzeilige Bemerkungen
-- Live-Mehrbenutzer (M1 oder M2), offlinefähig
+- Mehrbenutzer über OneDrive (M2, nahezu live), offlinefähig
 - Stand einfrieren als Datei, Doppelklick öffnet, mehrere Fenster
 - Vorteile-Abschnitt mit automatischer Ersparnis
 - Standard-Untergruppen, Autovervollständigung, eigene Vorlagen
@@ -118,7 +118,7 @@ Felder je Bereich (Beträge intern als **ganze Cent**, nie Kommazahlen):
 **Kann (eigene Vorschläge)**
 - **Rückgängig/Wiederholen** (Strg+Z), auch bei gemeinsamer Bearbeitung nur für eigene Änderungen
 - **Kundensuche** mit Schnellöffnen (Strg+K)
-- **„Wer ist gerade hier“-Anzeige** bei gleichzeitiger Bearbeitung (nur M1 in Echtzeit)
+- **„Wer ist gerade hier“-Anzeige** bei gleichzeitiger Bearbeitung (mit OneDrive-Verzögerung)
 - **Neu aus Aktuell kopieren**: ein Klick als Startpunkt für die Beratung
 - **Hell-/Dunkelmodus** (PDF bleibt immer hell)
 - **Tastatursteuerung** für schnelles Erfassen (Enter = nächste Zeile)
