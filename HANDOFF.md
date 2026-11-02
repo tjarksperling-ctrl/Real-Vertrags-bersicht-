@@ -177,7 +177,8 @@ Konkret unübersichtlich:
 | Meilenstein | Status |
 |---|---|
 | 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · ✅ **freigegeben** (Sitzung 24, „Freigeben“) |
-| 2 Editor · 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
+| 2 Editor | ◐ Aufbau vorgeschlagen (Sitzung 25), wartet auf Freigabe |
+| 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
 
 **Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
 - Struktur: `package.json`, `tsconfig.json`, `vitest.config.ts`; `src/shared/` reine Logik ohne Electron/React (`modell/` Typen, IDs, Standard-Vorlagen; `rechnen/` Geld/Cent, Zahlweise, Summen, Vorteile; `fassung/` Neu als Kopie von Aktuell mit `quelleId`); `src/main/` (Electron, ab M2), `src/renderer/` (React, ab M2). Tests neben dem Code (`*.test.ts`). M1-Abhängigkeiten nur `typescript` + `vitest` (dev).
@@ -240,6 +241,16 @@ Konkret unübersichtlich:
 **Vorheriger nächster Schritt (Sitzung 15):** Bild 10 ist freigegeben. KI-Konto gilt endgültig **je Benutzer**. Weiter mit **Bild 11 „Neuer Kunde + Vorlagen“** (Dialog „Neuer Kunde“: nur Name, Start leer / mit Vorlage / mit Unterlagen (KI); Vorlagen = Standard-Untergruppen mit Symbolen, eigene Vorlagen, Autovervollständigung von Vertragsnamen; ggf. Einstellungsseite „Vorlagen“ im Design von Bild 8). Danach: Untergruppe/Vertrag bearbeiten (Symbol, Zahlweise, AV-Art, umbenennen, löschen, Drag & Drop) · abgewählter Bereich. Kein App-Code vor Freigabe aller Mockups.
 
 **Vorheriger nächster Schritt (Sitzung 14):** Bild 9 ist freigegeben. Weiter mit **Bild 10 „Auf Desktop speichern“** (Dialog: Dateiname aus Muster `Kunde – Titel – Datum.vtue`, Ziel Desktop, optional Passwort/Verschlüsselung, laut Einstellung Speicherort aus Bild 8) **und Datei öffnen** (Doppelklick auf `.vtue` öffnet diesen Stand in der App, als gespeicherter Stand gekennzeichnet, ggf. Passwortabfrage; mehrere Dateien gleichzeitig offen), Einstieg über Knopf „Auf Desktop speichern“ in der Kopfzeile von Bild 2. Danach: „Auf Desktop speichern“ (+ Passwort) und Datei öffnen · Neuer Kunde + Vorlagen · Untergruppe/Vertrag bearbeiten · abgewählter Bereich. Kein App-Code vor Freigabe aller Mockups.
+
+**Meilenstein 2 – Vorschlag (Sitzung 25, wartet auf Freigabe, noch kein Code):**
+- Branch `claude/relaxed-meitner-3lp1le` (Stand von `claude/epic-hawking-njwxvq` per Fast-Forward übernommen, 88/88 grün).
+- **Grundgerüst:** Electron + React + TypeScript mit `electron-vite` (ein Build für main/preload/renderer). `src/main/` Fenster, Speichern im Benutzerprofil; `src/preload/` schmale, typisierte Brücke (`window.api`), Renderer ohne Node-Zugriff (contextIsolation an); `src/renderer/` React-Oberfläche, eigenes CSS mit Farb-Tokens aus den Mockups (hell/dunkel), Schrift Inter, Symbole Lucide.
+- **Neue Abhängigkeiten:** electron, electron-vite, react, react-dom, @dnd-kit/core + sortable, yjs, lucide-react, @fontsource/inter (+ Typen, @vitejs/plugin-react).
+- **Datenfluss:** eine Übersicht = ein Yjs-Dokument. Alle Änderungen laufen über Befehle in `src/shared/editor/` (rein, testbar: Untergruppe/Vertrag anlegen, ändern, löschen, verschieben, Bereich an/aus, Vorlage anwenden). Lesen: Yjs → einfache Objekte (Typen aus M1) → `berechneFassung` aus M1 → Anzeige. Rückgängig/Wiederholen über Y.UndoManager nur für eigene Änderungen (Festlegung 3). Speichern lokal als Yjs-Datei im Benutzerprofil, OneDrive-Abgleich erst M5 ohne Umbau.
+- **Komponenten (Bild 2, 11, 12, 13):** Kundenliste (schlicht) · Dialog „Neuer Kunde“ (Name + Dublettenprüfung, Titel, leer/mit Vorlage) · Editor: Kopfzeile, Bereichsleiste mit Kästchen + Gesamt, Bereich (Kopf mit Summen; abgewählt = graue Leiste mit „Wieder zuschalten“), Untergruppe (Symbol, Name, Mülleimer, Griff, Summe), Vertragszeile je Typ (direkt tippen ohne weiße Felder, ×, Griff, Zahlweise-Auswahl, AV-Art, Datum), „+ Vertrag“ / „+ Untergruppe hinzufügen“, Hinweis mit „Rückgängig“ · Vorschlagsliste beim Tippen (Autovervollständigung) · Einstellungen → Vorlagen.
+- **Tastatur (Festlegung 6):** Enter/Tab/⇧Tab/Esc, Entf, Strg+Z/Y, Strg+/ Kürzel-Übersicht. Strg+K/P/1/2/3 folgen mit M3/M4.
+- **Nicht in M2:** Neu/Nebeneinander/Sync/Vorteile (M3), PDF (M4), Mehrbenutzer, Dateien, KI, Outlook, Aufgaben, Schnellstart (M5).
+- **Prüfung:** Vitest für die Editor-Befehle und Undo, Typprüfung, App per Playwright (Electron) starten und Screenshots gegen Bild 2/12/13 vergleichen.
 
 ## Übergabeprotokoll Sitzung 7 (02.11.2026)
 - **Branch:** `claude/bild-2-uebersicht-aktuell-9fc3nh` (Stand von `claude/sleepy-hawking-ks7fp3` per Fast-Forward übernommen), alles committet und gepusht.
