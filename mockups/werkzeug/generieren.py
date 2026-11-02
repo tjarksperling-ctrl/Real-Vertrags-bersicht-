@@ -951,6 +951,58 @@ def schnellstart_overlay_v1():
             f'<span class="spacer"></span><button class="btn ghost">Agentur-Standard laden</button><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
     return einst_overlay_v1('Schnellstart', titel, inhalt, fuss)
 
+# ---------------- Bild 9 v1 (Sitzung 14): Aufgaben je Vertragsübersicht ----------------
+# Fehlender Screen aus Abschnitt 2. Knopf „Aufgaben“ in der Kopfzeile öffnet rechts ein Seitenfeld über der Übersicht
+# (Übersicht bleibt sichtbar). Oben „Aufgabe anlegen“ (Text, Fällig, Priorität, Zuständig, Bezug auf Vertrag, Outlook-Erinnerung),
+# darunter die offenen Aufgaben dieser Übersicht, gruppiert wie auf Startseite/Kundenakte. Verträge mit Aufgabe tragen ein Symbol.
+TEAM = [('TS', 'a4', 'Ich'), ('SK', 'a2', 'Sabine K.'), ('MB', 'a1', 'Markus B.')]
+
+def aufgaben_panel_v1(formular=True):
+    def task(text, due, cls, vertrag, wer, wa, prio=False, hover=False):
+        p = f'<span class="prio">{ic("flag")} Hoch</span>' if prio else ''
+        v = f'<span class="au-v">{ic("file")} {vertrag}</span>' if vertrag else f'<span class="au-v">{ic("file")} ganze Übersicht</span>'
+        akt = (f'<div class="au-akt"><span title="Verschieben">{ic("calendar")} +1 Woche</span><span>{ic("arrow")} Zum Vertrag</span><span>{ic("more")}</span></div>' if hover else '')
+        return (f'<div class="au-row{" hover" if hover else ""}"><span class="box"></span><div class="au-main"><div class="au-t">{text}</div>'
+                f'<div class="au-meta">{p}{v}</div>{akt}</div><div class="au-side"><span class="due {cls}">{due}</span>'
+                f'<span class="avatar {wa} mini" title="zuständig">{wer}</span></div></div>')
+    if formular:
+        wer = ''.join(f'<span class="chip{" on" if k == "TS" else ""}"><span class="avatar {a} mini">{k}</span>{n}</span>' for k, a, n in TEAM)
+        form = f'''<div class="au-form">
+  <div class="tin">{ic("plus")}<span>Termin zur Unterschrift vereinbaren</span><i class="caret"></i></div>
+  <div class="au-f"><label>Fällig</label><div class="au-fw"><span class="chip">Heute</span><span class="chip">Morgen</span><span class="chip">In 1 Woche</span><span class="chip on">{ic("calendar")} Fr, 13.11.</span></div></div>
+  <div class="au-f"><label>Priorität</label><div class="au-fw"><div class="seg sm"><span class="on">Normal</span><span>{ic("flag")} Hoch</span></div></div></div>
+  <div class="au-f"><label>Zuständig</label><div class="au-fw">{wer}</div></div>
+  <div class="au-f"><label>Bezug</label><div class="au-fw"><div class="kk-input au-sel">{ic("file")} Ganze Übersicht<span class="spacer"></span>{ic("down")}</div></div></div>
+  <div class="au-f"><label>Erinnerung</label><div class="au-fw nw"><span class="cbx on">{ic("check")}</span><span class="au-cb">In Outlook-Kalender <small>· am Fälligkeitstag, 9:00</small></span></div></div>
+  <div class="au-btns"><span class="au-hint">Enter = anlegen</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Aufgabe anlegen</button></div>
+ </div>'''
+    else:
+        form = f'<div class="au-neu">{ic("plus")} Neue Aufgabe <span class="spacer"></span><kbd>N</kbd></div>'
+    liste = ('<div class="tgroup rot"><span>Überfällig</span><em>1</em></div>' +
+             task('Kfz-Angebot senden', 'seit 2 Tagen', 'over', 'VW Golf', 'TS', 'a4', prio=True) +
+             '<div class="tgroup"><span>Diese Woche</span><em>1</em></div>' +
+             task('BU-Unterlagen prüfen', 'Do, 05.11.', '', 'Berufsunfähigkeit', 'SK', 'a2', hover=not formular))
+    return f'''<aside class="au-panel">
+ <header><div class="au-h"><h2>{ic("tasks")} Aufgaben</h2><span class="es-anz">2 offen</span><span class="spacer"></span><span class="au-x">{ic("x")}</span></div>
+  <p>Jahresgespräch 2026 · Familie Berger</p>
+  <div class="au-filter"><div class="seg sm"><span class="on">Offen 2</span><span>Erledigt 5</span></div><span class="spacer"></span><span class="switch"><i></i>Nur meine</span></div></header>
+ <div class="au-body">{form}<div class="au-liste">{liste}</div>
+  <div class="tmore">{ic("check")} 5 erledigte Aufgaben anzeigen</div></div>
+ <footer>{ic("info")} Erscheint auch auf der Startseite und in der Kundenakte.</footer>
+</aside>'''
+
+def aufgaben_v1(formular=True):
+    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL))
+    bs = bs.replace('<span class="edit-cell">VW Golf</span>',
+                    f'<span class="edit-cell">VW Golf</span><span class="v-auf over" title="1 Aufgabe: Kfz-Angebot senden">{ic("tasks")}1</span>')
+    bs = bs.replace('<span class="edit-cell">Berufsunfähigkeit</span>',
+                    f'<span class="edit-cell">Berufsunfähigkeit</span><span class="v-auf" title="1 Aufgabe: BU-Unterlagen prüfen">{ic("tasks")}1</span>')
+    gz = f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    tb = toolbar_v1().replace(f'<button class="btn">{ic("tasks")} Aufgaben <span class="badge orange">1</span></button>',
+                              f'<button class="btn on" title="Offene Aufgaben dieser Übersicht · rot = eine ist überfällig">{ic("tasks")} Aufgaben <span class="badge rot">2</span></button>')
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main au-main-wrap">{tb}{bereichsleiste_v1()}<div class="content narrow">{bs}{gz}</div>{aufgaben_panel_v1(formular)}</main>')
+
 # ---------------- PDF ----------------
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
@@ -1095,6 +1147,7 @@ def index_page():
              ('einstellungen-outlook.html', 'Einstellungen: Outlook', 'Konto verbinden, Senden, Vorlage für die E-Mail'),
              ('einstellungen-speicherort.html', 'Einstellungen: Speicherort', 'Gemeinsamer SharePoint/OneDrive-Ordner, Auf Desktop speichern (.vtue, Passwort), Sicherheit'),
              ('einstellungen-schnellstart.html', 'Einstellungen: Schnellstart', '5–8 Links bearbeiten, sortieren, App oder Webseite hinzufügen'),
+             ('aufgaben.html', 'Aufgaben je Vertragsübersicht', 'Seitenfeld mit offenen Aufgaben, Aufgabe anlegen: Fällig, Priorität, Zuständig, Bezug, Outlook-Erinnerung'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1120,6 +1173,8 @@ files = {
  'einstellungen-outlook.html': page('Einstellungen – Outlook', start_body(), outlook_overlay_v1()),
  'einstellungen-speicherort.html': page('Einstellungen – Speicherort', start_body(), speicherort_overlay_v1()),
  'einstellungen-schnellstart.html': page('Einstellungen – Schnellstart', start_body(), schnellstart_overlay_v1()),
+ 'aufgaben.html': page('Aufgaben', aufgaben_v1()),
+ 'aufgaben-liste.html': page('Aufgaben – Liste', aufgaben_v1(formular=False)),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),

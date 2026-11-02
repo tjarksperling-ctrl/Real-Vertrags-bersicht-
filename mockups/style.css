@@ -883,3 +883,65 @@ table.vgl.v1 tr.sum td { box-shadow: 1px 0 0 var(--text), -1px 0 0 var(--text); 
 .es-add { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
 .es-add-b { display: flex; align-items: center; gap: 10px; border: 1.5px dashed #c7c7cc; border-radius: 10px; padding: 8px 12px; color: var(--accent); }
 .es-add-b b { display: block; font-weight: 600; } .es-add-b small { color: var(--muted); font-size: 12px; }
+
+/* ---------- Bild 9 v1 (Sitzung 14): Aufgaben je Vertragsübersicht (Seitenfeld rechts) ---------- */
+.main.au-main-wrap { position: relative; }
+.toolbar.v1 .btn.on { background: var(--accent-soft); border-color: #b9d6f6; color: var(--accent); }
+.badge.rot { background: var(--red); color: #fff; }
+.v-auf { display: inline-flex; align-items: center; gap: 2px; margin-left: 6px; font-size: 10.5px; font-weight: 650; color: var(--accent); background: var(--accent-soft); border-radius: 99px; padding: 0 6px 0 4px; vertical-align: 1px; }
+.v-auf svg.i { width: 11px; height: 11px; stroke-width: 2.2; }
+.v-auf.over { color: var(--red); background: #fdecec; }
+.au-panel { position: absolute; top: 53px; right: 0; bottom: 0; width: 448px; background: #fff; border-left: 1px solid var(--line); box-shadow: -18px 0 40px rgba(0,0,0,.10); display: flex; flex-direction: column; z-index: 5; }
+.au-panel header { padding: 14px 18px 10px; border-bottom: 1px solid var(--line); }
+.au-h { display: flex; align-items: center; gap: 10px; }
+.au-h h2 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.au-h h2 svg { color: var(--accent); width: 17px; height: 17px; }
+.au-h .spacer, .au-filter .spacer, .au-btns .spacer, .au-neu .spacer, .au-sel .spacer { flex: 1; }
+.au-x { width: 26px; height: 26px; border-radius: 99px; display: grid; place-items: center; color: var(--muted); background: var(--line-soft); }
+.au-x svg { width: 14px; height: 14px; }
+.au-panel header p { margin: 2px 0 10px; color: var(--muted); }
+.au-filter { display: flex; align-items: center; gap: 10px; }
+.au-filter .switch { font-size: 12.5px; }
+.seg.sm span { padding: 3px 11px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 4px; }
+.seg.sm svg.i { width: 12px; height: 12px; }
+.au-body { flex: 1; overflow: auto; }
+.au-form { margin: 12px 14px 6px; padding: 12px; border: 1px solid #b9d6f6; background: #fafcff; border-radius: 10px; display: flex; flex-direction: column; gap: 8px; }
+.au-form .tin { margin-bottom: 2px; }
+.au-f { display: grid; grid-template-columns: 76px 1fr; align-items: center; min-height: 28px; }
+.au-f label { font-size: 12px; color: var(--muted); }
+.au-fw { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.au-fw .chip { padding: 3px 10px; }
+.au-fw .chip .avatar.mini { margin-left: -5px; }
+.au-sel { padding: 4px 10px; flex: 1; }
+.au-sel svg.i { width: 13px; height: 13px; }
+.au-cb { font-size: 12.5px; } .au-cb small { color: var(--muted); font-size: 12px; margin-left: 4px; }
+.au-btns { display: flex; align-items: center; gap: 8px; margin-top: 2px; padding-top: 10px; border-top: 1px solid var(--line-soft); }
+.au-btns .btn { padding: 5px 12px; }
+.au-hint { font-size: 12px; color: var(--faint); }
+.au-neu { display: flex; align-items: center; gap: 8px; margin: 12px 14px 6px; padding: 9px 12px; border: 1.5px dashed #c7c7cc; border-radius: 10px; color: var(--accent); font-weight: 500; }
+.au-neu kbd { font: 11px var(--font); color: var(--faint); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+.au-liste .tgroup { padding: 12px 18px 6px; }
+.au-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 18px; border-top: 1px solid var(--line-soft); }
+.tgroup + .au-row { border-top: 0; }
+.au-row + .tgroup { border-top: 1px solid var(--line); margin-top: 4px; }
+.au-row .box { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--faint); flex: none; margin-top: 1px; }
+.au-main { flex: 1; min-width: 0; }
+.au-t { font-weight: 550; font-size: 13.5px; }
+.au-meta { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+.au-v { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 12px; }
+.au-v svg.i { width: 12px; height: 12px; }
+.au-side { display: flex; align-items: center; gap: 8px; }
+.au-side .due { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.au-side .due.over { color: var(--red); font-weight: 600; }
+.au-row.hover { background: #f7faff; }
+.au-row.hover .box { border-color: var(--accent); }
+.au-akt { display: flex; gap: 6px; margin-top: 7px; }
+.au-akt span { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text); background: #fff; border: 1px solid var(--line); border-radius: 7px; padding: 2px 8px; }
+.au-akt svg.i { width: 12px; height: 12px; color: var(--muted); }
+.au-panel .tmore { border-top: 1px solid var(--line); }
+.au-panel footer { display: flex; align-items: center; gap: 6px; padding: 10px 18px; border-top: 1px solid var(--line); background: #fafafc; color: var(--muted); font-size: 12px; }
+.au-panel footer svg { width: 13px; height: 13px; }
+.au-f { grid-template-columns: 70px 1fr; }
+.au-fw.nw { flex-wrap: nowrap; white-space: nowrap; }
+.au-fw .chip { padding: 3px 9px; }
+.au-cb small { margin-left: 2px; }
