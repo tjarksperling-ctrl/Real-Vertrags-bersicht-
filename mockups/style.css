@@ -550,3 +550,14 @@ td.zw { position: relative; }
 /* Bild 3 v1 (Sitzung 8): Neu im v2-Design */
 .gesamt.v1 .neben { margin-right: 22px; font-size: 12px; }
 .gesamt.v1 .neben b { font-size: 13px; font-weight: 600; letter-spacing: 0; }
+/* Bild 3 v2 (Sitzung 8): ruhigere Markierungen, Änderungsleiste mit Schaltern „Nur Änderungen“ / „Ersparnis anzeigen“ */
+.aenderungen { display: flex; align-items: center; gap: 12px; padding: 9px 14px; border-radius: 10px; background: #fff; box-shadow: var(--shadow); margin-bottom: 18px; color: var(--muted); }
+.aenderungen b { color: var(--text); font-weight: 600; }
+.aenderungen .spacer { flex: 1; }
+.aenderungen .switch { color: var(--text); font-size: 12.5px; }
+.ae-mark, .neu2 .changed { background: #dcebfc; color: #0052ad; border-radius: 5px; padding: 1px 6px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.neu2 .changed { margin-right: -6px; }
+.neu2 .changed::before { display: none; }
+.neu2 .vorher { text-decoration: none; margin-top: 2px; }
+.neu2 .vorher::before { content: "vorher "; }
+.ae-mark { white-space: nowrap; flex: none; }

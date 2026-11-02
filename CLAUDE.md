@@ -22,6 +22,6 @@ Mehrbenutzer **M2**: Yjs-Änderungsdateien je Nutzer in SharePoint/OneDrive-Ordn
 - AV-Leistung = Betrag + Art (Rente mtl./Kapital/Guthaben/Todesfall), Laufzeit = Enddatum. SPAR ohne „Stand vom“, ohne %.
 - Bemerkung mehrzeilig, nie abgeschnitten (auch PDF).
 - Sync Aktuell → Neu über `quelleId`; aus = nichts rückwirkend; in Neu gelöschte Elemente nicht wieder anlegen.
-- PDF: nur Kopfzeile (Vertragsübersicht · Kunde · Aktuell/Neu · Datum). „Beide“ = Aktuell, dann Neu, Vergleichsseite optional.
+- PDF: nur Kopfzeile (Vertragsübersicht · Kunde · Aktuell/Neu · Datum; Übersichtstitel nur optional). Ersparnis/Differenz nur, wenn „Ersparnis anzeigen“ an ist (App + PDF). „Beide“ = Aktuell, dann Neu, Vergleichsseite optional.
 - Kundendaten: nur Name. Unterlagen nur auswerten, nicht speichern. Name vor KI-Versand entfernen.
 - Datei „Stand einfrieren“: `.vtue`, optional verschlüsselt, Doppelklick öffnet eigenes Fenster.

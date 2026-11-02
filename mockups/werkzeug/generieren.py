@@ -259,12 +259,12 @@ def gesamt_html(f, other=None):
         neben = f'<div class="neben">Beiträge + Sparraten + Kreditraten<br>Einmalbeträge separat: {eur(e)}</div>'
     return f'<div class="gesamt"><div><div class="label">Gesamtbetrag pro Monat</div><div class="wert">{eur(g)}</div></div><span class="spacer"></span>{neben}</div>'
 
-def vorteile_html():
+def vorteile_html(ersparnis=True):
     li = ''.join(f'<li>{ic("check")}<span>{t}</span></li>' for t in VORTEILE)
     return (f'<div class="vorteile"><h3>Vorteile der Änderungen<span class="spacer"></span><span class="switch on"><small>im PDF</small><i></i></span></h3>'
-            f'<ul>{li}</ul><span class="add">{ic("plus")} Stichpunkt hinzufügen</span>'
-            f'<div class="ersparnis"><div><span>Ersparnis pro Monat (automatisch)</span><b>{eur(-DIFF)}</b></div>'
-            f'<div><span>Ersparnis pro Jahr (automatisch)</span><b>{eur(-DIFF*12)}</b></div></div></div>')
+            f'<ul>{li}</ul><span class="add">{ic("plus")} Stichpunkt hinzufügen</span>' +
+            (f'<div class="ersparnis"><div><span>Ersparnis pro Monat (automatisch)</span><b>{eur(-DIFF)}</b></div>'
+            f'<div><span>Ersparnis pro Jahr (automatisch)</span><b>{eur(-DIFF*12)}</b></div></div>' if ersparnis else '') + '</div>')
 
 # ---------------- Rahmen ----------------
 KUNDEN = [('Familie Berger', 'FB', 'a1', '1'), ('Andreas Köhler', 'AK', 'a2', ''), ('Lea Nowak', 'LN', 'a3', ''),
@@ -371,7 +371,7 @@ def table_v1(typ, ug, focus=None, mark=False):
         h += '</tr>'
     return h + '</tbody></table>'
 
-def bereich_v1(b, i, focus=None, other=None):
+def bereich_v1(b, i, focus=None, other=None, mark=False):
     t = b['typ']; title = META[t][0]
     h = (f'<section class="bereich v1 {FARBE[t]}"><header class="bereich-kopf"><span class="nr">{i+1}</span><h2>{title}</h2>'
          f'<span class="spacer"></span><button class="btn icon ghost" title="Bereich umbenennen, ausblenden …">{ic("more")}</button></header>')
@@ -379,7 +379,7 @@ def bereich_v1(b, i, focus=None, other=None):
     for ug in b['ug']:
         h += (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(ug["icon"])}</span>'
               f'<span class="name">{ug["name"]}</span><span class="ug-more">{ic("more")}</span></div>')
-        h += table_v1(t, ug, focus, mark=other is not None)
+        h += table_v1(t, ug, focus, mark=mark or other is not None)
         h += (f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span>'
               f'<span class="summe"><small>{ug_label(t)} / Monat</small> {eur(ug_monat(t, ug))}</span></div></div>')
     h += f'<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
@@ -408,14 +408,18 @@ def bereichsleiste_v1(nur=None, g=None):
               f'{META[t][0]}</span>')
     return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA if g is None else g)}</b></div></div>'
 
-def editor_v1(nur=None, mode='Aktuell'):
-    if mode == 'Neu':  # Bild 3, Sitzung 8: Ausgangsstand = v2-Bausteine aus Bild 2 + bisherige Neu-Markierungen
-        bs = ''.join(bereich_v1(b, i, other=AKTUELL[i]) for i, b in enumerate(NEU) if not nur or b['typ'] == nur)
-        hint = f'<div class="hint">{ic("info")} Geänderte Werte sind mit einem blauen Punkt markiert, der vorherige Wert steht klein darunter (nur in der App, nicht im PDF).</div>'
-        gz = '' if nur else (f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><span class="spacer"></span>'
-                             f'<div class="neben">Aktuell {eur(GA)}<br><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b></div><b>{eur(GN)}</b></div>' + vorteile_html())
+def editor_v1(nur=None, mode='Aktuell', ersparnis=True):
+    if mode == 'Neu':  # Bild 3 v2 (Sitzung 8): Ersparnis optional (Schalter, gilt für App + PDF), ruhigere Markierungen, Änderungsleiste
+        bs = ''.join(bereich_v1(b, i, other=AKTUELL[i] if ersparnis else None, mark=True) for i, b in enumerate(NEU) if not nur or b['typ'] == nur)
+        n = sum(1 for b in NEU for ug in b['ug'] for v in ug['v'] if 'vorher' in v)
+        sw = lambda on, txt, tip: f'<span class="switch{" on" if on else ""}" title="{tip}"><i></i>{txt}</span>'
+        leiste = (f'<div class="aenderungen"><span class="ae-mark">28,90 €</span><span><b>{n} Änderungen</b> gegenüber „Aktuell“ · vorheriger Wert steht darunter (nur in der App)</span>'
+                  f'<span class="spacer"></span>{sw(False, "Nur Änderungen zeigen", "Blendet unveränderte Verträge aus")}'
+                  f'{sw(ersparnis, "Ersparnis anzeigen", "An: Ersparnis bzw. Mehrbeitrag ggü. Aktuell wird in der App und im PDF gezeigt. Aus: nirgends.")}</div>')
+        neben = f'<span class="spacer"></span><div class="neben">Aktuell {eur(GA)}<br><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b></div>' if ersparnis else '<span class="spacer"></span>'
+        gz = '' if nur else (f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span>{neben}<b>{eur(GN)}</b></div>' + vorteile_html(ersparnis))
         return (sidebar('Familie Berger', v2=True) +
-                f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="content narrow">{hint}{bs}{gz}</div></main>')
+                f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="content narrow neu2">{leiste}{bs}{gz}</div></main>')
     bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
@@ -668,6 +672,7 @@ files = {
  'aktuell.html': page('Aktuell', editor_v1()),
  'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL')),
  'neu.html': page('Neu', editor_v1(mode='Neu')),
+ 'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
  'nebeneinander.html': page('Nebeneinander', side_body()),
  'export.html': page('PDF erstellen', editor_body('Neu'), export_overlay()),
  'ki-import.html': page('KI-Import', editor_body('Aktuell'), ki_overlay()),
