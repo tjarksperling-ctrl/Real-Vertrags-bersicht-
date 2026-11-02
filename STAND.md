@@ -1,7 +1,7 @@
 # Projektstand – Vertragsübersicht (Desktop-App)
 
-**Aktueller Stand:** Phase 1 ✅ · Phase 2 ✅ (`PLAN.md`) · Phase 3: Mockups werden Bild für Bild überarbeitet, Bild 1 (Startseite) v3 in Arbeit (Anpinnen überarbeiten). Details und Vorgehen siehe `HANDOFF.md`.
-**Nächster Schritt:** Feedback einarbeiten (nur betroffene Seite) → nach Freigabe Phase 4, Meilenstein 1.
+**Aktueller Stand:** Phase 1–3 ✅ · Phase 4 Meilenstein 1 (Datenmodell & Berechnungen + Tests) umgesetzt, wartet auf Freigabe. Details siehe `HANDOFF.md`.
+**Nächster Schritt:** Freigabe Meilenstein 1 → Meilenstein 2 (Editor).
 
 > Fortsetzen in neuer Sitzung: „Lies HANDOFF.md und mach beim nächsten Schritt weiter."
 

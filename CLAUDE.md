@@ -3,7 +3,7 @@
 Desktop-App (Windows, zusätzlich Mac) für eine Versicherungsagentur: Vertragsübersicht je Kunde in zwei Fassungen „Aktuell“ und „Neu“, hochwertiger PDF-Export. Neutral, Apple-Stil, extrem einfach. Details: `STAND.md` (Briefing + Entscheidungen), `PLAN.md` (freigegebener Plan), `HANDOFF.md` (letzter Stand).
 
 ## Arbeitsregeln
-- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen. Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
+- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen (M1 Datenmodell & Berechnungen umgesetzt). Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
 - Kein App-Code vor Phase 4. Bei Mockup-Feedback nur die betroffene Seite ändern.
 - Rückfragen immer zum Antippen (Auswahl-Dialog, max. 4 je Runde).
 - Token-effizient: kurze Zusammenfassungen, keine kompletten Dateien im Chat, Abhängigkeiten nur mit echtem Mehrwert.
@@ -11,11 +11,12 @@ Desktop-App (Windows, zusätzlich Mac) für eine Versicherungsagentur: Vertrags�
 
 ## Technik
 Electron + React + TypeScript · dnd-kit · Yjs (CRDT) · MSAL + Microsoft Graph · Vitest · electron-builder/-updater.
+Code: `src/shared/` reine Logik ohne Electron/React (`modell/`, `rechnen/`, `fassung/`), Tests `*.test.ts` daneben; `npm test`, `npm run typecheck`. Rechenlogik nur dort, nie in UI/PDF duplizieren.
 Mehrbenutzer **M2**: Yjs-Änderungsdateien je Nutzer in SharePoint/OneDrive-Ordner, konfliktfrei zusammengeführt, offlinefähig, kein Server.
 
 ## Fachregeln (verbindlich)
 - 4 Bereiche, einzeln an-/abwählbar: VERS, SPAR, DARL, AV. Untergruppen (Name + Symbol) und Verträge: anlegen, umbenennen, löschen, Drag & Drop.
-- Beträge intern als ganze Cent. Runden erst bei Summen.
+- Beträge intern als ganze Cent, leeres Feld = `null` (zählt 0). Runden „sichtbar stimmig“: exakter Jahresbetrag, einmal je Untergruppe kaufmännisch gerundet (Jahr/12); Bereich = Σ UG-Summen, Gesamt = Σ aktive Bereiche, Vorteile/Jahr = Monat × 12.
 - Zahlweise → Monat: ÷1/3/6/12. „Einmalig“ nie in Monatssummen; Einmalbeträge separat, nur anzeigen wenn > 0.
 - Summen: VERS Beitrag/Monat (+Einmal) · SPAR Untergruppe Sparrate/Monat, Bereich Gesamtvermögen (Guthaben+Wertentw.), Sparrate/Monat, Einmal · DARL Rate/Monat (UG nur Rate), Bereich + Gesamtrestschuld · AV Beitrag/Monat (+Einmal).
 - Gesamt/Monat über alle aktiven Bereiche. Danach optional „Vorteile“ (Stichpunkte + autom. Ersparnis/Mehrbeitrag Monat/Jahr; nur Neu/Beide).

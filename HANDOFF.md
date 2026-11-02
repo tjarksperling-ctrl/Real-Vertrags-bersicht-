@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 24) · Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 M1: Vorschlag Projektstruktur + Datenmodell vorgelegt, wartet auf Freigabe** (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
+**Stand:** 02.11.2026 (Sitzung 24) · Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 Meilenstein 1 umgesetzt (88 Tests grün), wartet auf Freigabe** (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -176,14 +176,17 @@ Konkret unübersichtlich:
 ## Phase 4 – Fortschritt
 | Meilenstein | Status |
 |---|---|
-| 1 Datenmodell & Berechnungen + Tests | ◐ Sitzung 24: Vorschlag Projektstruktur + Datenmodell vorgelegt, **wartet auf Freigabe** (noch kein Code) |
+| 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · **wartet auf Freigabe** |
 | 2 Editor · 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
 
-**Vorschlag M1 (Sitzung 24, zur Freigabe):**
+**Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
 - Struktur: `package.json`, `tsconfig.json`, `vitest.config.ts`; `src/shared/` reine Logik ohne Electron/React (`modell/` Typen, IDs, Standard-Vorlagen; `rechnen/` Geld/Cent, Zahlweise, Summen, Vorteile; `fassung/` Neu als Kopie von Aktuell mit `quelleId`); `src/main/` (Electron, ab M2), `src/renderer/` (React, ab M2). Tests neben dem Code (`*.test.ts`). M1-Abhängigkeiten nur `typescript` + `vitest` (dev).
 - Abweichungen zu PLAN.md Abschnitt 3: kein Feld `reihenfolge` (Position im Array = Reihenfolge, passt zu Yjs) · `Fassung.bereiche` als feste Zuordnung VERS/SPAR/DARL/AV statt Liste · zusätzlich `Uebersicht.titel?`, `ersparnisAnzeigen`, Aufgabe mit Priorität/Zuständig/Bezug/Outlook-Erinnerung (Bild 9), Einstellungen mit Darstellung, PDF-Passwort-Standard, Aufbewahrung 10 Jahre, angepinnt (max. 4).
 - Leeres Betragsfeld = `null` (zählt als 0). Wertentwicklung darf negativ sein. Zinsbindung `JJJJ-MM` (Anzeige MM/JJJJ), AV-Laufzeit `JJJJ-MM-TT`.
-- Rundung: offen (Rückfrage an den Nutzer, Empfehlung „sichtbar stimmig“).
+- **Rundung „sichtbar stimmig“ (Nutzer, Sitzung 24):** exakter Jahresbetrag je Vertrag (Betrag × Zahlungen/Jahr), gerundet wird einmal je Untergruppe (Jahr/12, kaufmännisch, ab ,5 vom Nullpunkt weg). Bereich = Σ angezeigte UG-Summen, Gesamt = Σ angezeigte Summen der aktiven Bereiche, Vorteile/Jahr = Differenz/Monat × 12. Ergibt im Beispielkunden genau die Mockup-Werte (Aktuell 2.033,25 €, Neu 2.007,85 €, Ersparnis 25,40 €/Monat, 304,80 €/Jahr).
+- **Einmalbeträge:** VERS = Beitrag mit Zahlweise „einmalig“; SPAR = Einmalbetrag + einmalige Sparrate; AV = Einmalbeitrag + einmaliger Beitrag; DARL wird mitgerechnet (einmalige Rate), laut Briefing aber nicht angezeigt. Abgewählte Bereiche werden berechnet, zählen aber nicht ins Gesamt.
+- **Dateien:** `src/shared/modell/` (`typen.ts`, `ids.ts`, `fabrik.ts` neue Elemente/Übersicht/Standard-Einstellungen, `vorlagen.ts` Agentur-Standard 4·9 + Junge Familie 3·8), `src/shared/rechnen/` (`geld.ts` Rundung, Eingabe lesen „1.234,56“, Ausgabe „1.234,56 €“ mit geschütztem Leerzeichen und „−“; `zahlweise.ts`; `summen.ts`; `vorteile.ts`; `fristen.ts` fällige Aufgaben + alte Kunden nach N Jahren), `src/shared/fassung/kopieren.ts` (Neu als Kopie mit `quelleId`, „Neu wieder wie Aktuell“), `src/shared/testdaten/beispiel.ts` (Beispielkunde aus Bild 2/3, nur Tests), `src/shared/index.ts`.
+- **Offen für spätere Meilensteine:** Vorlagen „Single & Berufsstart“, „Selbstständige“, „Ruhestand“ (im Mockup nur Name/Anzahl) · DARL-Zahlweise: im Mockup feste „mtl.“-Rate, im Modell Zahlweise (Standard monatlich) – bei Meilenstein 2 klären · Prüfung/Validierung beim Laden (`.vtue`, KI) folgt mit Meilenstein 5.
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |
@@ -420,3 +423,13 @@ Konkret unübersichtlich:
 
 **Prompt für den nächsten Chat:**
 > Lies HANDOFF.md auf dem Branch claude/cleanup-gap-list-phase-3-2hyoia und arbeite genau nach CLAUDE.md und dem Übergabeprotokoll Sitzung 23. Übernimm zuerst den Stand dieses Branches in deinen Arbeitsbranch. Phase 3 ist abgeschlossen: Alle Bilder 1–16 sind freigegeben und alle offenen Punkte vor Phase 4 geklärt (siehe Abschnitt 2, „Offene Punkte vor Phase 4“). Phase 3 habe ich freigegeben. Beginne Phase 4 mit Meilenstein 1 (Datenmodell & Berechnungen + Tests, siehe PLAN.md Abschnitt 7 und die Fachregeln in CLAUDE.md): Schlag mir zuerst kurz die Projektstruktur und das Datenmodell vor und warte auf meine Freigabe, bevor du Code schreibst. Nach dem Meilenstein: STOPP, Ergebnis zeigen, Freigabe abwarten. Halte den Fortschritt laufend in HANDOFF.md fest und erstelle am Ende ein Übergabeprotokoll mit dem Prompt für den nächsten Chat.
+
+## Übergabeprotokoll Sitzung 24 – Phase 4 Meilenstein 1 umgesetzt (02.11.2026)
+- **Branch:** `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen), alles committet und gepusht.
+- **Erledigt:** Projektstruktur + Datenmodell vorgeschlagen und **freigegeben**; Rundung **„sichtbar stimmig“** gewählt. Meilenstein 1 umgesetzt: TypeScript-Projekt (`package.json`, `tsconfig.json` streng, `vitest.config.ts`, `.gitignore`), nur Dev-Abhängigkeiten `typescript` + `vitest`. Reine Logik in `src/shared/` (Details unter „Phase 4 – Fortschritt“). Tests: 7 Dateien, 88 Tests grün; Typprüfung fehlerfrei.
+- **Befehle:** `npm install` · `npm test` · `npm run typecheck`.
+- **Stolpersteine:** Mockup-Generator rundet je Bereich, die freigegebene Regel rundet je Untergruppe – für den Beispielkunden identisch, in Tests abgesichert (3 UGs à 1 €/Jahr → 0,24 €, nicht 0,25 €).
+- **Offen:** Freigabe Meilenstein 1 durch den Nutzer. Danach Meilenstein 2 (Editor: Electron + React-Grundgerüst, Bereiche, Untergruppen, Verträge, Drag & Drop mit dnd-kit, Vorlagen, Tastatursteuerung laut Festlegung 6, Rückgängig laut Festlegung 3). Kleinere Punkte aus Abschnitt 2 und „Phase 4 – Fortschritt“ (DARL-Zahlweise, weitere Agentur-Vorlagen, Einstellungsseite „Allgemein“) bei Meilenstein 2 klären. Vom Nutzer später: Entra-ID-Registrierung, KI-API-Schlüssel, optional Code-Signatur.
+
+**Prompt für den nächsten Chat:**
+> Lies HANDOFF.md auf dem Branch claude/epic-hawking-njwxvq und arbeite genau nach CLAUDE.md und dem Übergabeprotokoll Sitzung 24. Übernimm zuerst den Stand dieses Branches in deinen Arbeitsbranch und prüfe mit `npm install && npm test && npm run typecheck`, dass alles grün ist. Meilenstein 1 (Datenmodell & Berechnungen) habe ich freigegeben. Beginne Meilenstein 2 (Editor, siehe PLAN.md Abschnitt 7, Bilder 2, 11, 12, 13 und die Festlegungen 3 und 6 in HANDOFF.md Abschnitt 2): Schlag mir zuerst kurz den Aufbau (Electron + React-Grundgerüst, Komponenten, Datenfluss) vor, kläre die offenen Kleinpunkte aus „Phase 4 – Fortschritt“ per Auswahl-Rückfrage und warte auf meine Freigabe, bevor du Code schreibst. Nach dem Meilenstein: STOPP, Ergebnis zeigen, Freigabe abwarten. Halte den Fortschritt laufend in HANDOFF.md fest und erstelle am Ende ein Übergabeprotokoll mit dem Prompt für den nächsten Chat.

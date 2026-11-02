@@ -1,0 +1,16 @@
+{
+  "name": "vertragsuebersicht",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vertragsübersicht – Desktop-App für die Versicherungsagentur",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2",
+    "vitest": "^5.1.0"
+  }
+}
