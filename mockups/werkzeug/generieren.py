@@ -1560,15 +1560,17 @@ def vertrag_bearbeiten_v1():
 # Wunsch des Nutzers zu v1: „viel einfacher, ohne 5 Untermenüs“. Keine Menüs „…“, kein Detail-Dialog, keine Rückfragen:
 # Name anklicken = tippen · Symbol anklicken = Symbolreihe · Papierkorb beim Darüberfahren = sofort löschen + „Rückgängig“ ·
 # „+ Vertrag“ / „+ Untergruppe“ legt eine leere Zeile/Karte an, Cursor steht im Namen · Verschieben nur am Griff.
-V2_DEL = f'<span class="v2-del" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
-V2_DEL_H = f'<span class="v2-del h" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
+P['trash2'] = '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/>'
+V2_DEL = f'<span class="v2-del ug" title="Untergruppe löschen – sofort, mit Rückgängig">{ic("trash2")}</span>'  # Untergruppe: Mülleimer
+V2_X = f'<span class="v2-del x" title="Vertrag löschen – sofort, mit Rückgängig">{ic("x")}</span>'  # Vertrag: ×
+V2_DEL_H = f'<span class="v2-del x h" title="Vertrag löschen – sofort, mit Rückgängig">{ic("x")}</span>'
 def v2_editor(nur=None, ersetzen=(), extra_cls=''):
     bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     for alt, neu in ersetzen:
         assert alt in bs, alt[:90]
         bs = bs.replace(alt, neu, 1)
     bs = bs.replace(f'<span class="ug-more">{ic("more")}</span>', V2_DEL)  # statt „…“: Papierkorb, immer sichtbar
-    bs = bs.replace(V2_DEL + '</td></tr>', '</td></tr>').replace('</td></tr>', V2_DEL + '</td></tr>')  # jede Zeile: Papierkorb
+    bs = bs.replace('</td></tr>', V2_X + '</td></tr>')  # jede Vertragszeile: ×
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
             f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow ub v2e {extra_cls}">{bs}{gz}</div></main>')
