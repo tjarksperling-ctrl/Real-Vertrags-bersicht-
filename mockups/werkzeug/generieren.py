@@ -1416,6 +1416,146 @@ def pdf_page_v1(titel=False, ersparnis=True):
 <body class="pdf"><div class="pdf-bar">{ic("pdf")}<b>PDF-Vorschau</b><span style="color:var(--muted)">Beide + Vergleichsseite · 5 Seiten A4 · {var} · grau: nur Seitenbeschriftung der Vorschau</span><span class="spacer"></span><a class="btn" href="index.html" style="text-decoration:none">Zur Übersicht</a></div>
 <div class="pages">{ph}</div></body></html>'''
 
+# ---------------- Bild 12 v1 (Sitzung 17): Untergruppe / Vertrag bearbeiten ----------------
+# Fehlender Screen aus Abschnitt 2. Vier Zustände im Editor „Aktuell“ (Bild 2):
+# (a) Menü „…“ einer Untergruppe + Seitenfeld „Name & Symbol“, (b) Untergruppe per Drag & Drop verschieben,
+# (c) Untergruppe mit Verträgen löschen (Rückfrage), (d) Vertragsdetails (Zahlweise, AV-Leistung + Art, Laufzeit-Enddatum,
+# umbenennen, in andere Untergruppe verschieben, löschen).
+P.update({
+ 'up': '<path d="m18 15-6-6-6 6"/>',
+ 'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+ 'move': '<path d="M12 2v20"/><path d="m15 19-3 3-3-3"/><path d="m19 9 3 3-3 3"/><path d="M2 12h20"/><path d="m5 9-3 3 3 3"/><path d="m9 5 3-3 3 3"/>',
+ 'undo': '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/>',
+ 'alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+ 'gift': '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>',
+ 'bike': '<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+ 'tooth': '<path d="M7 3c-2.5 0-4 2-4 4.5 0 3 1.5 4.5 2 7.5.4 2.4 1 6 2.5 6s1.8-3 2.3-5c.3-1 .9-1.5 2.2-1.5s1.9.5 2.2 1.5c.5 2 .8 5 2.3 5s2.1-3.6 2.5-6c.5-3 2-4.5 2-7.5C21 5 19.5 3 17 3c-2 0-3 1-5 1S9 3 7 3z"/>',
+ 'coins': '<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/><path d="m16.71 13.88.7.71-2.82 2.82"/>',
+ 'piggy': '<path d="M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1z"/><path d="M16 10h.01"/><path d="M2 8v1a2 2 0 0 0 2 2h1"/>',
+ 'building': '<rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><path d="M9 22v-4h6v4"/><path d="M8 6h.01"/><path d="M16 6h.01"/><path d="M12 6h.01"/><path d="M12 10h.01"/><path d="M12 14h.01"/><path d="M16 10h.01"/><path d="M16 14h.01"/><path d="M8 10h.01"/><path d="M8 14h.01"/>',
+})
+UB_SYMBOLE = [  # Gruppe, Symbole
+ ('Versicherungen', ['shield', 'home', 'car', 'bike', 'plane', 'paw', 'activity', 'tooth', 'umbrella', 'briefcase']),
+ ('Geld & Vorsorge', ['trend', 'coins', 'piggy', 'key', 'bank', 'building', 'cart', 'hourglass', 'heart', 'baby']),
+]  # je Gruppe 10 Symbole (eine Zeile)
+
+def ub_editor(nur=None, ersetzen=(), extra_cls=''):
+    """Editor „Aktuell“ (Bild 2) ohne geöffnetes Zahlweise-Menü; ersetzen = Liste (alt, neu) für die gezeigten Zustände."""
+    bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
+    for alt, neu in ersetzen:
+        assert alt in bs, alt[:80]
+        bs = bs.replace(alt, neu, 1)
+    gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
+    return (sidebar('Familie Berger', v2=True) +
+            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow ub {extra_cls}">{bs}{gz}</div></main>')
+
+def ug_kopf_alt(ug):
+    return (f'<div class="ug v1"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(ug["icon"])}</span>'
+            f'<span class="name">{ug["name"]}</span><span class="ug-more">{ic("more")}</span></div>')
+
+def ub_menu_item(sym, txt, key='', cls='', sub=''):
+    return (f'<div class="ub-mi {cls}">{ic(sym)}<span>{txt}</span>{sub}'
+            f'{f"<kbd>{key}</kbd>" if key else ""}</div>')
+
+def ug_bearbeiten_v1():
+    """(a) Menü „…“ der Untergruppe „Wohnen“ + Seitenfeld „Name & Symbol“."""
+    ug = AKTUELL[0]['ug'][1]
+    sy = ''
+    for g, syms in UB_SYMBOLE:
+        sy += f'<div class="ub-sg">{g}</div><div class="ub-syms">' + ''.join(
+            f'<span class="{"on" if s == "home" else ""}">{ic(s)}</span>' for s in syms) + '</div>'
+    flyout = f'''<div class="ub-fly">
+  <div class="ub-fly-k"><b>Name &amp; Symbol</b><span class="es-hint">Enter übernimmt · Esc bricht ab</span></div>
+  <label class="ub-lab">Name der Untergruppe</label>
+  <div class="tin ub-name"><span class="ub-isym">{ic("home")}</span>Wohnen &amp; Eigentum<span class="caret"></span></div>
+  <label class="ub-lab">Symbol</label>{sy}
+  <div class="ub-prev"><span class="ub-prev-l">So im PDF</span><span class="ub-prev-ug">{ic("home")}<b>Wohnen &amp; Eigentum</b></span></div>
+ </div>'''
+    menu = (f'<div class="ub-menu">'
+            + ub_menu_item('pencil', 'Name &amp; Symbol ändern', 'F2', 'on', f'<span class="ub-chev">{ic("chev")}</span>')
+            + ub_menu_item('plus', 'Vertrag hinzufügen')
+            + ub_menu_item('plus', 'Neue Untergruppe darunter')
+            + '<div class="ub-sep"></div>'
+            + ub_menu_item('up', 'Nach oben', 'Alt ↑')
+            + ub_menu_item('down', 'Nach unten', 'Alt ↓')
+            + ub_menu_item('copy', 'Duplizieren')
+            + '<div class="ub-sep"></div>'
+            + ub_menu_item('trash', 'Löschen …', '', 'rot', '<small>2 Verträge</small>')
+            + f'</div>{flyout}')
+    neu = (f'<div class="ug v1 ub-z"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic("home")}</span>'
+           f'<span class="name">Wohnen &amp; Eigentum<span class="caret"></span></span><span class="ug-more on">{ic("more")}</span>{menu}</div>')
+    return ub_editor(ersetzen=[(ug_kopf_alt(ug), neu)])
+
+def ug_verschieben_v1():
+    """(b) Untergruppe „Kfz“ wird am Griff nach oben gezogen (zwischen „Haftpflicht & Recht“ und „Wohnen“)."""
+    b = AKTUELL[0]; kfz = b['ug'][2]; wohnen = b['ug'][1]
+    # Kfz-Karte (gezogen) als schwebende Kopie
+    kfz_html = ug_kopf_alt(kfz) + table_v1('VERS', kfz) + (f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span>'
+               f'<span class="summe"><small>Beitrag / Monat</small> {eur(ug_monat("VERS", kfz))}</span></div></div>')
+    schwebend = kfz_html.replace('<div class="ug v1">', '<div class="ug v1 ub-drag">', 1)
+    linie = (f'<div class="ub-drop"><span class="ub-drop-l"></span><span class="ub-drop-t">{ic("arrow")} hier ablegen</span><span class="ub-drop-l"></span>'
+             f'{schwebend}</div>')
+    platz = f'<div class="ub-platz">{ic(kfz["icon"])} Kfz · ursprünglicher Platz</div>'
+    tipp = (f'<div class="ub-tipp">{ic("move")}<span><b>Kfz</b> wird verschoben · Loslassen legt ab · <kbd>Esc</kbd> bricht ab · '
+            f'Verträge lassen sich genauso am Griff in eine andere Untergruppe ziehen</span></div>')
+    alt_kfz_start = ug_kopf_alt(kfz)
+    alt_kfz = alt_kfz_start + table_v1('VERS', kfz) + (f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span>'
+              f'<span class="summe"><small>Beitrag / Monat</small> {eur(ug_monat("VERS", kfz))}</span></div></div>')
+    return ub_editor(ersetzen=[(alt_kfz, platz), (ug_kopf_alt(wohnen), linie + ug_kopf_alt(wohnen))], extra_cls='ub-ziehen') + tipp
+
+def ug_loeschen_v1():
+    """(c) Untergruppe „Kfz“ löschen: Rückfrage, weil noch ein Vertrag enthalten ist."""
+    kfz = AKTUELL[0]['ug'][2]
+    pop = f'''<div class="ub-del">
+  <div class="ub-del-k"><span class="ub-del-ic">{ic("trash")}</span><div><b>Untergruppe „Kfz“ löschen?</b><small>Enthält 1 Vertrag: VW Golf · 81,00 € / Monat</small></div></div>
+  <div class="ub-opt on"><span class="nk-radio on"></span><div><b>Vertrag mitlöschen</b><small>Summe Versicherungen sinkt auf 103,05 € / Monat</small></div></div>
+  <div class="ub-opt"><span class="nk-radio"></span><div><b>Vertrag behalten und verschieben nach</b>
+    <span class="ub-sel">{ic("shield")} Haftpflicht &amp; Recht {ic("down")}</span></div></div>
+  <div class="ub-sync">{ic("sync")}<span>Wird auch in „Neu“ gelöscht – „In „Neu“ übernehmen“ ist an.</span></div>
+  <div class="ub-del-f"><span class="es-hint">Rückgängig mit Strg + Z</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn rot">{ic("trash")} Löschen</button></div>
+ </div>'''
+    neu = (f'<div class="ug v1 ub-z ub-weg"><div class="ug-kopf"><span class="grip">{ic("grip")}</span><span class="ug-icon">{ic(kfz["icon"])}</span>'
+           f'<span class="name">{kfz["name"]}</span><span class="ug-more on">{ic("more")}</span>{pop}</div>')
+    return ub_editor(ersetzen=[(ug_kopf_alt(kfz), neu)])
+
+def vertrag_bearbeiten_v1():
+    """(d) Vertragsdetails „Private Rente“ (Altersvorsorge): Doppelklick auf die Zeile, Enter oder „…“ am Zeilenende."""
+    v = AKTUELL[3]['ug'][0]['v'][0]
+    zw = ''.join(f'<span class="{"on" if o == "monatlich" else ""}">{o}</span>' for o in ZW_OPT)
+    art = ''.join(f'<span class="{"on" if a == "Rente mtl." else ""}">{a}</span>' for a in ('Rente mtl.', 'Kapital', 'Guthaben', 'Todesfall'))
+    import datetime
+    leer = datetime.date(2052, 7, 1).weekday()
+    tage = '<span class="l"></span>' * leer + ''.join(f'<span class="{"on" if d == 1 else ""}">{d}</span>' for d in range(1, 32))
+    kal = f'''<div class="vd-kal"><div class="vd-kal-k"><span>{ic("chev")}</span><b>Juli 2052</b><span>{ic("chev")}</span></div>
+     <div class="vd-kal-w"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+     <div class="vd-kal-t">{tage}</div>
+     <div class="vd-kal-q"><span>Jahresende</span><span>Monatsende</span></div></div>'''
+    pop = f'''<div class="vd-pop">
+  <div class="vd-k"><span class="ug-icon">{ic("hourglass")}</span><div class="vd-kt"><div class="tin vd-name">Private Rente<span class="caret"></span></div></div>
+   <span class="vd-ug"><small>Untergruppe</small><span class="ub-sel">{ic("hourglass")} Altersvorsorge {ic("down")}</span></span><span class="nk-x">{ic("x")}</span></div>
+  <div class="vd-f"><label>Bemerkung</label><div class="kk-input vd-bem">Garantierente, Beitragsdynamik 3 %<br>&nbsp;</div></div>
+  <div class="vd-row">
+   <div class="vd-f vd-betrag"><label>Beitrag</label><div class="kk-input num">100,00 €</div></div>
+   <div class="vd-f"><label>Zahlweise</label><div class="seg vd-seg">{zw}</div></div>
+   <div class="vd-f vd-betrag"><label>Einmalbeitrag</label><div class="kk-input num ph">0,00 €</div></div>
+  </div>
+  <div class="vd-hint">{ic("calc")}<span>Zählt mit <b>100,00 € / Monat</b> zur Summe · „einmalig“ zählt nie zur Monatssumme, sondern erscheint separat als Einmalbetrag.</span></div>
+  <div class="vd-row">
+   <div class="vd-f vd-betrag"><label>Leistung</label><div class="kk-input num">412,00 €</div></div>
+   <div class="vd-f"><label>Art der Leistung</label><div class="seg vd-seg">{art}</div></div>
+   <div class="vd-f vd-bis"><label>Laufzeit bis</label><div class="tin vd-datum">01.07.2052<span class="spacer"></span>{ic("calendar")}</div><div class="vd-rest">noch 25 Jahre 8 Monate</div></div>
+  </div>
+  <div class="vd-foot"><button class="btn ghost rot">{ic("trash")} Löschen</button><button class="btn ghost">{ic("copy")} Duplizieren</button>
+   <span class="spacer"></span><span class="es-hint">{ic("sync")} wird auch in „Neu“ übernommen</span><button class="btn primary">Fertig</button></div>
+ </div>'''
+    alt = f'<td class="vname"><span class="edit-cell">{v["n"]}</span></td>'
+    neu = f'<td class="vname vd-anker"><span class="edit-cell">{v["n"]}</span>{pop}</td>'
+    zeile_alt = f'<tr class=""><td class="g grip">{ic("grip")}</td>{alt}'
+    zeile_neu = f'<tr class="focus vd-zeile"><td class="g grip">{ic("grip")}</td>{neu}'
+    # „…“ am Zeilenende (erscheint beim Darüberfahren) in der Zeile „Basisrente“ andeuten: nicht nötig – aktive Zeile zeigt es
+    return ub_editor(nur='AV', ersetzen=[(zeile_alt, zeile_neu)], extra_cls='vd')
+
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -1436,6 +1576,8 @@ def index_page():
              ('neuer-kunde.html', 'Neuer Kunde', 'Nur Name, Titel der ersten Übersicht, Start leer / mit Vorlage / mit Unterlagen'),
              ('einstellungen-vorlagen.html', 'Einstellungen: Vorlagen', 'Agentur- und eigene Vorlagen, Untergruppen mit Symbolen, Vertragsvorschläge, Autovervollständigung'),
              ('neuer-kunde-editor.html', 'Neuer Kunde: Autovervollständigung', 'Übersicht nach dem Anlegen mit Vorlage, Vorschläge beim Tippen'),
+             ('untergruppe-bearbeiten.html', 'Untergruppe bearbeiten', 'Menü „…“: Name &amp; Symbol, sortieren, duplizieren, löschen · Varianten: verschieben (Drag &amp; Drop), löschen'),
+             ('vertrag-bearbeiten.html', 'Vertrag bearbeiten', 'Vertragsdetails: Zahlweise, Leistung mit Art, Laufzeit-Enddatum, Untergruppe wechseln, löschen'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -1469,6 +1611,10 @@ files = {
  'neuer-kunde.html': page('Neuer Kunde', nk_start_v1(), nk_overlay_v1()),
  'einstellungen-vorlagen.html': page('Einstellungen – Vorlagen', start_body(), vorlagen_overlay_v1()),
  'neuer-kunde-editor.html': page('Neuer Kunde – Autovervollständigung', nk_editor_v1()),
+ 'untergruppe-bearbeiten.html': page('Untergruppe bearbeiten', ug_bearbeiten_v1()),
+ 'untergruppe-verschieben.html': page('Untergruppe verschieben', ug_verschieben_v1()),
+ 'untergruppe-loeschen.html': page('Untergruppe löschen', ug_loeschen_v1()),
+ 'vertrag-bearbeiten.html': page('Vertrag bearbeiten', vertrag_bearbeiten_v1()),
  'pdf.html': pdf_page_v1(),
  'pdf-titel.html': pdf_page_v1(titel=True),
  'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
