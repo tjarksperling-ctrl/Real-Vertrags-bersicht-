@@ -28,12 +28,15 @@ import { Avatar, STRG, Schalter, Sym } from '../komponenten/ui';
 import { Bereich, BereichAus, FARBE } from '../editor/Bereich';
 import { EditorKontext, FokusRegister, useEditorKontext, type EditorKontextWert } from '../editor/kontext';
 import { TextFeld } from '../editor/felder';
+import { PdfDialog } from '../dialoge/Pdf';
 
 export type Ansicht = FassungName | 'neben';
 
 export interface HinweisDaten {
   text: string;
   n: number;
+  /** Nur Info, ohne „Rückgängig“. */
+  info?: boolean;
 }
 
 export function Hinweis({ h, onRueckgaengig, onZu }: { h: HinweisDaten | null; onRueckgaengig: () => void; onZu: () => void }) {
@@ -47,10 +50,14 @@ export function Hinweis({ h, onRueckgaengig, onZu }: { h: HinweisDaten | null; o
     <div className="ub-toast" role="status">
       <Sym n="check" />
       <span>{h.text}</span>
-      <button type="button" className="ub-toast-a knopf-rein" onClick={onRueckgaengig}>
-        <Sym n="undo" /> Rückgängig
-      </button>
-      <span className="v2-tk">{STRG} + Z</span>
+      {!h.info && (
+        <>
+          <button type="button" className="ub-toast-a knopf-rein" onClick={onRueckgaengig}>
+            <Sym n="undo" /> Rückgängig
+          </button>
+          <span className="v2-tk">{STRG} + Z</span>
+        </>
+      )}
     </div>
   );
 }
@@ -89,8 +96,11 @@ export function EditorSeite({
   setAnsicht,
   band,
   benutzer,
-  onPdf,
+  pdfPasswortStandard = false,
+  pdfZiel,
 }: {
+  pdfPasswortStandard?: boolean;
+  pdfZiel?: string | undefined;
   doc: Y.Doc;
   kunde: Kunde;
   katalog: Katalog | null;
@@ -98,7 +108,6 @@ export function EditorSeite({
   setAnsicht: (a: Ansicht) => void;
   band?: ReactNode;
   benutzer: string;
-  onPdf?: (() => void) | undefined;
 }) {
   const editor = useMemo(() => new Editor(doc), [doc]);
   useEffect(() => () => editor.undo.destroy(), [editor]);
@@ -115,6 +124,7 @@ export function EditorSeite({
   const [titelBearbeiten, setTitelBearbeiten] = useState(false);
   const [uebertragung, setUebertragung] = useState<Uebertragung | null>(null);
   const [menu, setMenu] = useState(false);
+  const [pdfOffen, setPdfOffen] = useState(false);
   const inhalt = useRef<HTMLDivElement>(null);
   const fassung: FassungName = ansicht === 'neben' ? 'aktuell' : ansicht;
 
@@ -179,6 +189,10 @@ export function EditorSeite({
         if (wieder) editor.wiederholen();
         else editor.rueckgaengig();
         setHinweis(null);
+      } else if (mod && (e.key === 'p' || e.key === 'P')) {
+        e.preventDefault();
+        (document.activeElement as HTMLElement | null)?.blur();
+        setPdfOffen(true);
       } else if (mod && ['1', '2', '3'].includes(e.key)) {
         e.preventDefault();
         setAnsicht((['aktuell', 'neu', 'neben'] as const)[Number(e.key) - 1]!);
@@ -449,7 +463,7 @@ export function EditorSeite({
           <button type="button" className="btn" disabled title="folgt mit Meilenstein 5">
             <Sym n="monitor" /> Auf Desktop speichern
           </button>
-          <button type="button" className="btn primary" disabled={!onPdf} title={onPdf ? `${STRG} + P` : 'folgt mit Meilenstein 4'} onClick={onPdf}>
+          <button type="button" className="btn primary" title={`${STRG} + P`} onClick={() => setPdfOffen(true)}>
             <Sym n="pdf" /> PDF / E-Mail
           </button>
           <span className="mehr-menu">
@@ -575,6 +589,20 @@ export function EditorSeite({
             {!nur && gesamtKarte(fassung, summe, fassung === 'neu')}
             {!nur && fassung === 'neu' && <Vorteile u={u} sa={sa.gesamtMonat} sn={sn.gesamtMonat} />}
           </div>
+        )}
+        {pdfOffen && (
+          <PdfDialog
+            editor={editor}
+            u={u}
+            kunde={kunde.name}
+            passwortStandard={pdfPasswortStandard}
+            ziel={pdfZiel}
+            onSchliessen={() => setPdfOffen(false)}
+            onFertig={(text) => {
+              setPdfOffen(false);
+              setHinweis((h) => ({ text, n: (h?.n ?? 0) + 1, info: true }));
+            }}
+          />
         )}
         <Hinweis
           h={hinweisDaten}

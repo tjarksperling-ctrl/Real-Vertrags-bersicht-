@@ -6,7 +6,8 @@ import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } from 'e
 import { mkdir, readFile, rename, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { userInfo } from 'node:os';
-import type { AppInfo, PdfAuftrag, PdfErgebnis } from '../shared/api';
+import type { AppInfo, DruckDaten, PdfAuftrag, PdfErgebnis } from '../shared/api';
+import { randomUUID } from 'node:crypto';
 import type { Darstellung } from '../shared/modell/typen';
 
 const datenOrdner = () => process.env['VTUE_DATEN'] || join(app.getPath('userData'), 'daten');
@@ -73,41 +74,66 @@ function fensterOeffnen(): BrowserWindow {
 
 // ---------------------------------------------------------------- PDF (Meilenstein 4)
 
+const auftraege = new Map<string, DruckDaten>();
+
+/** Seitenzahl eines (unverschlüsselten) PDFs. */
+function seitenZahl(pdf: Buffer): number {
+  return (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) ?? []).length;
+}
+
 /** Zeichnet die Druckansicht in einem unsichtbaren Fenster und erzeugt daraus das PDF (A4, immer hell). */
 async function pdfErstellen(auftrag: PdfAuftrag, eltern: BrowserWindow | null): Promise<PdfErgebnis> {
   let ziel = auftrag.ziel;
+  if (auftrag.vorschau) ziel = join(app.getPath('temp'), auftrag.dateiname);
   if (!ziel) {
-    const r = await dialog.showSaveDialog(eltern ?? undefined!, {
+    const optionen = {
       title: 'PDF speichern',
       defaultPath: join(app.getPath('documents'), auftrag.dateiname),
       filters: [{ name: 'PDF', extensions: ['pdf'] }],
-    });
+    };
+    const r = eltern ? await dialog.showSaveDialog(eltern, optionen) : await dialog.showSaveDialog(optionen);
     if (r.canceled || !r.filePath) return { pfad: null };
     ziel = r.filePath;
   }
+  const schluessel = randomUUID();
+  auftraege.set(schluessel, { daten: auftrag.daten, kunde: auftrag.kunde, optionen: auftrag.optionen, datum: auftrag.datum });
   const win = new BrowserWindow({ show: false, width: 794, height: 1123, webPreferences: webPreferences() });
   try {
     const bereit = new Promise<void>((ok, fehler) => {
       const t = setTimeout(() => fehler(new Error('Druckansicht nicht bereit')), 20000);
-      ipcMain.once('druck:bereit', () => {
+      const h = (e: Electron.IpcMainEvent) => {
+        if (e.sender !== win.webContents) return;
         clearTimeout(t);
+        ipcMain.off('druck:bereit', h);
         ok();
-      });
+      };
+      ipcMain.on('druck:bereit', h);
     });
-    await seiteLaden(win, auftrag.route);
+    win.webContents.setZoomFactor(1);
+    await seiteLaden(win, `druck?s=${schluessel}`);
     await bereit;
-    const pdf = await win.webContents.printToPDF({
-      pageSize: 'A4',
-      printBackground: true,
-      preferCSSPageSize: true,
-      margins: { top: 0, bottom: 0, left: 0, right: 0 },
-    });
+    let pdf: Buffer = Buffer.from(
+      await win.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true, margins: { top: 0, bottom: 0, left: 0, right: 0 } }),
+    );
+    const seiten = seitenZahl(pdf);
+    if (auftrag.passwort) pdf = await verschluesseln(pdf, auftrag.passwort);
     await writeFile(ziel, pdf);
-    const seiten = (pdf.toString('latin1').match(/\/Type\s*\/Page[^s]/g) ?? []).length;
+    if (auftrag.vorschau) void shell.openPath(ziel);
     return { pfad: ziel, seiten };
+  } catch (e) {
+    return { pfad: null, fehler: (e as Error).message };
   } finally {
+    auftraege.delete(schluessel);
     win.destroy();
   }
+}
+
+/** PDF-Passwort (Bild 5 v2): AES-256, Öffnen nur mit Passwort. */
+async function verschluesseln(pdf: Buffer, passwort: string): Promise<Buffer> {
+  const { PDFDocument } = await import('@cantoo/pdf-lib');
+  const doc = await PDFDocument.load(pdf);
+  doc.encrypt({ userPassword: passwort, ownerPassword: randomUUID() + passwort, permissions: { printing: 'highResolution', copying: true, modifying: false } });
+  return Buffer.from(await doc.save({ useObjectStreams: false }));
 }
 
 /** „tjark.sperling“ → „Tjark S.“ */
@@ -126,6 +152,7 @@ function ipcEinrichten(): void {
     version: app.getVersion(),
     benutzer: process.env['VTUE_BENUTZER'] || anzeigename(userInfo().username),
     demo: process.env['VTUE_DEMO'] === '1',
+    ...(process.env['VTUE_PDF_ZIEL'] ? { pdfZiel: process.env['VTUE_PDF_ZIEL'] } : {}),
   }));
   ipcMain.handle('daten:laden', async (_e, name: string) => {
     const b = await lesenOderNull(pfad(name));
@@ -147,6 +174,7 @@ function ipcEinrichten(): void {
     nativeTheme.themeSource = d === 'hell' ? 'light' : d === 'dunkel' ? 'dark' : 'system';
   });
   ipcMain.handle('pdf:erstellen', (e, auftrag: PdfAuftrag) => pdfErstellen(auftrag, BrowserWindow.fromWebContents(e.sender)));
+  ipcMain.handle('druck:daten', (_e, schluessel: string) => auftraege.get(schluessel) ?? null);
 }
 
 if (process.env['VTUE_DATEN']) app.setPath('userData', join(process.env['VTUE_DATEN'], 'profil'));

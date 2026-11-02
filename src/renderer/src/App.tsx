@@ -179,6 +179,8 @@ function Oberflaeche({
             setLeisteOffen(false);
           }}
           benutzer={info.benutzer}
+          pdfPasswortStandard={gespeichert.einstellungen.pdfPasswortStandard}
+          pdfZiel={info.pdfZiel}
           band={
             band?.uebersichtId === offen.id ? (
               <div className="nk-band">

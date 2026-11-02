@@ -8,6 +8,7 @@
 import { createRequire } from 'node:module';
 import { mkdtempSync, rmSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
+import { execFileSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
 
 const require = createRequire(import.meta.url);
@@ -207,7 +208,44 @@ async function m3() {
   }
 }
 
-const schritte = { m2, m3 };
+/** M4: PDF-Dialog (Bild 5 v2) und erzeugtes PDF (Bild 7 v1); Seiten werden mit pdftoppm zu PNG. */
+async function m4() {
+  const ausgabe = mkdtempSync(join(tmpdir(), 'vtue-pdf-'));
+  const ziel = join(ausgabe, 'beide.pdf');
+  const { app, win, daten } = await starten({ VTUE_PDF_ZIEL: ziel });
+  try {
+    await win.click('.nav li:has-text("Familie Berger")');
+    await win.waitForSelector('.bereich.v1.vers');
+    await win.keyboard.press('Control+p');
+    await win.waitForSelector('.sheet.ex2');
+    await pause(200);
+    await bild(win, 'm4-pdf-dialog');
+    await win.click('.sheet.ex2 footer .btn.primary');
+    await win.waitForSelector('.ub-toast:has-text("PDF gespeichert")', { timeout: 30000 });
+    console.log('  ' + (await win.textContent('.ub-toast span')));
+    execFileSync('pdftoppm', ['-png', '-r', '110', ziel, join(bilder, 'app-m4-pdf-s')]);
+    // Variante: Nur Neu, Ersparnis aus, Titel im Kopf, mit Passwort
+    await win.keyboard.press('Control+p');
+    await win.waitForSelector('.sheet.ex2');
+    await win.click('.choice:has-text("Nur Neu")');
+    await win.click('.optrow:has-text("Ersparnis anzeigen") .switch');
+    await win.click('.cbl');
+    await win.click('.optrow:has-text("Mit Passwort") .switch');
+    await win.fill('.pw-feld input', 'geheim123');
+    await pause(150);
+    await bild(win, 'm4-pdf-dialog-passwort');
+    await win.click('.sheet.ex2 footer .btn.primary');
+    await win.waitForSelector('.ub-toast:has-text("mit Passwort")', { timeout: 30000 });
+    console.log('  ' + (await win.textContent('.ub-toast span')));
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+  }
+  console.log('  PDF:', ziel);
+  return ausgabe;
+}
+
+const schritte = { m2, m3, m4 };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

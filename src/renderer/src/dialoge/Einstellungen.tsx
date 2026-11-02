@@ -151,6 +151,20 @@ export function EinstellungenDialog({
           ))}
         </div>
         <p className="kk-lead klein">Automatisch folgt Windows bzw. macOS. Gilt nur für Sie. Das PDF ist immer hell.</p>
+        <div className="ex-sec">PDF</div>
+        <div className="optrow">
+          <div>
+            PDF standardmäßig mit Passwort schützen<small>Im Dialog „PDF erstellen“ ist „Mit Passwort schützen“ dann schon an.</small>
+          </div>
+          <Schalter
+            an={entwurf.einstellungen.pdfPasswortStandard}
+            onChange={(an) => {
+              const neu = { ...entwurf, einstellungen: { ...entwurf.einstellungen, pdfPasswortStandard: an } };
+              setEntwurf(neu);
+              onSpeichern({ ...gespeichert, einstellungen: neu.einstellungen });
+            }}
+          />
+        </div>
         <div className="ex-sec">Tastenkürzel</div>
         <KuerzelListe />
       </>

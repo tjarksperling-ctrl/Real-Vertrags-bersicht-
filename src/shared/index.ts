@@ -14,3 +14,4 @@ export * from './editor/befehle';
 export * from './editor/bestand';
 export * from './editor/vorschlaege';
 export * from './fassung/vergleich';
+export * from './pdf/auftrag';

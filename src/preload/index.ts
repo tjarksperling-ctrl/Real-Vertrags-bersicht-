@@ -10,6 +10,7 @@ const api: Api = {
   einstellungenSpeichern: (daten) => ipcRenderer.invoke('einstellungen:speichern', daten),
   darstellungSetzen: (d) => ipcRenderer.invoke('darstellung:setzen', d),
   pdfErstellen: (auftrag) => ipcRenderer.invoke('pdf:erstellen', auftrag),
+  druckDaten: (schluessel) => ipcRenderer.invoke('druck:daten', schluessel),
   druckBereit: () => ipcRenderer.send('druck:bereit'),
 };
 

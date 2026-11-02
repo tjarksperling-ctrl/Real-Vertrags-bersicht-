@@ -4,7 +4,7 @@ html, body, #wurzel { height: 100%; }
 body { background: var(--bg); overflow: hidden; }
 .app { height: 100vh; position: relative; }
 .laedt { height: 100vh; background: var(--bg); }
-.overlay { position: fixed; inset: 0; }
+.overlay { position: fixed; inset: 0; z-index: 50; }
 
 /* Knöpfe ohne eigenes Aussehen – Mockup-Klassen bestimmen das Bild (:where = keine Spezifität) */
 :where(.knopf-rein) { font: inherit; color: inherit; background: none; border: 0; margin: 0; padding: 0; text-align: inherit; cursor: default; }
@@ -204,3 +204,17 @@ td .sy-tag { justify-content: flex-end; }
 :root.dunkel .sy-aus { background: var(--side); border-color: var(--line); color: var(--text); }
 :root.dunkel .sy-zeile.on { background: #183224; }
 .toolbar.v1 { position: relative; z-index: 20; }
+
+/* ---------- M4: PDF-Dialog ---------- */
+button.choice { width: 100%; }
+.choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.optrow.gesperrt, .ex-sec.gesperrt { opacity: .5; }
+.optrow.gesperrt .switch, .ex-sec.gesperrt .switch { pointer-events: none; }
+button.cbl { text-align: left; }
+.pw-feld { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; background: var(--card); width: 200px; margin-left: auto; }
+.pw-feld.fehler { border-color: var(--red); }
+.pw-feld svg.i { width: 14px; height: 14px; color: var(--muted); }
+.pw-feld .pw-eye { display: grid; place-items: center; color: var(--faint); }
+.pdf-fehler { margin-top: 10px; color: var(--red); font-size: 12px; }
+:root.dunkel .choice .mini i { background: var(--card); }
+:root.dunkel .cbx:not(.on) { background: var(--card); }

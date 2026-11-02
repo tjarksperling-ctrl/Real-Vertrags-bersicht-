@@ -1,6 +1,6 @@
 # Übergabe – Vertragsübersicht (Desktop-App)
 
-**Stand:** 02.11.2026 (Sitzung 25) · Branch `claude/relaxed-meitner-3lp1le` · M2-Aufbau vorgeschlagen + 4 Entscheidungen getroffen · **Nutzer schläft: nächster Chat arbeitet ohne Zwischen-STOPP, Freigaben gesammelt am nächsten Tag** (siehe Übergabeprotokoll Sitzung 25) · Vorher Sitzung 24: Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 Meilenstein 1 umgesetzt (88 Tests grün) und vom Nutzer freigegeben** · nächstes: Meilenstein 2 (Editor) (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
+**Stand:** 02.11.2026 (Sitzung 26) · Branch `claude/milestones-2-3-4-numiz3` (Stand von `claude/relaxed-meitner-3lp1le` übernommen) · **M2 Editor, M3 Aktuell/Neu + Sync + Vorteile, M4 PDF umgesetzt (ohne Zwischen-STOPP), 132 Tests grün – Freigabe ausstehend** (siehe Übergabeprotokoll Sitzung 26) · Vorher Sitzung 25 · Branch `claude/relaxed-meitner-3lp1le` · M2-Aufbau vorgeschlagen + 4 Entscheidungen getroffen · **Nutzer schläft: nächster Chat arbeitet ohne Zwischen-STOPP, Freigaben gesammelt am nächsten Tag** (siehe Übergabeprotokoll Sitzung 25) · Vorher Sitzung 24: Branch `claude/epic-hawking-njwxvq` (Stand von `claude/cleanup-gap-list-phase-3-2hyoia` per Fast-Forward übernommen) · **Phase 4 Meilenstein 1 umgesetzt (88 Tests grün) und vom Nutzer freigegeben** · nächstes: Meilenstein 2 (Editor) (siehe „Phase 4 – Fortschritt“) · Vorher Sitzung 23 · Phase 3 (Mockups): **alle Bilder freigegeben** (1 v4, 1b v1, 2 v3, 3 v3, 4 v2, 5 v2, 6 v1, 6b v1, 7 v1, 8 v1, 9 v1, 10 v1, 11 v1, 12 v4, 13 v1, 14 v2, **15 v1 Mehrbenutzer**, **16 v1 Datenschutz**) · Lückenliste bereinigt, **alle 7 offenen Punkte vor Phase 4 geklärt** · **Phase 3 vom Nutzer freigegeben** (Sitzung 23) · nächstes: Phase 4 Meilenstein 1
 Weitere Dateien: `STAND.md` (Briefing kompakt + alle Entscheidungen), `PLAN.md` (freigegebener Plan), `CLAUDE.md` (Spezifikation + Regeln).
 
 ## 1. Projektziel
@@ -179,7 +179,8 @@ Konkret unübersichtlich:
 | 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · ✅ **freigegeben** (Sitzung 24, „Freigeben“) |
 | 2 Editor | ✅ umgesetzt Sitzung 26 (ohne Zwischen-STOPP laut Sonderregel), `npm test` + `npm run typecheck` grün, Screenshots `mockups/bilder/app-m2-*.png` · ⏳ **Freigabe ausstehend** (Aufbau aus Sitzung 25 + vorläufige Entscheidungen unten) |
 | 3 Aktuell/Neu + Sync + Vorteile | ✅ umgesetzt Sitzung 26, Tests + Typprüfung grün, Screenshots `mockups/bilder/app-m3-*.png` · ⏳ **Freigabe ausstehend** |
-| 4 PDF · 5 Zusatzfunktionen | offen |
+| 4 PDF | ✅ umgesetzt Sitzung 26, Tests + Typprüfung grün, PDF-Seiten `mockups/bilder/app-m4-pdf-s-*.png`, Dialog `app-m4-pdf-dialog*.png` · ⏳ **Freigabe ausstehend** |
+| 5 Zusatzfunktionen (Mehrbenutzer/OneDrive, Dateien `.vtue`, KI, Outlook, Aufgaben, Schnellstart, Kundenakte, Updates, Mac) | offen – Teile brauchen Entra ID, KI-Schlüssel, Code-Signatur |
 
 **Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
 - Struktur: `package.json`, `tsconfig.json`, `vitest.config.ts`; `src/shared/` reine Logik ohne Electron/React (`modell/` Typen, IDs, Standard-Vorlagen; `rechnen/` Geld/Cent, Zahlweise, Summen, Vorteile; `fassung/` Neu als Kopie von Aktuell mit `quelleId`); `src/main/` (Electron, ab M2), `src/renderer/` (React, ab M2). Tests neben dem Code (`*.test.ts`). M1-Abhängigkeiten nur `typescript` + `vitest` (dev).
@@ -236,6 +237,19 @@ Konkret unübersichtlich:
   5. Leiste „Übernehmen ist aus“ in „Neu“ und „Nebeneinander“, nicht in „Aktuell“.
   6. „Neu wieder wie Aktuell“ im Menü „…“ in allen Ansichten, mit Hinweis + Rückgängig.
   7. Mehrbeitrag: Kacheln „Mehrbeitrag pro Monat/Jahr“ in Orange; bei gleichem Betrag keine Kacheln. Vorteile: Enter legt den nächsten Stichpunkt an, × beim Darüberfahren.
+
+**Meilenstein 4 – umgesetzt (Sitzung 26, Freigabe ausstehend):**
+- **Umfang:** Dialog „PDF erstellen“ wie Bild 5 v2 (Knopf „PDF / E-Mail“ und Strg+P): Nur Aktuell / Nur Neu / Beide, Vergleichsseite (nur bei Beide), Vorteile (= Schalter „im PDF“), Ersparnis anzeigen (= Schalter in „Neu“), Titel im PDF-Kopf mit Kopfzeilen-Vorschau, Mit Passwort schützen (AES-256), „Vorschau öffnen“ (temporäre Datei im PDF-Programm), „PDF speichern“ (Speichern-Dialog, Vorschlag `Vertragsuebersicht_Berger_2026-11-02.pdf`) · PDF wie Bild 7 v1: nur Kopfzeile, auf jeder Seite wiederholt (auch wenn eine Untergruppe über die Seite läuft – mit 45 Verträgen geprüft), gleiche Komponenten-Optik und Rechenlogik wie die App, Bereiche/Untergruppen nicht ungünstig getrennt, Bemerkungen vollständig, immer hell · „Beide“ = Aktuell, dann Neu, optional Vergleichsseite · Einstellungen → Allgemein: „PDF standardmäßig mit Passwort schützen“.
+- **Technik:** `src/shared/pdf/auftrag.ts` (+Test: Abschnitte, Bereiche fürs PDF, Dateiname, Vergleichszeilen) · `src/renderer/src/druck/Druck.tsx` + `stil/druck.css` (Druckansicht, Route `#druck?s=…`) · `src/renderer/src/dialoge/Pdf.tsx` · Hauptprozess: unsichtbares Fenster bekommt den Stand (Yjs) direkt übergeben, `printToPDF` (A4, `@page`-Ränder), Verschlüsselung mit `@cantoo/pdf-lib` (neue Abhängigkeit, nur für das PDF-Passwort). Test-Hilfe: `VTUE_PDF_ZIEL=<Datei>` speichert ohne Dialog.
+- **Geprüft:** Beispielkunde „Beide + Vergleichsseite“ = 5 Seiten wie Bild 7 (Seitenbilder `app-m4-pdf-s-1…5.png`); mit Passwort: verschlüsselt, öffnet nur mit Passwort (mit pypdf geprüft).
+- **Vorläufige Entscheidungen M4 (vorläufig – Freigabe ausstehend):**
+  1. Keine Seitenzahlen im PDF (im Mockup war die graue Seitenbeschriftung nur Vorschau-Hinweis).
+  2. Vorteile im PDF: bei „Beide + Vergleichsseite“ auf der Vergleichsseite (wie Bild 7), sonst direkt nach dem Gesamtbetrag „Neu“; bei „Nur Aktuell“ nie.
+  3. Untergruppen ohne Verträge und Bereiche ohne Verträge erscheinen nicht im PDF (wie der Hinweis „erscheint erst im PDF, wenn ein Vertrag eingetragen ist“).
+  4. DARL im PDF: Zahlweise klein hinter der Rate nur, wenn nicht monatlich.
+  5. „Per E-Mail senden“ sichtbar, aber gesperrt bis Outlook (M5); Hauptknopf heißt deshalb „PDF speichern“ statt „Erstellen & senden“. Seitenzahl in den Inhalts-Kacheln ersetzt durch „n Bereiche“ (Seitenzahl steht nach dem Speichern im Hinweis).
+  6. Passwort mindestens 4 Zeichen; Öffnen nur mit Passwort, Drucken/Kopieren erlaubt, Ändern nicht.
+  7. Läuft eine Untergruppe über eine Seite, wiederholt sich die Kopfzeile, die Spaltenköpfe nicht.
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |
@@ -492,3 +506,27 @@ Konkret unübersichtlich:
 
 **Prompt für den nächsten Chat:**
 > Lies HANDOFF.md auf dem Branch claude/relaxed-meitner-3lp1le und arbeite nach CLAUDE.md und dem Übergabeprotokoll Sitzung 25. Übernimm zuerst den Stand dieses Branches in deinen Arbeitsbranch und prüfe mit `npm install && npm test && npm run typecheck`, dass alles grün ist. Ich schlafe und gebe erst morgen frei: Arbeite deshalb ohne Zwischen-STOPP und ohne Rückfragen alles ab, was ohne externe Konten möglich ist – zuerst Meilenstein 2 (Editor) genau nach dem „Meilenstein 2 – Vorschlag“ und den Entscheidungen aus Sitzung 25, danach Meilenstein 3 und danach Meilenstein 4. Triff nötige Entscheidungen selbst passend zu den freigegebenen Mockups und Festlegungen und notiere sie in HANDOFF.md als „vorläufig – Freigabe ausstehend“. Committe und pushe nach jedem Meilenstein (Tests und Typprüfung grün, App-Screenshots zum Vergleich mit den Mockups). Halte den Fortschritt laufend in HANDOFF.md fest und erstelle am Ende ein Übergabeprotokoll mit einer kurzen Liste aller Punkte, die ich freigeben soll, und dem Prompt für den nächsten Chat.
+
+## Übergabeprotokoll Sitzung 26 – Meilensteine 2, 3 und 4 umgesetzt (02.11.2026)
+- **Branch:** `claude/milestones-2-3-4-numiz3` (Stand von `claude/relaxed-meitner-3lp1le` per Fast-Forward übernommen). Je Meilenstein ein Commit, alles gepusht. `npm install && npm test && npm run typecheck` grün (132 Tests in 12 Dateien).
+- **Arbeitsweise:** laut Sonderregel Sitzung 25 ohne Zwischen-STOPP und ohne Rückfragen. Alle selbst getroffenen Entscheidungen stehen unter „Phase 4 – Fortschritt“ bei M2, M3, M4 als „vorläufig – Freigabe ausstehend“.
+- **Erledigt:** M2 Editor (Electron + React + Yjs, Drag & Drop, Vorlagen, Vorschläge, Tastatur, Hell/Dunkel), M3 (Neu mit Markierungen, Nebeneinander, Sync-Schalter mit Erklärkarte und „Übernehmen ist aus“, Vorteile), M4 (PDF-Dialog, PDF wie Bild 7, Passwortschutz). App-Screenshots zum Vergleich: `mockups/bilder/app-m2-*.png`, `app-m3-*.png`, `app-m4-*.png`.
+- **Befehle:** `npm run build` · `npm run start` (gebaute App) · `npm run dev` · Vorführdaten `VTUE_DEMO=1` · Screenshots `npm run build && xvfb-run -a npm run screenshots -- alle` (m2 | m3 | m4).
+- **Stolpersteine:** Electron-Download brauchte einen zweiten Versuch (`node node_modules/electron/install.js`); als root nur mit `--no-sandbox` startbar (nur Screenshots). Dunkelmodus läuft über die Klasse `dunkel` am Dokument (die Media-Query reagierte in Electron nicht zuverlässig). Kopfzeile auf jeder PDF-Seite über wiederholten Tabellenkopf.
+- **Nicht angefangen (externe Konten nötig):** OneDrive-Abgleich/Mehrbenutzer, Outlook/E-Mail, KI-Import, Code-Signatur/Installer. Ebenfalls M5: Aufgaben, Schnellstart, Kundenakte, Angepinnt, „Auf Desktop speichern“ (`.vtue`), Datenschutz-Seite, Updates.
+
+**Bitte freigeben (kurze Liste):**
+1. **M2 Editor** insgesamt (Screenshots `app-m2-*`) – inkl. Stil 1:1 aus den Mockups, Lucide-Pfade statt `lucide-react`, variable Inter-Schrift.
+2. **M2 Bedienung:** Umschalt+Enter = neue Zeile in der Bemerkung · Esc entfernt leere neue Zeile · Betrag 0 als „–“ · DARL-Zahlweise als Kurzauswahl hinter der Rate · 12 Symbole je Bereich · Entf löscht markierte Zeile · Klick auf Bereichsnamen zeigt nur diesen Bereich.
+3. **M2 Vereinfachungen bis M5:** schlichte Startseite, keine „Angepinnt“, Name aus dem Windows-Konto, Agentur-Vorlagen lokal bearbeitbar, „Liste bearbeiten (148 Namen)“ und „Vorlage wechseln“ entfallen.
+4. **Dunkelmodus** (Farben aus Tokens abgeleitet, `app-m2-aktuell-dunkel.png`).
+5. **Sync-Regel:** Wert in „Neu“ bleibt, wenn er dort selbst geändert wurde (je Feld); neue Elemente erscheinen in „Neu“ an passender Stelle.
+6. **M3** insgesamt (Screenshots `app-m3-*`) – Markierung nur für den Hauptbetrag, keine Kennzeichnung neuer/entfernter Verträge.
+7. **„Nebeneinander“** ohne ×/Mülleimer/Drag & Drop (Löschen per Entf), Kästchen wirkt auf beide Fassungen.
+8. **Sync-Karte** nur beim Darüberfahren; Leiste „Übernehmen ist aus“ nur in „Neu“/„Nebeneinander“; „Neu wieder wie Aktuell“ in allen Ansichten.
+9. **M4 PDF** insgesamt (Seiten `app-m4-pdf-s-1…5`, Dialog `app-m4-pdf-dialog*`) – keine Seitenzahlen, Position der Vorteile, leere Untergruppen nicht im PDF.
+10. **PDF-Passwort** über neue Abhängigkeit `@cantoo/pdf-lib` (AES-256, mind. 4 Zeichen); „Per E-Mail senden“ gesperrt bis M5, Knopf „PDF speichern“.
+11. **Nächster Schritt:** Reihenfolge für M5 (Vorschlag: zuerst ohne externe Konten – Aufgaben, Schnellstart, Kundenakte/Angepinnt, `.vtue`-Datei, Datenschutz-Seite; danach OneDrive/Outlook/KI nach Entra-ID-Registrierung und KI-Schlüssel).
+
+**Prompt für den nächsten Chat:**
+> Lies HANDOFF.md auf dem Branch claude/milestones-2-3-4-numiz3 und arbeite nach CLAUDE.md und dem Übergabeprotokoll Sitzung 26. Übernimm zuerst den Stand dieses Branches in deinen Arbeitsbranch und prüfe mit `npm install && npm test && npm run typecheck`, dass alles grün ist (bei Bedarf `npm run build` und Screenshots per `xvfb-run -a npm run screenshots -- alle`). Ich gebe dir meine Rückmeldung zur Freigabeliste aus Sitzung 26 (Punkte 1–11): setze Änderungswünsche zuerst um, trage freigegebene Punkte in HANDOFF.md als „freigegeben“ ein. Schlag mir danach den Aufbau von Meilenstein 5 vor (zuerst die Teile ohne externe Konten), kläre offene Punkte per Auswahl-Rückfrage und warte auf meine Freigabe, bevor du Code schreibst. Halte den Fortschritt laufend in HANDOFF.md fest und erstelle am Ende ein Übergabeprotokoll mit dem Prompt für den nächsten Chat.

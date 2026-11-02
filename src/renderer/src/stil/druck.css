@@ -1,0 +1,16 @@
+/* Druckansicht fürs PDF (Bild 7 v1) – A4, immer hell; Kopfzeile wiederholt sich über den Tabellenkopf auf jeder Seite. */
+@page { size: A4; margin: 13mm 14mm 12mm; }
+html.druck, html.druck body, html.druck #wurzel { height: auto; overflow: visible; background: #fff; }
+html.druck body { font-size: 8.6pt; line-height: 1.4; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+html.druck .page.druck-seite { width: auto; height: auto; padding: 0; box-shadow: none; overflow: visible; background: #fff; break-after: page; }
+html.druck .page.druck-seite:last-child { break-after: auto; }
+.p-rahmen { width: 100%; border-collapse: collapse; }
+.p-rahmen > thead > tr > td, .p-rahmen > tbody > tr > td { padding: 0; vertical-align: top; }
+.p-bereich { break-inside: avoid; }
+.p-ug, .p-summe, .p-gesamt, .p-vorteile, .p-vgl, table.vgl tr { break-inside: avoid; }
+.p-bk, .p-sk { break-after: avoid; }
+.p-summe { break-before: avoid; }
+table.pt .bem { white-space: pre-wrap; }
+table.pt .strich { color: var(--faint); }
+.p-gesamt .neben b.mehr { color: #ff9f8a; }
+.p-vorteile .ersparnis.mehrbeitrag div { color: var(--orange); border-color: color-mix(in srgb, var(--orange) 30%, transparent); }
