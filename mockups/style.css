@@ -302,3 +302,55 @@ body.index { background: var(--bg); }
 
 /* Betragsspalten: Überschrift rechtsbündig wie die Werte */
 table.vt th.num, table.pt th.num, table.review th.num { text-align: right; }
+
+/* ---------- Startseite v2 (Bild 1, Überarbeitung) ---------- */
+.toolbar.start { padding: 14px 28px; }
+.toolbar.start h1 { font-size: 20px; }
+.toolbar.start .datum { color: var(--muted); font-size: 12.5px; margin-top: 1px; }
+.content.start .section-title { font-size: 14px; margin-bottom: 10px; }
+.section-title .btn.ghost { font-weight: 500; }
+.hdr-note { font-size: 12px; font-weight: 400; color: var(--muted); }
+.links { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 26px; }
+.lnk { display: flex; align-items: center; gap: 12px; background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; }
+.lnk .sym { width: 34px; height: 34px; border-radius: 9px; display: grid; place-items: center; flex: none; }
+.lnk .sym svg.i { width: 19px; height: 19px; }
+.lnk b { display: block; font-weight: 600; font-size: 13px; }
+.lnk small { display: block; color: var(--muted); font-size: 11.5px; }
+.lnk svg.ext { margin-left: auto; width: 14px; height: 14px; color: var(--faint); align-self: flex-start; }
+.lnk.add { border-style: dashed; background: transparent; color: var(--muted); }
+.lnk.add .sym { background: var(--line-soft); color: var(--muted); }
+.lnk.add b { font-weight: 500; }
+.grid-start { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+.tgroup { display: flex; align-items: center; gap: 8px; padding: 10px 16px 6px; font-size: 11.5px; font-weight: 650; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+.tgroup em { font-style: normal; font-weight: 600; background: var(--line-soft); border-radius: 99px; padding: 0 7px; letter-spacing: 0; }
+.tgroup.rot span { color: var(--red); } .tgroup.rot em { background: #fdecec; color: var(--red); }
+.tgroup.orange span { color: var(--orange); } .tgroup.orange em { background: var(--orange-soft); color: var(--orange); }
+.tgroup + .trow { border-top: 0; }
+.trow + .tgroup { border-top: 1px solid var(--line); margin-top: 4px; }
+.trow { display: flex; align-items: center; gap: 12px; padding: 9px 16px; border-top: 1px solid var(--line-soft); }
+.trow .box { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--faint); flex: none; }
+.trow .tmain { flex: 1; min-width: 0; }
+.trow .kunde { display: flex; align-items: center; gap: 8px; font-size: 14.5px; font-weight: 650; }
+.trow .kunde .avatar { width: 22px; height: 22px; font-size: 9px; }
+.trow .ttext { color: var(--text); font-size: 13px; margin: 1px 0 0 30px; }
+.trow .tside { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.trow .due { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.trow .due.over { color: var(--red); font-weight: 600; }
+.trow .due.today { color: var(--orange); font-weight: 600; }
+.prio { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; color: var(--red); }
+.prio svg.i { width: 12px; height: 12px; }
+.tmore { padding: 11px 16px; border-top: 1px solid var(--line); color: var(--accent); font-weight: 500; }
+.crow { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-top: 1px solid var(--line-soft); }
+.crow:first-child { border-top: 0; }
+.crow > .avatar { width: 34px; height: 34px; font-size: 12px; }
+.crow .cmain { flex: 1; min-width: 0; }
+.crow .cmain b { display: block; font-size: 14.5px; font-weight: 650; }
+.crow .cmain small { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
+.crow .live { display: inline-flex; align-items: center; gap: 6px; color: var(--orange); font-weight: 500; }
+.crow .live .avatar { width: 16px; height: 16px; font-size: 7px; }
+.crow .cval { width: 84px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+.crow .cval small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; }
+.crow .cdiff { width: 78px; text-align: right; }
+.diff0 { font-size: 12px; color: var(--faint); }
+.content.start .section-title .btn.ghost { font-size: 13px; }
+.crow .cmain small { white-space: nowrap; }

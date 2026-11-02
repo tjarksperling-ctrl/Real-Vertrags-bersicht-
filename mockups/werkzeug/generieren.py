@@ -38,6 +38,11 @@ P = {
  'lock': '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
  'columns': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M12 3v18"/>',
  'info': '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+ 'globe': '<circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>',
+ 'calc': '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
+ 'chat': '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+ 'ext': '<path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>',
+ 'flag': '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
  'user': '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
 }
 def ic(n, cls='i'):
@@ -262,10 +267,10 @@ def vorteile_html():
 KUNDEN = [('Familie Berger', 'FB', 'a1', '1'), ('Andreas Köhler', 'AK', 'a2', ''), ('Lea Nowak', 'LN', 'a3', ''),
           ('Jonas & Mira Albers', 'JA', 'a4', ''), ('Elif Yılmaz', 'EY', 'a5', ''), ('Thomas Brandt', 'TB', '', '1'),
           ('Katharina Vogt', 'KV', 'a3', ''), ('Familie Schreiber', 'FS', 'a1', '')]
-def sidebar(sel='Familie Berger'):
+def sidebar(sel='Familie Berger', v2=False):
     li = ''
     for n, k, a, badge in KUNDEN:
-        b = f'<span class="badge orange">{badge}</span>' if badge else ''
+        b = f'<span class="badge orange">{badge}</span>' if badge and not v2 else ''
         li += f'<li class="{"sel" if n == sel else ""}"><span class="avatar {a}">{k}</span>{n}{b}</li>'
     return f'''<aside class="sidebar">
   <div class="top">
@@ -273,7 +278,7 @@ def sidebar(sel='Familie Berger'):
     <button class="btn primary" style="justify-content:center">{ic("plus")} Neuer Kunde</button>
   </div>
   <div class="nav-title" style="display:flex">Start</div>
-  <ul class="nav" style="flex:none"><li class="{"sel" if sel == "start" else ""}">{ic("home")} Übersicht</li><li>{ic("tasks")} Aufgaben <span class="badge orange">2</span></li></ul>
+  <ul class="nav" style="flex:none"><li class="{"sel" if sel == "start" else ""}">{ic("home")} Übersicht</li><li>{ic("tasks")} Aufgaben <span class="badge orange">{"3" if v2 else "2"}</span></li></ul>
   <div class="nav-title">Kunden</div>
   <ul class="nav">{li}</ul>
   <div class="bottom">
@@ -323,35 +328,50 @@ def side_body():
     return sidebar() + f'<main class="main">{toolbar("Nebeneinander")}<div class="content">{hint}{h}</div></main>'
 
 # ---------------- Start ----------------
+# Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
+# nur ein „Neuer Kunde“, kein KI-Import auf der Startseite, Aufgaben nach Dringlichkeit gruppiert.
 def start_body():
-    tiles = [('Outlook', 'O', '#0a64d0'), ('Maklerportal', 'M', '#5e5ce6'), ('Vergleichsrechner', 'V', '#ff9f0a'),
-             ('Teams', 'T', '#4b53bc'), ('Bank-Portal', 'B', '#30b0c7'), ('Kalender', 'K', '#ff375f'), ('Tarifrechner Kfz', 'K', '#34c759')]
-    th = ''.join(f'<div class="tile"><span class="ic" style="background:{c}">{l}</span>{n}</div>' for n, l, c in tiles)
-    th += f'<div class="tile add"><span class="ic">{ic("plus")}</span>Link hinzufügen</div>'
-    cards = [('Familie Berger', 'FB', 'a1', 'Sabine K. bearbeitet gerade', GA, GN),
-             ('Lea Nowak', 'LN', 'a3', 'Geändert heute, 09:12 · Tjark S.', 84730, 79910),
-             ('Andreas Köhler', 'AK', 'a2', 'Geändert gestern · Sabine K.', 31240, 31240),
-             ('Thomas Brandt', 'TB', '', 'Geändert 29.10. · Tjark S.', 152900, 148320)]
+    links = [('Outlook', 'mail', 'App', '#0a64d0'), ('Teams', 'chat', 'App', '#4b53bc'), ('Kalender', 'calendar', 'App', '#d63a5a'),
+             ('Maklerportal', 'globe', 'maklerportal.de', '#5e5ce6'), ('Vergleichsrechner', 'calc', 'vergleich.de', '#c77800'),
+             ('Tarifrechner Kfz', 'car', 'kfz-tarif.de', '#1f8a4c'), ('Bank-Portal', 'bank', 'bank-partner.de', '#1f7f95')]
+    lh = ''.join(f'<div class="lnk"><span class="sym" style="color:{c};background:{c}14">{ic(i)}</span><div><b>{n}</b><small>{t}</small></div>{ic("ext", "i ext")}</div>' for n, i, t, c in links)
+    lh += f'<div class="lnk add"><span class="sym">{ic("plus")}</span><div><b>Link hinzufügen</b><small>App oder Webseite</small></div></div>'
+
+    def trow(kunde, kz, av, text, due, cls, prio=False):
+        p = f'<span class="prio">{ic("flag")} Hoch</span>' if prio else ''
+        return (f'<div class="trow"><span class="box"></span><div class="tmain"><div class="kunde"><span class="avatar {av}">{kz}</span>{kunde}</div>'
+                f'<div class="ttext">{text}</div></div><div class="tside">{p}<span class="due {cls}">{due}</span></div></div>')
+    groups = [('Überfällig', 'rot', [trow('Familie Berger', 'FB', 'a1', 'Kfz-Angebot senden', 'seit 2 Tagen', 'over', True)]),
+              ('Heute', 'orange', [trow('Thomas Brandt', 'TB', '', 'Unterlagen BU-Antrag anfordern', 'heute', 'today', True),
+                                   trow('Lea Nowak', 'LN', 'a3', 'Rückruf wegen Bausparvertrag', 'heute', 'today')]),
+              ('Diese Woche', '', [trow('Jonas & Mira Albers', 'JA', 'a4', 'Termin Baufinanzierung vorbereiten', 'Do, 05.11.', ''),
+                                   trow('Elif Yılmaz', 'EY', 'a5', 'Hausrat-Angebot nachfassen', 'Fr, 06.11.', '')])]
+    tk = ''
+    for g, c, rows in groups:
+        tk += f'<div class="tgroup {c}"><span>{g}</span><em>{len(rows)}</em></div>' + ''.join(rows)
+    tk += '<div class="tmore">Später: 2 weitere Aufgaben anzeigen</div>'
+
+    cards = [('Familie Berger', 'FB', 'a1', '<span class="live"><span class="avatar a2">SK</span>Sabine K. ist gerade drin</span>', GA, GN),
+             ('Lea Nowak', 'LN', 'a3', 'heute, 09:12 · Tjark S.', 84730, 79910),
+             ('Andreas Köhler', 'AK', 'a2', 'gestern · Sabine K.', 31240, 31240),
+             ('Thomas Brandt', 'TB', '', '29.10. · Tjark S.', 152900, 148320),
+             ('Katharina Vogt', 'KV', 'a3', '27.10. · Tjark S.', 46815, 46815)]
     ch = ''
     for n, k, a, meta, ga, gn in cards:
         d = gn - ga
-        dd = f'<span class="badge green">{eur(d, True)} / Monat</span>' if d < 0 else '<span class="badge">unverändert</span>'
-        live = '<span class="dot" style="background:#ff9f0a"></span> ' if 'gerade' in meta else ''
-        ch += f'''<div class="ccard"><div class="row"><span class="avatar {a}">{k}</span><div><div class="name">{n}</div><div class="meta">{live}{meta}</div></div></div>
-<div class="vals"><div><span>Aktuell / Monat</span><b>{eur(ga)}</b></div><div><span>Neu / Monat</span><b>{eur(gn)}</b></div><div style="margin-left:auto;align-self:end">{dd}</div></div></div>'''
-    tasks = [('Kfz-Angebot an Familie Berger senden', 'Familie Berger', '31.10.', True),
-             ('Unterlagen BU-Antrag anfordern', 'Thomas Brandt', 'heute', False),
-             ('Rückruf wegen Bausparvertrag', 'Lea Nowak', '05.11.', False),
-             ('Wohngebäude-Kündigung prüfen', 'Thomas Brandt', '12.11.', False)]
-    tk = ''.join(f'<div class="task"><span class="box"></span><div class="t">{t}<small>{c}</small></div><span class="due{" over" if o else ""}">{d}</span></div>' for t, c, d, o in tasks)
-    body = f'''<div class="toolbar"><h1>Übersicht</h1><span class="spacer"></span><button class="btn">{ic("sparkles")} Unterlagen per KI einlesen</button><button class="btn primary">{ic("plus")} Neuer Kunde</button></div>
-<div class="content narrow">
-<div class="section-title">Schnellstart<span class="spacer"></span><span class="btn ghost" style="padding:0">Bearbeiten</span></div>
-<div class="tiles">{th}</div>
-<div class="grid2"><div><div class="section-title">Zuletzt bearbeitet</div><div class="cards">{ch}</div></div>
-<div><div class="section-title">Fällige Aufgaben<span class="spacer"></span><span class="badge orange">2 fällig</span></div><div class="panel">{tk}</div></div></div>
-</div>'''
-    return sidebar('start') + f'<main class="main">{body}</main>'
+        dd = f'<span class="badge green">{eur(d, True)}</span>' if d < 0 else '<span class="diff0">gleich</span>'
+        ch += (f'<div class="crow"><span class="avatar {a}">{k}</span><div class="cmain"><b>{n}</b><small>{meta}</small></div>'
+               f'<div class="cval"><small>Aktuell</small>{eur(ga)}</div><div class="cval"><small>Neu</small>{eur(gn)}</div><div class="cdiff">{dd}</div></div>')
+
+    body = (f'<div class="toolbar start"><div><h1>Guten Morgen, Tjark</h1><div class="datum">Montag, 2. November 2026</div></div></div>'
+            f'<div class="content narrow start">'
+            f'<div class="section-title">Schnellstart<span class="spacer"></span><span class="btn ghost" style="padding:0">{ic("sliders")} Anpassen</span></div>'
+            f'<div class="links">{lh}</div>'
+            f'<div class="grid-start">'
+            f'<div><div class="section-title">Aufgaben<span class="spacer"></span><span class="btn ghost" style="padding:0">{ic("plus")} Aufgabe</span></div><div class="panel">{tk}</div></div>'
+            f'<div><div class="section-title">Zuletzt bearbeitet<span class="spacer"></span><span class="hdr-note">Beitrag pro Monat</span></div><div class="panel">{ch}</div></div>'
+            f'</div></div>')
+    return sidebar('start', v2=True) + f'<main class="main">{body}</main>'
 
 # ---------------- Export-Dialog ----------------
 def export_overlay():

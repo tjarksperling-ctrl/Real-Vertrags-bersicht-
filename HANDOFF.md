@@ -115,7 +115,7 @@ Konkret unübersichtlich:
 ## Fortschritt
 | Bild | Status | Offene Punkte |
 |---|---|---|
-| 1 Startseite | in Arbeit: gezeigt, Feedback ausstehend | – |
+| 1 Startseite | v2 gezeigt (`mockups/bilder/1-start-v2.png`), Freigabe ausstehend | Umgesetzt: Links als eckige Symbol-Kacheln mit ↗ und App/Domain (≠ runde Kunden-Initialen) · nur 1× „Neuer Kunde“ (Seitenleiste) · kein KI-Import auf Start (nur im Kunden, Datei auf Kunde ziehen, oder über „Neuer Kunde“) · Aufgaben gruppiert Überfällig/Heute/Diese Woche/Später + Priorität „Hoch“, Kundenname groß · „Zuletzt bearbeitet“ als Liste · unklare Zahlen an Kunden entfernt. Seitenleiste v2 (`sidebar(v2=True)`) später auf die anderen Seiten übertragen. |
 | 2 Aktuell | offen | – |
 | 3 Neu | offen | – |
 | 4 Nebeneinander | offen | – |
@@ -124,4 +124,4 @@ Konkret unübersichtlich:
 | 7 PDF | offen | – |
 | neu: fehlende Screens | offen | siehe Abschnitt 2 |
 
-**Nächster Schritt:** Bild 1 (Startseite) zeigen und beschreiben, dann nach Verbesserungsvorschlägen fragen. Kein App-Code vor Freigabe aller Mockups.
+**Nächster Schritt:** Freigabe Bild 1 abwarten, danach Bild 2 (Aktuell). Kein App-Code vor Freigabe aller Mockups.
