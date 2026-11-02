@@ -8,3 +8,8 @@ export * from './rechnen/zahlweise';
 export * from './rechnen/summen';
 export * from './rechnen/vorteile';
 export * from './rechnen/fristen';
+export * from './rechnen/datum';
+export * from './editor/dokument';
+export * from './editor/befehle';
+export * from './editor/bestand';
+export * from './editor/vorschlaege';

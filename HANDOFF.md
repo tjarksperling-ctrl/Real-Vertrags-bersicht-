@@ -177,7 +177,7 @@ Konkret unübersichtlich:
 | Meilenstein | Status |
 |---|---|
 | 1 Datenmodell & Berechnungen + Tests | ✅ umgesetzt Sitzung 24 (Struktur + Datenmodell freigegeben, Rundung „sichtbar stimmig“ gewählt), `npm test` 88/88 grün, `npm run typecheck` fehlerfrei · ✅ **freigegeben** (Sitzung 24, „Freigeben“) |
-| 2 Editor | ◐ Aufbau vorgeschlagen (Sitzung 25), wartet auf Freigabe |
+| 2 Editor | ✅ umgesetzt Sitzung 26 (ohne Zwischen-STOPP laut Sonderregel), `npm test` + `npm run typecheck` grün, Screenshots `mockups/bilder/app-m2-*.png` · ⏳ **Freigabe ausstehend** (Aufbau aus Sitzung 25 + vorläufige Entscheidungen unten) |
 | 3 Aktuell/Neu + Sync + Vorteile · 4 PDF · 5 Zusatzfunktionen | offen |
 
 **Meilenstein 1 (Sitzung 24, Vorschlag freigegeben, umgesetzt):**
@@ -199,6 +199,29 @@ Konkret unübersichtlich:
 - **Nicht in M2:** Neu/Nebeneinander/Sync/Vorteile (M3), PDF (M4), Mehrbenutzer, Dateien, KI, Outlook, Aufgaben, Schnellstart (M5).
 - **Prüfung:** Vitest für die Editor-Befehle und Undo, Typprüfung, App per Playwright (Electron) starten und Screenshots gegen Bild 2/12/13 vergleichen.
 - **Entscheidungen Sitzung 25 (Auswahl-Rückfrage):** DARL-Rate mit **wählbarer Zahlweise** wie die anderen Bereiche (Mockup „mtl.“ = Anzeige der Zahlweise) · weitere Agentur-Vorlagen (Single & Berufsstart, Selbstständige, Ruhestand) **vorerst weglassen**, nur Agentur-Standard + Junge Familie · **Yjs von Anfang an**, lokal im Benutzerprofil · Einstellungsseite **„Allgemein“ schlicht mit M2** (Automatisch/Hell/Dunkel + Kürzelliste, Stil Bild 8).
+
+**Meilenstein 2 – umgesetzt (Sitzung 26, Freigabe ausstehend):**
+- **Start:** `npm install` · `npm run build` (electron-vite: `out/main`, `out/preload`, `out/renderer`) · `npm run start` (gebaute App) · `npm run dev` (mit Neuladen) · Vorführdaten: Umgebungsvariable `VTUE_DEMO=1` (Familie Berger wie Bild 2/3 + 7 weitere Kunden), eigener Datenordner `VTUE_DATEN=<Ordner>` · Screenshots: `npm run build && xvfb-run -a npm run screenshots -- m2` (nutzt vorhandenes Playwright, als root mit `--no-sandbox`).
+- **Dateien:** `electron.vite.config.ts` · `src/main/index.ts` (Fenster, Speichern im Benutzerprofil `<userData>/daten` als `bestand.yjs`, `u-<id>.yjs`, `einstellungen.json`, atomar über Hilfsdatei; Darstellung; PDF-Erzeugung für M4) · `src/preload/index.ts` (`window.api`, Typen in `src/shared/api.ts`) · `src/shared/editor/` (rein, getestet): `dokument.ts` (Übersicht ↔ Yjs), `befehle.ts` (Klasse `Editor`: alle Änderungen inkl. Sync und Rückgängig), `bestand.ts` (Kundenliste als Yjs, Dublette, Kürzel, Titelvorschlag), `vorschlaege.ts` (Autovervollständigung) · `src/shared/rechnen/datum.ts` (TT.MM.JJJJ, MM/JJJJ) · `src/renderer/src/`: `App.tsx`, `daten/` (Speicher, Vorführdaten, Darstellung), `editor/` (Bereich, Untergruppe, VertragZeile, Felder, Spalten, Kontext), `seiten/` (Start, Editor), `dialoge/` (Neuer Kunde, Einstellungen), `komponenten/` (Seitenleiste, ui), `stil/mockup.css` (1:1 Kopie von `mockups/style.css`) + `stil/app.css` (Ergänzungen) · `werkzeug/screenshots.mjs`.
+- **Umfang:** Kundenliste mit Suche (Strg+K) · Dialog „Neuer Kunde“ (Name, Dublettenprüfung, Titel, leer/mit Vorlage, KI-Kachel deaktiviert) · Editor „Aktuell“: Bereichsleiste mit Kästchen + Gesamt, Bereich (abgewählt = graue Leiste mit „Wieder zuschalten“), Untergruppe (Symbol, Name, Mülleimer, Griff, Summe, „Noch keine Verträge …“), Vertragszeile je Typ direkt bearbeitbar (Zahlweise-Auswahl, AV-Art, Datum mit Kalender, DARL-Zahlweise), „+ Vertrag“ / „+ Untergruppe hinzufügen“ mit Symbolreihe, Drag & Drop (Untergruppen sortieren, Verträge sortieren und in andere Untergruppe desselben Bereichs ziehen), Hinweis mit „Rückgängig“, Titel per Doppelklick umbenennen · Vorschläge beim Tippen · Einstellungen → Allgemein (Automatisch/Hell/Dunkel + Kürzelliste) und → Vorlagen · Tastatur nach Festlegung 6 (Strg+1/2/3 und Strg+P mit M3/M4) · Strg+/ Kürzel-Übersicht.
+- **Tests:** 123 (neu: Editor-Befehle, Undo nur eigene Änderungen, Sync-Regeln, Vorschläge, Kunden, Datum). Drag & Drop per Playwright geprüft (Kfz über Wohnen, VW Golf nach Haftpflicht & Recht).
+- **Vorläufige Entscheidungen M2 (vorläufig – Freigabe ausstehend):**
+  1. Stil: `mockups/style.css` unverändert als Grundlage übernommen, nur Ergänzungen in `app.css` → App sieht aus wie die Mockups (Screenshots `app-m2-*.png`).
+  2. Symbole: Lucide-Pfade aus dem Mockup-Generator statt Paket `lucide-react` (identisch zu den Mockups, eine Abhängigkeit weniger). Schrift: `@fontsource-variable/inter` (variable Schrift für Stärken 550/650 wie im Mockup).
+  3. Startseite in M2 schlicht: Begrüßung + „Zuletzt bearbeitet“ (Aktuell/Neu/Differenz). Seitenleiste ohne „Angepinnt“/„Aufgaben“, unten „Lokal gespeichert“ statt OneDrive (beides M5). Klick auf einen Kunden öffnet seine zuletzt bearbeitete Übersicht (Kundenakte Bild 1b mit M5).
+  4. Name der Person bis zur Microsoft-Anmeldung (M5): Windows-/macOS-Benutzername („tjark.sperling“ → „Tjark S.“).
+  5. Enter in der Bemerkung speichert und springt weiter, **Umschalt+Enter** = neue Zeile in der Bemerkung.
+  6. Esc in einer ganz leeren, neuen Zeile entfernt sie wieder; Enter in einer leeren letzten Zeile legt keine weitere an (Eingabe fertig).
+  7. Betrag 0 erscheint als „–“ (wie Mockup), leeres Hauptfeld in neuer Zeile mit Platzhalter „0,00 €“.
+  8. DARL: Zahlweise als kleine Auswahl direkt hinter der Rate (mtl./vtl./halbj./jährl./einm.).
+  9. Symbolauswahl: je Bereich eine Reihe mit 12 passenden Symbolen.
+  10. Zeile markieren: Klick auf Griff/Zeilenrand; Entf löscht die markierte Zeile (mit Hinweis + Rückgängig).
+  11. Strg+Z in einem Feld mit noch nicht gespeicherter Eingabe nimmt zuerst das Tippen zurück, sonst die letzte gespeicherte Änderung.
+  12. Bereichsleiste: Klick auf den Namen zeigt nur diesen Bereich („Gesamt“ zeigt wieder alle), Klick aufs Kästchen wählt an/ab; dunkle Kachel „Gesamtbetrag ohne Darlehen“, wenn abgewählt.
+  13. Vorlagen: Agentur-Vorlagen bis M5 lokal bearbeitbar (in `einstellungen.json`, ab M5 für alle geteilt); „Meine Vorlagen“: neu (leer), aus dieser Übersicht, duplizieren, löschen. „Liste bearbeiten … (148 Namen)“ entfällt – Vorschläge kommen aus Vorlagen + allen Kunden.
+  14. Hinweisband nach dem Anlegen mit Vorlage nur mit Schließen; „Vorlage wechseln“ vorerst weggelassen.
+  15. Dunkelmodus: Farben aus denselben Tokens abgeleitet (kein Mockup, Screenshot `app-m2-aktuell-dunkel.png`).
+  16. Sync-Regel „in ‚Neu‘ selbst geändert bleibt“: je Feld – ein Wert in „Neu“ wird nur überschrieben, wenn er noch dem bisherigen Wert in „Aktuell“ entspricht (kein Zusatzspeicher). Neue Elemente erscheinen in „Neu“ an passender Stelle (nach dem Gegenstück des Vorgängers). Vorgezogen in M2, weil der Schalter in der Kopfzeile sitzt; sichtbar wird es mit M3.
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |

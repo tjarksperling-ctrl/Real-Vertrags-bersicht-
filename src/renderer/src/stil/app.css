@@ -1,0 +1,166 @@
+/* Vertragsübersicht – Ergänzungen zur Mockup-Stilvorlage für die echte App (Eingabefelder, Knöpfe, Dunkelmodus). */
+:root { --font: "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif; color-scheme: light; }
+html, body, #wurzel { height: 100%; }
+body { background: var(--bg); overflow: hidden; }
+.app { height: 100vh; position: relative; }
+.laedt { height: 100vh; background: var(--bg); }
+.overlay { position: fixed; inset: 0; }
+
+/* Knöpfe ohne eigenes Aussehen – Mockup-Klassen bestimmen das Bild (:where = keine Spezifität) */
+:where(.knopf-rein) { font: inherit; color: inherit; background: none; border: 0; margin: 0; padding: 0; text-align: inherit; cursor: default; }
+button:disabled { opacity: .45; }
+button.kk-anb, button.nk-v, button.vl-k, button.vl-neu, button.kk-nav-i, button.add-ug, button.nk-verw { width: 100%; text-align: left; }
+button.add-ug { justify-content: center; }
+button.kk-anb:disabled { opacity: .5; }
+.seg button { padding: 4px 14px; border-radius: 6px; font-weight: 500; color: var(--text); }
+.seg button.on { background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.12); font-weight: 600; }
+.bl-item .bl-name { font-weight: inherit; }
+.bl-item.on .bl-name { font-weight: 600; }
+.bl-item .chk { color: #fff; }
+.bl-item.off .chk { color: transparent; }
+.switch.knopf-rein { font-weight: 500; }
+
+/* Eingaben direkt in der Zeile – ohne weiße Felder (Leitlinie Bild 12 v4) */
+.zelle { display: block; width: calc(100% + 12px); margin: -3px -6px; padding: 3px 6px; font: inherit; color: inherit; letter-spacing: inherit; background: transparent; border: 0; border-radius: 6px; outline: none; }
+.zelle::placeholder { color: var(--faint); opacity: 1; }
+.zelle:focus { background: color-mix(in srgb, var(--bc, var(--accent)) 7%, transparent); }
+.zelle.betrag { text-align: right; font-variant-numeric: tabular-nums; }
+.zelle.strich::placeholder { color: var(--faint); }
+.zelle.fehler { box-shadow: 0 0 0 1.5px var(--red); }
+textarea.zelle { resize: none; overflow: hidden; field-sizing: content; min-height: 0; white-space: pre-wrap; line-height: inherit; }
+table.vt .vname .zelle { font-weight: 500; }
+table.vt .bem .zelle { color: var(--muted); }
+table.vt td { position: relative; }
+.ug-kopf .name { flex: 1; min-width: 0; }
+.ug-kopf .zelle.ug-name { font-weight: 600; font-size: 13.5px; max-width: 420px; }
+button.ug-icon { flex: none; }
+.v2e .v2-sym { box-shadow: 0 0 0 1.5px var(--bc) !important; }
+.ub-syms button { display: grid; place-items: center; }
+
+/* Auswahl (Zahlweise, Art der Leistung) */
+.auswahl { position: relative; display: inline-block; }
+.auswahl .zw-menu { top: 24px; right: auto; left: -6px; }
+td.num .auswahl .zw-menu { left: auto; right: -6px; }
+.auswahl .v2-artmenu { top: 20px; }
+.zw-sel.knopf-rein, .v2-art.knopf-rein { color: inherit; }
+td.zw .zw-sel { color: var(--muted); }
+.zw-sel:focus-visible, .v2-art:focus-visible { outline: none; color: var(--accent); }
+.zw-menu span { cursor: default; }
+td.v2-lz .auswahl { display: block; text-align: right; margin-top: 1px; }
+.rate-reihe { display: flex; align-items: baseline; justify-content: flex-end; gap: 4px; }
+.rate-reihe .zelle { flex: 1; width: auto; min-width: 0; margin-right: 0; }
+.rate-reihe .auswahl { flex: none; }
+
+/* Datum / Monat */
+.datum-feld { position: relative; display: flex; align-items: center; gap: 4px; }
+.datum-feld .zelle { flex: 1; width: auto; }
+td.num .datum-feld .zelle { text-align: right; }
+.datum-feld .kal { display: grid; place-items: center; color: var(--faint); opacity: 0; }
+tr:hover .datum-feld .kal, .datum-feld:focus-within .kal { opacity: 1; }
+.datum-feld .kal svg.i { width: 13px; height: 13px; }
+.picker-versteckt { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
+
+/* Zeilen markieren, ziehen, ablegen */
+tr.markiert td { background: color-mix(in srgb, var(--bc) 9%, transparent) !important; }
+tr.zieht { position: relative; z-index: 8; background: #fff; box-shadow: 0 10px 28px rgba(0,0,0,.2), 0 0 0 1.5px var(--bc); }
+.ug.v1.zieht { z-index: 8; position: relative; }
+.ug.v1.drop-ziel { box-shadow: 0 0 0 2px var(--bc); }
+.ug-inhalt { min-height: 6px; }
+.grip, td.grip { touch-action: none; }
+
+/* Vorschläge beim Tippen */
+.ac-wrap { position: relative; display: block; }
+.ac-schatten { position: absolute; left: -6px; top: -3px; padding: 3px 6px; pointer-events: none; white-space: pre; font-weight: 500; }
+.ac-schatten .unsichtbar { visibility: hidden; }
+td.vname .ac-menu { top: 26px; left: -10px; }
+.ac-menu .ac-i { cursor: default; }
+
+/* Toolbar / Titel */
+.titel-feld { font: inherit; font-size: 16.5px; font-weight: 650; border: 0; border-radius: 6px; padding: 1px 6px; margin: -1px -6px; background: color-mix(in srgb, var(--accent) 8%, transparent); color: var(--text); outline: none; min-width: 260px; }
+.toolbar .btn:disabled { opacity: .5; }
+
+/* Seitenleiste */
+.search .suche-feld { flex: 1; min-width: 0; border: 0; background: transparent; font: inherit; color: var(--text); outline: none; padding: 0; }
+.search .suche-feld::placeholder { color: var(--muted); }
+.sidebar .bottom .avatar.klein { width: 22px; height: 22px; font-size: 9px; }
+.einst-knopf { margin-left: auto; display: grid; place-items: center; color: var(--muted); }
+.nav li.leer { color: var(--faint); font-size: 12px; }
+.nav li:not(.leer):hover { background: rgba(0,0,0,.04); }
+.nav li.sel:hover { background: rgba(0,113,227,.12); }
+
+/* Start (schlicht) */
+.crow.klickbar:hover { background: #f7faff; }
+.crow .go { color: var(--faint); display: grid; place-items: center; }
+.crow .diff0 { color: var(--faint); font-size: 12px; }
+.start-leer { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 36px 16px; color: var(--muted); }
+.start-leer b { color: var(--text); font-size: 15px; }
+.start-leer .btn { margin-top: 8px; }
+
+/* Dialoge */
+.eingabe { width: 100%; font: inherit; font-size: 15px; font-weight: 500; color: var(--text); outline: none; }
+.eingabe-rein { flex: 1; min-width: 0; font: inherit; color: inherit; border: 0; background: transparent; outline: none; padding: 0; }
+.nk-frei.warn { color: var(--orange); }
+.nk-frei .ds-link { color: var(--accent); font-weight: 600; }
+.kk-nav-i:disabled { opacity: .45; }
+.darstellung { margin: 2px 0 6px; }
+.kk-lead.klein { font-size: 12px; color: var(--muted); margin: 4px 0 0; }
+.kuerzel-liste { display: grid; gap: 2px; }
+.kz-zeile { display: grid; grid-template-columns: 170px 1fr; gap: 12px; align-items: center; padding: 5px 0; border-bottom: 1px solid var(--line-soft); }
+.kz-zeile:last-child { border-bottom: 0; }
+.kz-k kbd, .kuerzel-liste kbd { font: 11px var(--font); color: var(--text); border: 1px solid var(--line); border-radius: 5px; padding: 1px 6px; background: var(--card); }
+.sheet.kuerzel-sheet { width: 560px; }
+.vl-vs .vs-x { display: inline-grid; place-items: center; margin-left: 3px; color: var(--faint); }
+.vl-vs .vs-x svg.i { width: 10px; height: 10px; }
+input.vl-vs.add { width: 90px; }
+.vl-ug { cursor: default; }
+.vl-ug .es-akt { margin-left: auto; color: var(--faint); display: grid; place-items: center; }
+.vl-ug .es-akt svg.i { width: 14px; height: 14px; }
+.es-syms button { display: grid; place-items: center; }
+.btn.rot { color: var(--red); }
+.nk-x { display: grid; place-items: center; color: inherit; opacity: .7; }
+
+/* Hinweis unten mittig (Rückgängig) */
+.ub-toast { position: fixed; }
+.ub-toast-a { color: #6cb4ff; }
+
+/* ---------- Dunkelmodus (Festlegung Sitzung 23: aus denselben Farb-Tokens; PDF immer hell). Klasse „dunkel“ setzt die App. ---------- */
+:root.dunkel {
+  color-scheme: dark;
+  --bg: #1c1c1e; --side: #232326; --card: #2a2a2d; --line: #3a3a3e; --line-soft: #323236;
+  --text: #f2f2f7; --muted: #a1a1a8; --faint: #6e6e74;
+  --accent: #3b8cff; --accent-soft: #1d2b40; --green: #4cc274; --green-soft: #183224; --orange: #ffad42; --orange-soft: #3a2a12; --red: #ff6b60;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 4px 16px rgba(0,0,0,.35);
+}
+:root.dunkel .vers { --bc: #4a9bff; --bs: #1b2a3d; }
+:root.dunkel .spar { --bc: #4cc274; --bs: #19301f; }
+:root.dunkel .darl { --bc: #ff9f3a; --bs: #36261a; }
+:root.dunkel .av { --bc: #a78bfa; --bs: #2a2340; }
+:root.dunkel .ug.v1 { background: color-mix(in srgb, var(--bs) 70%, var(--card)); }
+:root.dunkel .ug.v1 .ug-icon, :root.dunkel .seg button.on, :root.dunkel .bl-item.on, :root.dunkel .btn,
+:root.dunkel .sheet, :root.dunkel .zw-menu, :root.dunkel .ac-menu, :root.dunkel .kk-input, :root.dunkel .tin,
+:root.dunkel .ba-btn, :root.dunkel .vl-ed-box, :root.dunkel .kk-anb.on .es-sym { background: var(--card); color: var(--text); }
+:root.dunkel .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+:root.dunkel .toolbar { background: rgba(28,28,30,.9); }
+:root.dunkel .bl-total, :root.dunkel .gesamt { background: #f2f2f7; color: #1c1c1e; }
+:root.dunkel .bereich-summe { background: color-mix(in srgb, var(--bs) 50%, var(--card)); }
+:root.dunkel .sheet footer, :root.dunkel .kk-nav { background: var(--side); }
+:root.dunkel .seg { background: rgba(255,255,255,.08); }
+:root.dunkel .search { background: rgba(255,255,255,.07); }
+:root.dunkel tr.zieht { background: var(--card); }
+:root.dunkel .crow.klickbar:hover { background: rgba(255,255,255,.04); }
+:root.dunkel .bereich-aus { background: var(--card); border-color: var(--line); }
+:root.dunkel .ba-tag { background: var(--line); }
+:root.dunkel .v2e .v2-del.ug { background: #3a2222; box-shadow: inset 0 0 0 1px #5a3030; color: var(--red); }
+:root.dunkel .zw-menu span, :root.dunkel .ac-i { color: var(--text); }
+:root.dunkel .zw-menu span.on, :root.dunkel .ac-i.on { color: #fff; }
+
+/* Symbol-Auswahl als Knöpfe (im Mockup span) */
+.ub-syms > button { height: 32px; border-radius: 8px; display: grid; place-items: center; border: 1px solid var(--line); color: var(--muted); background: var(--card); }
+.ub-syms > button.on { border-color: var(--bc); color: var(--bc); background: var(--bs); box-shadow: 0 0 0 1px var(--bc); }
+.ub-syms.v2 > button { width: 32px; height: 30px; }
+.es-syms > button { width: 26px; height: 26px; border-radius: 7px; display: grid; place-items: center; background: var(--card); color: var(--muted); border: 1px solid var(--line); }
+.es-syms > button.on { border-color: var(--accent); color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.es-syms svg { width: 14px; height: 14px; }
+.vl-ed .es-syms > button { width: 24px; height: 24px; }
+.datum-feld .zelle { min-width: 0; }
+.rate-reihe .zelle, td .zelle { min-width: 0; }
