@@ -704,12 +704,19 @@ def export_overlay():
 # ---------------- Bild 5 v1 (Sitzung 10): PDF/E-Mail-Dialog im freigegebenen Design ----------------
 # Neu: Übersichtstitel im Kopf, Abschnitte „Inhalt“ / „Im PDF“ / „E-Mail“, Schalter „Ersparnis anzeigen“
 # (derselbe wie in „Neu“, wirkt auf App + PDF), Häkchen „Titel im PDF-Kopf“ (Standard aus) mit Kopfzeilen-Vorschau.
-def export_overlay_v1(titel=False, ersparnis=True):
+def pw_html(an, sw):
+    """Bild 5 v2 (Sitzung 23): PDF mit Passwort schützen – Schalter, bei „an“ Passwortfeld + Hinweis."""
+    if not an:
+        return f'<div class="optrow"><div>Mit Passwort schützen<small>PDF lässt sich nur mit Passwort öffnen · Standard in Einstellungen → Allgemein</small></div>{sw(False)}</div>'
+    return (f'<div class="optrow pw-row"><div>Mit Passwort schützen<small>Passwort separat mitteilen, nicht in derselben E-Mail</small></div>'
+            f'<span class="pw-feld">{ic("lock")}<span class="pw-pkt">••••••••••</span><span class="pw-eye" title="Passwort anzeigen">{ic("eye")}</span></span>{sw(True)}</div>')
+
+def export_overlay_v1(titel=False, ersparnis=True, passwort=False):
     sw = lambda on: f'<span class="switch{" on" if on else ""}"><i></i></span>'
     cb = lambda on: f'<span class="cbx{" on" if on else ""}">{ic("check") if on else ""}</span>'
     t = '<span class="kv-titel">Jahresgespräch 2026</span>' if titel else ''
     ers = f'{eur(DIFF, True)} pro Monat · {eur(DIFF*12, True)} pro Jahr' if ersparnis else 'aus – keine Differenzen und keine Ersparnis im PDF'
-    return f'''<div class="overlay"><div class="sheet ex1">
+    return f'''<div class="overlay"><div class="sheet ex1 ex2">
 <header><h2>PDF erstellen</h2><p>Familie Berger · Jahresgespräch 2026 · 02.11.2026</p></header>
 <div class="body">
  <div class="ex-sec">Inhalt</div>
@@ -725,6 +732,7 @@ def export_overlay_v1(titel=False, ersparnis=True):
   <div class="optrow"><div>Ersparnis anzeigen<small>{ers} · gleicher Schalter wie in der Ansicht „Neu“</small></div>{sw(ersparnis)}</div>
   <div class="optrow cb"><div class="cbl">{cb(titel)}<div>Titel im PDF-Kopf<small>„Jahresgespräch 2026“ zusätzlich in der Kopfzeile jeder Seite</small></div></div></div>
   <div class="kopf-vorschau"><span class="kv-l">Kopfzeile</span><span class="kv-t">Vertragsübersicht{t}</span><span class="kv-m"><b>Familie Berger</b><span class="kv-f">Neu</span>02.11.2026</span></div>
+  {pw_html(passwort, sw)}
  </div>
  <div class="ex-sec ex-sec-row"><span>Per E-Mail senden</span><small>über Ihr Outlook-Konto · danach in „Gesendete Elemente“</small><span class="spacer"></span>{sw(True)}</div>
  <div class="mailbox">
@@ -1793,6 +1801,7 @@ def index_page():
              ('neu.html', 'Übersicht „Neu“', 'Änderungen markiert, Differenzen je Bereich, Vorteile mit automatischer Ersparnis'),
              ('nebeneinander.html', 'Aktuell und Neu nebeneinander', 'Kompaktansicht, Bereiche auf gleicher Höhe'),
              ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite, Ersparnis und Titel im PDF-Kopf optional, Anhang optional'),
+             ('export-passwort.html', 'PDF erstellen: mit Passwort', 'Schalter „Mit Passwort schützen“ an: Passwortfeld + Hinweis, Passwort separat mitteilen'),
              ('ki-import.html', 'KI-Import mit Prüf-Dialog', 'Unterlagen auswerten, unsichere Werte markiert, nur bestätigte übernehmen'),
              ('ki-konto.html', 'Einstellungen: KI-Konto verbinden', 'Anbieter wählen, API-Schlüssel eintragen und testen, Datenschutz (AVV)'),
              ('einstellungen-outlook.html', 'Einstellungen: Outlook', 'Konto verbinden, Senden, Vorlage für die E-Mail'),
@@ -1833,6 +1842,7 @@ files = {
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
  'export.html': page('PDF erstellen', editor_v1(mode='Neu', leitlinie=True), export_overlay_v1()),
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu', leitlinie=True), export_overlay_v1(titel=True)),
+ 'export-passwort.html': page('PDF erstellen – mit Passwort', editor_v1(mode='Neu', leitlinie=True), export_overlay_v1(passwort=True)),
  'ki-import.html': page('KI-Import', editor_v1(leitlinie=True), ki_overlay_v1()),
  'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
  'einstellungen-outlook.html': page('Einstellungen – Outlook', start_body(), outlook_overlay_v1()),
