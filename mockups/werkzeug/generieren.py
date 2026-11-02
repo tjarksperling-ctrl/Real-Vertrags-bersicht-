@@ -418,8 +418,11 @@ def editor_v1(nur=None, mode='Aktuell', ersparnis=True, leitlinie=False):
                   f'{sw(ersparnis, "Ersparnis anzeigen", "An: Ersparnis bzw. Mehrbeitrag ggü. Aktuell wird in der App und im PDF gezeigt. Aus: nirgends.")}</div>')
         neben = f'<span class="spacer"></span><div class="neben">Aktuell {eur(GA)}<br><b style="color:#7ee2a0">{eur(DIFF, True)} pro Monat</b></div>' if ersparnis else '<span class="spacer"></span>'
         gz = '' if nur else (f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span>{neben}<b>{eur(GN)}</b></div>' + vorteile_html(ersparnis))
+        cls = 'content narrow neu2'
+        if leitlinie:  # Bild 3 v3 (Sitzung 21): Leitlinie aus Bild 12 wie Bild 2 v3
+            bs = v2_bereiche(bs); cls += ' ub v2e'
         return (sidebar('Familie Berger', v2=True) +
-                f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="content narrow neu2">{leiste}{bs}{gz}</div></main>')
+                f'<main class="main">{toolbar_v1("Neu")}{bereichsleiste_v1(nur, GN)}<div class="{cls}">{leiste}{bs}{gz}</div></main>')
     bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     cls = 'content narrow'
     if leitlinie:  # Bild 2 v3 (Sitzung 20): Leitlinie aus Bild 12 – Mülleimer an Untergruppen, × an Verträgen, kein „…“ im Bereichskopf, keine weißen Felder
@@ -1772,8 +1775,8 @@ files = {
  'kunde.html': page('Kundenakte', kunde_body()),
  'aktuell.html': page('Aktuell', editor_v1(leitlinie=True)),
  'aktuell-bereich.html': page('Aktuell – ein Bereich', editor_v1('DARL', leitlinie=True)),
- 'neu.html': page('Neu', editor_v1(mode='Neu')),
- 'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False)),
+ 'neu.html': page('Neu', editor_v1(mode='Neu', leitlinie=True)),
+ 'neu-ohne-ersparnis.html': page('Neu – ohne Ersparnis', editor_v1(mode='Neu', ersparnis=False, leitlinie=True)),
  'nebeneinander.html': page('Nebeneinander', side_v2()).replace('<div class="app">', '<div class="app rail-app">'),
  'export.html': page('PDF erstellen', editor_v1(mode='Neu'), export_overlay_v1()),
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
