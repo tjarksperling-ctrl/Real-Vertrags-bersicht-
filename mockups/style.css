@@ -759,3 +759,61 @@ table.review1 tr.note .i { color: var(--muted); }
 .kk-link { white-space: nowrap; }
 .kk-fuss { max-width: 560px; white-space: nowrap; }
 .btn.ghost.kk-trennen { color: #d70015; }
+
+/* ---------- Bild 7 v1 (Sitzung 12): PDF im freigegebenen Design ---------- */
+.page.v1 { -webkit-print-color-adjust: exact; print-color-adjust: exact; padding: 13mm 14mm; }
+.p-head.v1 { margin-bottom: 5mm; }
+.p-head.v1 .t { display: flex; align-items: baseline; gap: 2.5mm; }
+.p-titel { font-size: 10.5pt; font-weight: 500; color: var(--muted); letter-spacing: 0; }
+.p-titel::before { content: "·"; margin-right: 2.5mm; color: var(--faint); }
+.p-bereich.v1 { border: .35mm solid color-mix(in srgb, var(--bc) 35%, transparent); border-top: 1.2mm solid var(--bc); border-radius: 2mm; overflow: hidden; margin-bottom: 4.2mm; }
+.p-bk { display: flex; align-items: center; gap: 2.2mm; background: var(--bs); padding: 2.2mm 3.5mm 1.4mm; font-size: 10.5pt; font-weight: 700; color: var(--text); }
+.p-bk .nr { width: 5mm; height: 5mm; border-radius: 1.3mm; display: grid; place-items: center; background: var(--bc); color: #fff; font-size: 7.5pt; }
+table.pt.v1 th, table.pt.v1 td { padding-left: 1.2mm; padding-right: 1.2mm; }
+table.pt.v1 .num, table.vgl.v1 .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.pt.v1 { display: table; } /* .pt ist auch eine Chip-Klasse (inline-flex) */
+.p-bereich.v1 > table.p-sk { width: 100%; padding: 0 3.8mm; background: var(--bs); border-collapse: separate; border-spacing: 0; }
+.p-bereich.v1 > table.p-sk th { border-bottom: 0; padding-top: .4mm; padding-bottom: 1.2mm; color: color-mix(in srgb, var(--bc) 70%, var(--text)); }
+.p-bereich.v1 > .p-bk { padding-bottom: 1mm; }
+.p-ugs { padding: 2.2mm 2.4mm .3mm; border-top: .35mm solid color-mix(in srgb, var(--bc) 30%, transparent); }
+.p-ug.v1 { background: color-mix(in srgb, var(--bs) 55%, #fff); border: .3mm solid color-mix(in srgb, var(--bc) 28%, transparent); border-radius: 1.6mm; padding: 0 1.1mm; margin-bottom: 1.9mm; }
+.p-ug.v1 .p-ug-kopf { padding: 1.5mm .5mm .6mm; font-size: 8.8pt; }
+.p-ug.v1 .p-ug-kopf .ico { width: 5mm; height: 5mm; border-radius: 1.3mm; background: #fff; display: grid; place-items: center; color: var(--bc); box-shadow: 0 0 0 .25mm color-mix(in srgb, var(--bc) 35%, transparent); }
+.p-ug.v1 .p-ug-kopf .ico svg { width: 3.2mm; height: 3.2mm; }
+.p-ug.v1 table.pt td { border-bottom: .2mm solid color-mix(in srgb, var(--bc) 16%, transparent); }
+.p-ug.v1 table.pt tr:last-child td { border-bottom: 0; }
+.p-ug-fuss { display: flex; justify-content: flex-end; align-items: baseline; gap: 2mm; padding: 1mm .5mm 1.1mm; border-top: .25mm solid color-mix(in srgb, var(--bc) 25%, transparent); font-weight: 600; font-variant-numeric: tabular-nums; }
+.p-ug-fuss small { font-weight: 400; color: var(--muted); font-size: 7.4pt; }
+.p-summe.v1 { align-items: flex-end; background: var(--bs); border-radius: 0; margin: 0; padding: 2.2mm 3.5mm; border-top: .35mm solid color-mix(in srgb, var(--bc) 30%, transparent); }
+.p-summe.v1 .spacer { flex: 1; }
+.p-summe.v1 .bs-label { font-weight: 700; color: var(--bc); align-self: center; font-size: 9pt; }
+.p-summe.v1 .kv { text-align: right; }
+.p-summe.v1 .kv span { display: block; }
+.p-summe.v1 .kv .delta { font-size: 7pt; display: block; }
+.p-gesamt.v1 { padding: 3.6mm 5mm; margin: 1mm 0 5mm; }
+.p-gesamt.v1 .spacer { flex: 1; }
+.p-gesamt.v1 .l { font-size: 10pt; font-weight: 500; opacity: .85; }
+.p-gesamt.v1 .w { font-size: 15pt; font-weight: 700; font-variant-numeric: tabular-nums; }
+.p-gesamt.v1 .neben { text-align: right; font-size: 7.8pt; opacity: .85; margin-right: 6mm; line-height: 1.35; }
+.p-gesamt.v1 .neben b { color: #7ee2a0; font-size: 8.6pt; }
+.p-vorteile.v1 { border: .35mm solid color-mix(in srgb, var(--green) 35%, transparent); background: color-mix(in srgb, var(--green-soft) 45%, #fff); }
+.p-vorteile.v1 ul { list-style: none; padding: 0; }
+.p-vorteile.v1 li { display: flex; gap: 2mm; align-items: flex-start; }
+.p-vorteile.v1 li svg { width: 3.4mm; height: 3.4mm; color: var(--green); stroke-width: 2.4; flex: none; margin-top: .4mm; }
+.p-vorteile.v1 .ersparnis div { background: #fff; border: .3mm solid color-mix(in srgb, var(--green) 30%, transparent); }
+.p-vgl { margin-bottom: 7mm; }
+.p-vgl h2 { font-size: 10.5pt; margin: 0 0 2mm; }
+table.vgl.v1 { table-layout: fixed; }
+table.vgl.v1 td small { color: var(--muted); font-size: 7.6pt; margin-left: 1.5mm; }
+table.vgl.v1 td.gruen { color: var(--green); font-weight: 600; }
+table.vgl.v1 tr.sum td { background: var(--text); color: #fff; border-top: 0; }
+table.vgl.v1 tr.sum td:first-child { border-radius: 1.6mm 0 0 1.6mm; } table.vgl.v1 tr.sum td:last-child { border-radius: 0 1.6mm 1.6mm 0; }
+table.vgl.v1 tr.sum td.gruen { color: #7ee2a0; }
+.vnr { display: inline-grid; place-items: center; width: 4.6mm; height: 4.6mm; border-radius: 1.2mm; background: var(--bc); color: #fff; font-size: 7pt; font-weight: 700; margin-right: 2mm; vertical-align: .2mm; }
+.p-vorteile.v1 { padding: 3.2mm 4.5mm; }
+.p-vorteile.v1 li { padding: .35mm 0; }
+.p-vorteile.v1 .ersparnis { margin-top: 2.4mm; }
+.p-vorteile.v1 .ersparnis div { padding: 1.8mm 3mm; }
+table.vgl.v1 { border-collapse: separate; border-spacing: 0; }
+table.vgl.v1 td small { white-space: nowrap; }
+table.vgl.v1 tr.sum td { box-shadow: 1px 0 0 var(--text), -1px 0 0 var(--text); }

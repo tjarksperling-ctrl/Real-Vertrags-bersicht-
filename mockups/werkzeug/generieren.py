@@ -896,6 +896,88 @@ def pdf_page():
 <body class="pdf"><div class="pdf-bar">{ic("pdf")}<b>PDF-Vorschau</b><span style="color:var(--muted)">Beide + Vergleichsseite · 5 Seiten A4 · grau: nur Seitenbeschriftung der Vorschau</span><span class="spacer"></span><a class="btn" href="index.html" style="text-decoration:none">Zur Übersicht</a></div>
 <div class="pages">{ph}</div></body></html>'''
 
+# ---------------- Bild 7 v1 (Sitzung 12): PDF im freigegebenen Design aus Bild 2/3/5 ----------------
+# Bereichsfarben, Spaltenkopf einmal je Bereich, Untergruppen als getönte Karten mit Summe im Kartenfuß,
+# Bereichsfuß „Summe <Bereich>“, Gesamtbalken „Gesamtbetrag monatlich“. Optionen aus dem PDF-Dialog (Bild 5):
+# titel = Übersichtstitel im Kopf (Standard aus), ersparnis = Differenzen/Ersparnis (gleicher Schalter wie in „Neu“).
+def p_head_v1(fassung, titel=False):
+    t = '<span class="p-titel">Jahresgespräch 2026</span>' if titel else ''
+    return (f'<div class="p-head v1"><span class="t">Vertragsübersicht{t}</span>'
+            f'<span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>')
+
+P_COLS = {**{t: [c[1] for c in COLS[t]] for t in COLS},  # PDF: eigene Spaltenbreiten (A4), Spaltennamen wie in der App
+ 'SPAR': ['15%', '', '10%', '10%', '11%', '12%', '11%'],
+ 'AV':   ['23.5%', '', '9%', '11%', '10%', '15.5%', '11%']}
+def p_cg(t): return '<colgroup>' + ''.join(f'<col style="width:{w}">' if w else '<col>' for w in P_COLS[t]) + '</colgroup>'
+
+def p_bereich_v1(b, i, other=None):
+    t = b['typ']; title = META[t][0]
+    th = ''.join(f'<th class="{"num" if len(c) > 2 else ""}">{c[0]}</th>' for c in COLS[t])
+    h = (f'<div class="p-bereich v1 {FARBE[t]}"><div class="p-bk"><span class="nr">{i+1}</span>{title}</div>'
+         f'<table class="pt v1 p-sk">{p_cg(t)}<thead><tr>{th}</tr></thead></table><div class="p-ugs">')
+    for ug in b['ug']:
+        rows = ''
+        for v in ug['v']:
+            rows += f'<tr><td class="vname">{v["n"]}</td><td class="bem">{v["b"]}</td>'
+            rows += ''.join(f'<td class="{"num" if len(c) > 2 else "zw"}">{val}</td>' for c, val in zip(COLS[t][2:], cells(t, v, False, False)))
+            rows += '</tr>'
+        h += (f'<div class="p-ug v1"><div class="p-ug-kopf"><span class="ico">{ic(ug["icon"])}</span>{ug["name"]}</div>'
+              f'<table class="pt v1">{p_cg(t)}<tbody>{rows}</tbody></table>'
+              f'<div class="p-ug-fuss"><small>{ug_label(t)} / Monat</small>{eur(ug_monat(t, ug))}</div></div>')
+    h += (f'</div><div class="p-summe v1"><span class="bs-label">Summe {title}</span><span class="spacer"></span>'
+          f'{summen_html(b, other) if other else summen_html(b, pdf=True)}</div></div>')
+    return h
+
+def p_gesamt_v1(f, ersparnis=False):
+    neben = (f'<div class="neben">Aktuell {eur(GA)}<br><b>{eur(DIFF, True)} pro Monat</b></div>' if ersparnis else '')
+    return f'<div class="p-gesamt v1"><span class="l">Gesamtbetrag monatlich</span><span class="spacer"></span>{neben}<b class="w">{eur(gesamt(f))}</b></div>'
+
+def p_vorteile_v1(ersparnis=True):
+    li = ''.join(f'<li>{ic("check")}<span>{t}</span></li>' for t in VORTEILE)
+    e = (f'<div class="ersparnis"><div><span>Ersparnis pro Monat</span><b>{eur(-DIFF)}</b></div>'
+         f'<div><span>Ersparnis pro Jahr</span><b>{eur(-DIFF*12)}</b></div></div>') if ersparnis else ''
+    return f'<div class="p-vorteile v1"><h3>Vorteile der Änderungen</h3><ul>{li}</ul>{e}</div>'
+
+def p_vergleich_v1(ersparnis=True):
+    def row(label, a, n, cls='', nr=None, farbe=''):
+        d = n - a
+        dz = (f'<td class="num{" gruen" if d < 0 else ""}">{eur(d, True) if d else "±0,00 €"}</td>') if ersparnis else ''
+        lab = f'<span class="vnr {farbe}">{nr}</span>{label}' if nr else label
+        return f'<tr class="{cls}"><td>{lab}</td><td class="num">{eur(a)}</td><td class="num">{eur(n)}</td>{dz}</tr>'
+    rows = ''
+    for i, (a, n) in enumerate(zip(AKTUELL, NEU)):
+        t = a['typ']
+        rows += row(f'{META[t][0]} <small>{ug_label(t)} / Monat</small>', b_summen(a)['monat'], b_summen(n)['monat'], nr=i+1, farbe=FARBE[t])
+    rows += row('Gesamtbetrag monatlich', GA, GN, 'sum')
+    rows += row('Gesamtbetrag jährlich', GA*12, GN*12, 'sub')
+    ea = sum(b_summen(b)['einmal'] for b in AKTUELL); en = sum(b_summen(b)['einmal'] for b in NEU)
+    rows2 = (row('Einmalbeträge', ea, en) +
+             row('Gesamtvermögen <small>Sparen & Investieren</small>', b_summen(AKTUELL[1])['vermoegen'], b_summen(NEU[1])['vermoegen']) +
+             row('Gesamtrestschuld <small>Darlehen</small>', b_summen(AKTUELL[2])['restschuld'], b_summen(NEU[2])['restschuld']))
+    th = '<thead><tr><th></th><th>Aktuell</th><th>Neu</th>' + ('<th>Differenz</th>' if ersparnis else '') + '</tr></thead>'
+    cg = '<colgroup><col><col style="width:16%"><col style="width:16%">' + ('<col style="width:14%">' if ersparnis else '') + '</colgroup>'
+    return (f'<div class="p-vgl"><h2>Monatliche Beträge</h2><table class="vgl v1">{cg}{th}<tbody>{rows}</tbody></table></div>'
+            f'<div class="p-vgl"><h2>Weitere Werte</h2><table class="vgl v1">{cg}{th}<tbody>{rows2}</tbody></table></div>'
+            f'{p_vorteile_v1(ersparnis)}')
+
+def pdf_page_v1(titel=False, ersparnis=True):
+    o = (lambda i: AKTUELL[i]) if ersparnis else (lambda i: None)
+    H = lambda f: p_head_v1(f, titel)
+    pages = [
+      (H('Aktuell') + p_bereich_v1(AKTUELL[0], 0) + p_bereich_v1(AKTUELL[1], 1), 'Aktuell · Seite 1 von 5'),
+      (H('Aktuell') + p_bereich_v1(AKTUELL[2], 2) + p_bereich_v1(AKTUELL[3], 3) + p_gesamt_v1(AKTUELL), 'Aktuell · Seite 2 von 5'),
+      (H('Neu') + p_bereich_v1(NEU[0], 0, o(0)) + p_bereich_v1(NEU[1], 1, o(1)), 'Neu · Seite 3 von 5'),
+      (H('Neu') + p_bereich_v1(NEU[2], 2, o(2)) + p_bereich_v1(NEU[3], 3, o(3)) + p_gesamt_v1(NEU, ersparnis), 'Neu · Seite 4 von 5'),
+      (H('Vergleich') + p_vergleich_v1(ersparnis), 'Vergleichsseite (optional) · Seite 5 von 5'),
+    ]
+    ph = ''.join(f'<div class="page v1">{c}<span class="page-label">{l}</span></div>' for c, l in pages)
+    var = ('Titel im Kopf an' if titel else 'Titel im Kopf aus') + ' · ' + ('Ersparnis an' if ersparnis else 'Ersparnis aus')
+    return f'''<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF-Vorschau – Mockup</title><link rel="stylesheet" href="style.css"></head>
+<body class="pdf"><div class="pdf-bar">{ic("pdf")}<b>PDF-Vorschau</b><span style="color:var(--muted)">Beide + Vergleichsseite · 5 Seiten A4 · {var} · grau: nur Seitenbeschriftung der Vorschau</span><span class="spacer"></span><a class="btn" href="index.html" style="text-decoration:none">Zur Übersicht</a></div>
+<div class="pages">{ph}</div></body></html>'''
+
 # ---------------- Index ----------------
 def index_page():
     items = [('start.html', 'Startseite', 'Schnellstart-Kacheln, zuletzt bearbeitete Kunden, fällige Aufgaben'),
@@ -906,7 +988,7 @@ def index_page():
              ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite, Ersparnis und Titel im PDF-Kopf optional, Anhang optional'),
              ('ki-import.html', 'KI-Import mit Prüf-Dialog', 'Unterlagen auswerten, unsichere Werte markiert, nur bestätigte übernehmen'),
              ('ki-konto.html', 'Einstellungen: KI-Konto verbinden', 'Anbieter wählen, API-Schlüssel eintragen und testen, Datenschutz (AVV)'),
-             ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite')]
+             ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite · Varianten: mit Titel im Kopf, ohne Ersparnis')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
 <html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
@@ -928,7 +1010,9 @@ files = {
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
  'ki-import.html': page('KI-Import', editor_v1(), ki_overlay_v1()),
  'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
- 'pdf.html': pdf_page(),
+ 'pdf.html': pdf_page_v1(),
+ 'pdf-titel.html': pdf_page_v1(titel=True),
+ 'pdf-ohne-ersparnis.html': pdf_page_v1(ersparnis=False),
 }
 for n, c in files.items():
     open(os.path.join(OUT, n), 'w', encoding='utf-8').write(c)
