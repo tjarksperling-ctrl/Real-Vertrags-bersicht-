@@ -808,6 +808,45 @@ def ki_overlay_v1():
 <footer><span class="kfuss"><b>3 von 4</b> ausgewählt · nur ausgewählte Verträge werden übernommen</span><span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">{ic("check")} 3 Verträge übernehmen</button></footer>
 </div></div>'''
 
+# ---------------- Bild 6b v1 (Sitzung 11): KI-Konto verbinden (Einstellungen) ----------------
+# Wunsch des Nutzers: zeigen, wie die Verbindung mit einem KI-Konto läuft. Fehlender Screen „Einstellungen → KI-Konto“.
+# Ablauf in 3 Schritten: Anbieter wählen → Zugang (API-Schlüssel) eintragen + testen → Datenschutz bestätigen.
+def ki_konto_overlay_v1():
+    sw = lambda on: f'<span class="switch{" on" if on else ""}"><i></i></span>'
+    cb = lambda on: f'<span class="cbx{" on" if on else ""}">{ic("check") if on else ""}</span>'
+    nav = [('sliders', 'Allgemein', ''), ('sparkles', 'KI-Konto', 'ok'), ('mail', 'Outlook', 'ok'), ('cloud', 'Speicherort', 'ok'),
+           ('ext', 'Schnellstart', ''), ('file', 'Vorlagen', ''), ('lock', 'Datenschutz', '')]
+    nh = ''.join(f'<div class="kk-nav-i{" on" if n == "KI-Konto" else ""}">{ic(i)}{n}{"<span class=dot></span>" if s else ""}</div>' for i, n, s in nav)
+    anb = [('C', 'Claude', 'Anthropic', 'a1', True), ('G', 'ChatGPT', 'OpenAI', 'a3', False), ('G', 'Gemini', 'Google', 'a2', False),
+           ('A', 'Azure OpenAI', 'Microsoft · Rechenzentrum EU', 'a4', False), ('M', 'Mistral', 'Anbieter aus der EU', 'a5', False),
+           ('+', 'Anderer Anbieter', 'kompatible Schnittstelle', '', False)]
+    ah = ''.join(f'<div class="kk-anb{" on" if on else ""}"><span class="kk-logo {c}">{l}</span><div><b>{n}</b><small>{d}</small></div>{"<span class=kk-sel>" + ic("check") + "</span>" if on else ""}</div>' for l, n, d, c, on in anb)
+    return f'''<div class="overlay"><div class="sheet kk1">
+<header><h2>Einstellungen</h2><p>Gilt für Ihr Benutzerkonto · Tjark S.</p></header>
+<div class="kk-grid">
+ <nav class="kk-nav">{nh}</nav>
+ <div class="body">
+  <div class="kk-titel"><h3>{ic("sparkles")} KI-Konto</h3><span class="kk-status">{ic("check")} Verbunden mit Claude</span></div>
+  <p class="kk-lead">Die KI liest Unterlagen (PDFs, Scans) aus und füllt „Aktuell“ vor. Sie nutzen Ihr eigenes Konto beim Anbieter, die Kosten rechnet der Anbieter direkt mit Ihnen ab. Anbieter jederzeit wechselbar.</p>
+  <div class="ex-sec"><span class="kk-n">1</span>Anbieter wählen</div>
+  <div class="kk-anbieter">{ah}</div>
+  <div class="ex-sec"><span class="kk-n">2</span>Zugang eintragen</div>
+  <div class="ex-box kk-zugang">
+   <div class="kk-feld"><label>API-Schlüssel</label><div class="kk-input mono">sk-ant-••••••••••••••••••••••••4f2c<span class="spacer"></span>{ic("lock")}</div></div>
+   <div class="kk-feld"><label>Modell</label><div class="kk-input">Empfohlen (wird automatisch gewählt)<span class="spacer"></span>{ic("down")}</div></div>
+   <div class="kk-test"><button class="btn">{ic("sync")} Verbindung testen</button><span class="kk-ok">{ic("check")} Verbindung erfolgreich (Antwort in 0,8 s)</span><span class="spacer"></span><a class="kk-link">Wo finde ich den Schlüssel? {ic("ext")}</a></div>
+  </div>
+  <div class="ex-sec"><span class="kk-n">3</span>Datenschutz</div>
+  <div class="ex-box">
+   <div class="optrow"><div>Kundenname vor dem Senden entfernen<small>Name und Anschrift werden in den Unterlagen geschwärzt</small></div><span class="kk-fest">{ic("lock")} immer an</span></div>
+   <div class="optrow"><div>Unterlagen nach der Auswertung verwerfen<small>Nichts wird in der App, in OneDrive oder beim Anbieter gespeichert</small></div><span class="kk-fest">{ic("lock")} immer an</span></div>
+   <div class="optrow cb"><div class="cbl">{cb(True)}<div>Auftragsverarbeitungsvertrag (AVV) mit dem Anbieter liegt vor<small>Nach DSGVO nötig, bevor Kundenunterlagen gesendet werden. Ohne Häkchen bleibt der KI-Import gesperrt.</small></div></div></div>
+  </div>
+ </div>
+</div>
+<footer><span class="kk-fuss">{ic("lock")} Schlüssel wird verschlüsselt nur auf diesem Computer gespeichert, nicht in OneDrive.</span><span class="spacer"></span><button class="btn ghost kk-trennen">Verbindung trennen</button><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button></footer>
+</div></div>'''
+
 # ---------------- PDF ----------------
 def p_head(fassung):
     return f'<div class="p-head"><span class="t">Vertragsübersicht</span><span class="m"><b>Familie Berger</b><span class="p-fassung">{fassung}</span>02.11.2026</span></div>'
@@ -866,6 +905,7 @@ def index_page():
              ('nebeneinander.html', 'Aktuell und Neu nebeneinander', 'Kompaktansicht, Bereiche auf gleicher Höhe'),
              ('export.html', 'PDF erstellen & per Outlook senden', 'Aktuell / Neu / Beide, Vergleichsseite, Ersparnis und Titel im PDF-Kopf optional, Anhang optional'),
              ('ki-import.html', 'KI-Import mit Prüf-Dialog', 'Unterlagen auswerten, unsichere Werte markiert, nur bestätigte übernehmen'),
+             ('ki-konto.html', 'Einstellungen: KI-Konto verbinden', 'Anbieter wählen, API-Schlüssel eintragen und testen, Datenschutz (AVV)'),
              ('pdf.html', 'PDF-Vorschau (A4)', 'So sieht das PDF aus: Aktuell, Neu, Vergleichsseite')]
     h = ''.join(f'<a class="item" href="{u}"><span class="n">{i+1}</span><div><b>{t}</b><span>{d}</span></div></a>' for i, (u, t, d) in enumerate(items))
     return f'''<!doctype html>
@@ -887,6 +927,7 @@ files = {
  'export.html': page('PDF erstellen', editor_v1(mode='Neu'), export_overlay_v1()),
  'export-titel.html': page('PDF erstellen – mit Titel', editor_v1(mode='Neu'), export_overlay_v1(titel=True)),
  'ki-import.html': page('KI-Import', editor_v1(), ki_overlay_v1()),
+ 'ki-konto.html': page('KI-Konto verbinden', start_body(), ki_konto_overlay_v1()),
  'pdf.html': pdf_page(),
 }
 for n, c in files.items():

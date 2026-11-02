@@ -699,3 +699,63 @@ table.review1 tr.note .i { color: var(--muted); }
 .ki1 .unsure .sel svg { color: var(--orange); }
 .kfuss { color: var(--muted); }
 .kfuss b { color: var(--text); font-weight: 600; }
+
+/* ---------- Bild 6b v1 (Sitzung 11): Einstellungen → KI-Konto ---------- */
+.sheet.kk1 { width: 1020px; }
+.sheet.kk1 header { padding: 18px 24px 12px; border-bottom: 1px solid var(--line); }
+.kk-grid { display: grid; grid-template-columns: 200px minmax(0,1fr); min-height: 0; flex: 1; }
+.kk-nav { background: #f5f5f7; border-right: 1px solid var(--line); padding: 12px 10px; display: flex; flex-direction: column; gap: 2px; }
+.kk-nav-i { display: flex; align-items: center; gap: 9px; padding: 7px 10px; border-radius: 8px; color: var(--text); }
+.kk-nav-i svg { width: 15px; height: 15px; color: var(--muted); }
+.kk-nav-i.on { background: var(--accent-soft); color: var(--accent); font-weight: 500; }
+.kk-nav-i.on svg { color: var(--accent); }
+.kk-nav-i .dot { margin-left: auto; width: 7px; height: 7px; border-radius: 99px; background: var(--green); }
+.sheet.kk1 .body { padding: 14px 24px 16px; }
+.kk-titel { display: flex; align-items: center; gap: 12px; }
+.kk-titel h3 { margin: 0; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.kk-titel h3 svg { color: var(--accent); width: 17px; height: 17px; }
+.kk-status { display: inline-flex; align-items: center; gap: 5px; background: #e6f4ea; color: var(--green); font-weight: 500; font-size: 12px; padding: 3px 9px; border-radius: 99px; }
+.kk-status svg { width: 13px; height: 13px; stroke-width: 3; }
+.kk-lead { color: var(--muted); margin: 6px 0 0; line-height: 1.45; font-size: 13px; }
+.kk1 .ex-sec { display: flex; align-items: center; gap: 8px; margin: 14px 0 8px; }
+.kk-n { width: 18px; height: 18px; border-radius: 99px; background: var(--text); color: #fff; display: grid; place-items: center; font-size: 10.5px; letter-spacing: 0; }
+.kk-anbieter { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.kk-anb { position: relative; display: flex; align-items: center; gap: 10px; border: 1.5px solid var(--line); border-radius: 10px; padding: 9px 11px; }
+.kk-anb.on { border-color: var(--accent); background: var(--accent-soft); }
+.kk-anb b { display: block; font-weight: 600; }
+.kk-anb small { color: var(--muted); font-size: 12px; }
+.kk-logo { width: 30px; height: 30px; border-radius: 8px; display: grid; place-items: center; font-weight: 700; color: #fff; background: #8e8e93; flex: none; }
+.kk-logo.a1 { background: #c96442; } .kk-logo.a2 { background: #4285f4; } .kk-logo.a3 { background: #10a37f; } .kk-logo.a4 { background: #0078d4; } .kk-logo.a5 { background: #f97316; }
+.kk-logo:not([class*=" a"]) { background: #fff; color: var(--muted); border: 1.5px dashed #c7c7cc; }
+.kk-sel { position: absolute; right: 9px; top: 9px; width: 18px; height: 18px; border-radius: 99px; background: var(--accent); color: #fff; display: grid; place-items: center; }
+.kk-sel svg { width: 11px; height: 11px; stroke-width: 3.2; }
+.kk-zugang { padding: 10px 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 16px; }
+.kk-feld label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.kk-input { display: flex; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; background: #fff; }
+.kk-input.mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; }
+.kk-input .spacer { flex: 1; }
+.kk-input svg { width: 14px; height: 14px; color: var(--muted); }
+.kk-link { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-size: 12px; margin-top: 5px; }
+.kk-link svg { width: 12px; height: 12px; }
+.kk-test { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; padding-top: 2px; }
+.kk-ok { display: inline-flex; align-items: center; gap: 6px; color: var(--green); font-weight: 500; }
+.kk-ok svg { width: 15px; height: 15px; stroke-width: 3; }
+.kk1 .optrow { padding: 8px 0; gap: 16px; }
+.kk1 .optrow:last-child { border-bottom: 0; }
+.kk1 .optrow div small { font-size: 12px; margin-top: 1px; }
+.kk1 .optrow.cb { justify-content: flex-start; }
+.kk-fest { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.kk-fest svg { width: 13px; height: 13px; }
+.kk-fuss { display: inline-flex; gap: 6px; align-items: center; color: var(--muted); font-size: 12px; max-width: 470px; }
+.kk-fuss svg { width: 13px; height: 13px; flex: none; }
+.kk-trennen { color: var(--red, #d70015); }
+.kk-test .spacer { flex: 1; }
+.kk-test .kk-link { margin-top: 0; }
+.sheet.kk1 header { padding: 16px 24px 10px; }
+.kk1 .ex-sec { margin: 12px 0 7px; }
+.kk-anb { padding: 8px 11px; }
+.kk-trennen { color: #d70015; }
+.kk1 .optrow { padding: 7px 0; }
+.kk-link { white-space: nowrap; }
+.kk-fuss { max-width: 560px; white-space: nowrap; }
+.btn.ghost.kk-trennen { color: #d70015; }
