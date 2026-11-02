@@ -88,7 +88,7 @@ def gesamt(f): return sum(b_summen(b)['monat'] for b in f if b.get('aktiv', True
 
 # ---------------- Beispieldaten ----------------
 META = {
- 'VERS': ('Versicherung', ''),  # Sitzung 7: nur „Versicherung“, gilt auf allen Seiten inkl. PDF
+ 'VERS': ('Versicherungen', ''),  # Sitzung 7: „Versicherungen“ ohne Untertitel, gilt auf allen Seiten inkl. PDF
  'SPAR': ('Sparen & Investieren', ''),
  'DARL': ('Darlehen', ''),
  'AV':   ('Altersvorsorge & Familienabsicherung', ''),
@@ -390,10 +390,10 @@ def toolbar_v1(mode='Aktuell'):
     seg = ''.join(f'<span class="{"on" if m == mode else ""}">{m}</span>' for m in ('Aktuell', 'Neu', 'Nebeneinander'))
     return f'''<div class="toolbar v1">
   <span class="avatar a1">FB</span>
-  <div class="crumb"><span class="kunde">Familie Berger {ic("chev")}</span><h1 title="Doppelklick zum Umbenennen">Jahresgespräch 2026</h1></div>
-  <div class="seg" style="margin-left:14px">{seg}</div>
+  <div class="crumb"><span class="kunde">Familie Berger {ic("chev")}</span><h1 title="Doppelklick zum Umbenennen">Jahresgespräch 2026 <span class="avatar a2 live" title="Sabine K. arbeitet gerade ebenfalls in dieser Übersicht">SK</span></h1></div>
+  <div class="seg" style="margin-left:6px">{seg}</div>
+  <span class="switch on sync" title="An: Was Sie in „Aktuell“ ändern, wird sofort auch in „Neu“ geändert. Aus: „Neu“ bleibt unverändert, nichts wird rückwirkend übernommen."><i></i>In „Neu“ übernehmen</span>
   <span class="spacer"></span>
-  <div class="presence" title="Sabine K. arbeitet gerade ebenfalls in dieser Übersicht"><span class="avatar a2">SK</span></div>
   <button class="btn">{ic("tasks")} Aufgaben <span class="badge orange">1</span></button>
   <button class="btn" title="Speichert diesen Stand als Datei auf dem Desktop. Doppelklick auf die Datei öffnet ihn in der App.">{ic("monitor")} Auf Desktop speichern</button>
   <button class="btn primary">{ic("pdf")} PDF / E-Mail</button>
@@ -409,13 +409,10 @@ def bereichsleiste_v1(nur=None):
     return f'<div class="bleiste">{h}<span class="spacer"></span><div class="bl-total"><small>Gesamtbetrag monatlich</small><b>{eur(GA)}</b></div></div>'
 
 def editor_v1(nur=None):
-    sync = (f'<div class="fassung"><span class="badge">Aktuell</span><span>Bestand des Kunden</span><span class="spacer"></span>'
-            f'<span class="switch on"><i></i>Änderungen auch in „Neu“ übernehmen</span>'
-            f'<span class="info" title="An: Was Sie hier ändern, wird sofort auch in „Neu“ geändert. Aus: „Neu“ bleibt unverändert.">{ic("info")}</span></div>')
     bs = ''.join(bereich_v1(b, i, focus='Hausrat') for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
-            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow">{sync}{bs}{gz}</div></main>')
+            f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow">{bs}{gz}</div></main>')
 
 # ---------------- Start ----------------
 # Überarbeitung Bild 1: Links = eckige Symbol-Kacheln mit Pfeil (keine Initialen-Kreise wie bei Kunden),
