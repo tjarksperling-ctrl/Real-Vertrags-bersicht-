@@ -1560,17 +1560,19 @@ def vertrag_bearbeiten_v1():
 # Wunsch des Nutzers zu v1: „viel einfacher, ohne 5 Untermenüs“. Keine Menüs „…“, kein Detail-Dialog, keine Rückfragen:
 # Name anklicken = tippen · Symbol anklicken = Symbolreihe · Papierkorb beim Darüberfahren = sofort löschen + „Rückgängig“ ·
 # „+ Vertrag“ / „+ Untergruppe“ legt eine leere Zeile/Karte an, Cursor steht im Namen · Verschieben nur am Griff.
+V2_DEL = f'<span class="v2-del" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
+V2_DEL_H = f'<span class="v2-del h" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
 def v2_editor(nur=None, ersetzen=(), extra_cls=''):
     bs = ''.join(bereich_v1(b, i) for i, b in enumerate(AKTUELL) if not nur or b['typ'] == nur)
     for alt, neu in ersetzen:
         assert alt in bs, alt[:90]
         bs = bs.replace(alt, neu, 1)
-    bs = bs.replace(f'<span class="ug-more">{ic("more")}</span>', '')  # keine „…“-Menüs mehr an Untergruppen
+    bs = bs.replace(f'<span class="ug-more">{ic("more")}</span>', V2_DEL)  # statt „…“: Papierkorb, immer sichtbar
+    bs = bs.replace(V2_DEL + '</td></tr>', '</td></tr>').replace('</td></tr>', V2_DEL + '</td></tr>')  # jede Zeile: Papierkorb
     gz = '' if nur else f'<div class="gesamt v1"><span>Gesamtbetrag monatlich</span><b>{eur(GA)}</b></div>'
     return (sidebar('Familie Berger', v2=True) +
             f'<main class="main">{toolbar_v1()}{bereichsleiste_v1(nur)}<div class="content narrow ub v2e {extra_cls}">{bs}{gz}</div></main>')
 
-V2_DEL = f'<span class="v2-del" title="Löschen – sofort, mit Rückgängig">{ic("trash")}</span>'
 V2_SYMS = ['shield', 'home', 'car', 'bike', 'plane', 'paw', 'activity', 'tooth', 'umbrella', 'briefcase', 'heart', 'star']
 
 def einfach_bearbeiten_v2():
@@ -1579,20 +1581,17 @@ def einfach_bearbeiten_v2():
     dn = ic('down')
     # 1) Untergruppe „Wohnen“ beim Darüberfahren: Name als Feld, Papierkorb rechts
     wk_alt = ug_kopf_alt(wohnen)
-    wk_neu = (f'<div class="ug v1 v2-hover"><div class="ug-kopf"><span class="grip">{ic("grip")}</span>'
-              f'<span class="ug-icon v2-sym" title="Symbol ändern">{ic("home")}</span>'
-              f'<span class="name v2-name" title="Klicken zum Umbenennen">Wohnen</span>'
-              f'<span class="v2-tip">Name anklicken zum Umbenennen</span>{V2_DEL}</div>')
+    wk_neu = wk_alt  # Untergruppen sehen beim Bearbeiten unverändert aus
     # 2) Vertrag „Wohngebäude“ beim Darüberfahren: Papierkorb am Zeilenende
     r_alt = (f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Wohngebäude</span></td>')
-    r_neu = (f'<tr class="v2-row"><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Wohngebäude</span></td>')
+    r_neu = (f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Wohngebäude</span></td>')
     z_alt = f'<td class="num">612,00 €</td><td class="zw"><span class="zw-sel">jährlich{dn}</span></td></tr>'
-    z_neu = f'<td class="num">612,00 €</td><td class="zw"><span class="zw-sel">jährlich{dn}</span>{V2_DEL}</td></tr>'
+    z_neu = f'<td class="num">612,00 €</td><td class="zw"><span class="zw-sel">jährlich{dn}</span>{V2_DEL_H}</td></tr>'
     # 3) „+ Vertrag“ in Kfz geklickt: neue leere Zeile, Cursor im Namen
     k_alt = f'halbjährlich{dn}</span></td></tr></tbody></table>'
     k_neu = (f'halbjährlich{dn}</span></td></tr>'
-             f'<tr class="focus v2-neu"><td class="g grip">{ic("grip")}</td>'
-             f'<td class="vname"><span class="edit-cell active">Mot<span class="caret"></span><span class="ac-ghost">orrad</span></span></td>'
+             f'<tr class="v2-neu"><td class="g grip">{ic("grip")}</td>'
+             f'<td class="vname"><span class="edit-cell">Mot<span class="caret"></span><span class="ac-ghost">orrad</span></span></td>'
              f'<td class="bem"><span class="ph">Bemerkung</span></td><td class="num"><span class="ph">0,00 €</span></td>'
              f'<td class="zw"><span class="zw-sel ph">jährlich{dn}</span></td></tr></tbody></table>')
     kf_alt = f'<div class="ug-fuss"><span class="add-v">{ic("plus")} Vertrag</span><span class="summe"><small>Beitrag / Monat</small> 81,00 €'
@@ -1601,7 +1600,7 @@ def einfach_bearbeiten_v2():
     # 4) „+ Untergruppe“ geklickt: neue Karte, Cursor im Namen, Symbole in einer Reihe darunter
     sy = ''.join(f'<span class="{"on" if s == "activity" else ""}">{ic(s)}</span>' for s in V2_SYMS)
     neu_ug = (f'<div class="ug v1 v2-ugneu"><div class="ug-kopf"><span class="grip">{ic("grip")}</span>'
-              f'<span class="ug-icon">{ic("activity")}</span><span class="name"><span class="tin v2-ugname">Gesundheit<span class="caret"></span></span></span>{V2_DEL}</div>'
+              f'<span class="ug-icon">{ic("activity")}</span><span class="name">Gesundheit<span class="caret"></span></span>{V2_DEL}</div>'
               f'<div class="v2-symrow"><span class="es-lab">Symbol</span><span class="ub-syms v2">{sy}</span>'
               f'<span class="v2-keys"><kbd>Enter</kbd> fertig – danach direkt den ersten Vertrag eintragen</span></div></div>')
     add_alt = f'<div class="add-ug v1">{ic("plus")} Untergruppe hinzufügen</div></div>'
@@ -1622,9 +1621,9 @@ def einfach_av_v2():
     erste = (f'<td class="num">412,00 €<br><small style="color:var(--muted)">Rente mtl.</small></td><td class="num">01.07.2052</td></tr>')
     erste_neu = (f'<td class="num v2-lz"><span class="edit-cell">412,00 €</span><span class="v2-art open">Rente mtl.{dn}</span>'
                  f'<div class="zw-menu v2-artmenu">{arten}</div></td>'
-                 f'<td class="num"><span class="v2-datum">01.07.2052{ic("calendar")}</span>{V2_DEL}</td></tr>')
+                 f'<td class="num"><span class="v2-datum">01.07.2052{ic("calendar")}</span></td></tr>')
     zeile_alt = f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Private Rente</span></td>'
-    zeile_neu = f'<tr class="focus v2-row"><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Private Rente</span></td>'
+    zeile_neu = f'<tr class=""><td class="g grip">{ic("grip")}</td><td class="vname"><span class="edit-cell">Private Rente</span></td>'
     tipp = (f'<div class="ub-tipp">{ic("pencil")}<span>Alles direkt in der Zeile: anklicken und tippen · '
             f'<kbd>Tab</kbd> nächstes Feld · Datum tippen oder {ic("calendar")} wählen</span></div>')
     return v2_editor(nur='AV', ersetzen=[(erste, erste_neu), (zeile_alt, zeile_neu)] + reps, extra_cls='v2av') + tipp

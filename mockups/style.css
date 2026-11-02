@@ -1373,3 +1373,17 @@ td.v2-lz .edit-cell { display: block; }
 .v2av td.num:last-child { position: relative; }
 .v2-tk { color: #999; font-size: 11.5px; }
 .ub-tipp svg.i { width: 14px; height: 14px; vertical-align: -2px; }
+
+/* ---------- Bild 12 v3 (Sitzung 17): Papierkorb immer sichtbar, Bearbeiten ohne weißes Feld ---------- */
+.v2e .v2-del { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 6px; color: #8e8e93; background: transparent; box-shadow: none; }
+.v2e .v2-del.h { color: var(--red); background: #fdecec; }
+.v2e td:last-child { position: relative; }
+.v2e td .v2-del { position: absolute; right: -34px; top: 3px; }
+.v2e .ug-kopf .v2-del { margin-left: auto; margin-right: -34px; }
+.v2e tr.focus td, .v2e tr.v2-neu td { background: transparent; }
+.v2e .edit-cell, .v2e .edit-cell.active { box-shadow: none !important; background: transparent !important; }
+.v2e .caret { display: inline-block; width: 1.5px; height: 15px; background: var(--accent); vertical-align: -2px; margin: 0 1px; }
+.v2e .v2-ugneu { box-shadow: none; background: color-mix(in srgb, var(--bs) 60%, #fff) !important; }
+.v2e .v2-datum { box-shadow: none; background: transparent; padding: 0; margin: 0; }
+.v2e .v2-art.open { box-shadow: none; background: transparent; color: var(--accent); }
+.v2-maus { position: absolute; right: -24px; top: 16px; width: 0; height: 0; border-left: 7px solid #1d1d1f; border-top: 4px solid transparent; border-bottom: 9px solid transparent; transform: rotate(-25deg); }
