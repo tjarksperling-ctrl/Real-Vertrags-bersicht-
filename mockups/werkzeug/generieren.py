@@ -1818,6 +1818,7 @@ def datenschutz_overlay_v1():
   <div class="ex-box">
    <div class="optrow"><div>Kunde endgültig löschen<small>Entfernt alle Übersichten und Aufgaben des Kunden auf allen Geräten · mit Rückfrage</small></div><button class="btn ds-rot">{ic("trash")} Kunde wählen …</button></div>
    <div class="optrow"><div>Auskunft für einen Kunden<small>Alle gespeicherten Daten eines Kunden als PDF (Art. 15 DSGVO)</small></div><button class="btn">{ic("pdf")} Kunde wählen …</button></div>
+   <div class="optrow"><div>Alte Kunden zum Löschen vorschlagen<small>Nur ein Hinweis an Inhaber – gelöscht wird nichts automatisch</small></div><span class="ds-frist">ohne Änderung seit <span class="kk-input ds-sel">10 Jahren {ic("down")}</span></span>{es_sw(True)}</div>
   </div>
   <div class="ex-sec"><span class="kk-n">4</span>Protokoll und Dokumentation</div>
   <div class="ex-box ds-prot">{ph}
@@ -1825,7 +1826,7 @@ def datenschutz_overlay_v1():
   </div>'''
     fuss = (f'<span class="kk-fuss">{ic("lock")} Nur Inhaber können diese Seite ändern. Alle anderen sehen sie nur.</span>'
             f'<span class="spacer"></span><button class="btn">Abbrechen</button><button class="btn primary">Speichern</button>')
-    return einst_overlay_v1('Datenschutz', titel, inhalt, fuss)
+    return einst_overlay_v1('Datenschutz', titel, inhalt, fuss).replace('sheet kk1 es1', 'sheet kk1 es1 dsg1', 1)
 
 
 # ---------------- Index ----------------

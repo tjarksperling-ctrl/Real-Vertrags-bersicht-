@@ -1508,3 +1508,11 @@ td.v2-lz .edit-cell { display: block; }
 .ds-hint { color: var(--muted); font-size: 11.5px; }
 .ds-p-fuss .btn.ds-r { margin-left: auto; }
 .ds-p small { margin-left: auto; }
+.ds-frist { display: inline-flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); white-space: nowrap; }
+.kk-input.ds-sel { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; color: var(--text); }
+.kk-input.ds-sel svg.i { width: 13px; height: 13px; }
+.sheet.dsg1 { max-height: calc(100% - 24px); }
+.dsg1 .ex-sec { margin-top: 10px; }
+.dsg1 .optrow { padding-top: 7px; padding-bottom: 7px; }
+.dsg1 .ds-p { padding: 5px 0; }
+.dsg1 .ds-p-fuss { padding: 4px 0 0; }
