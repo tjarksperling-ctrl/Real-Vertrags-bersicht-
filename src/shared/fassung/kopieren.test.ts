@@ -59,3 +59,16 @@ describe('Übersicht', () => {
     expect(u.neu.bereiche.VERS.untergruppen).toHaveLength(0); // für Rückgängig unverändert
   });
 });
+
+describe('Aus letzter Übersicht übernehmen', () => {
+  it('kopiert ohne quelleId mit neuen Ids', async () => {
+    const { beispielNeu } = await import('../testdaten/beispiel');
+    const neu = beispielNeu();
+    const k = kopiereFassung(neu, false);
+    const v = k.bereiche.VERS.untergruppen[0]!.vertraege[0]!;
+    expect(v.quelleId).toBeUndefined();
+    expect(k.bereiche.VERS.untergruppen[0]!.quelleId).toBeUndefined();
+    expect(v.id).not.toBe(neu.bereiche.VERS.untergruppen[0]!.vertraege[0]!.id);
+    expect(v.name).toBe(neu.bereiche.VERS.untergruppen[0]!.vertraege[0]!.name);
+  });
+});

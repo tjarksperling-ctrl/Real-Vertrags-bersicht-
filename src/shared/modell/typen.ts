@@ -141,6 +141,11 @@ export interface Aufgabe {
   /** Bezug auf einen Vertrag oder eine Untergruppe (Id). */
   bezug?: Id;
   outlookErinnerung: boolean;
+  /** Angelegt am/von (M5a). */
+  erstellt?: Zeitstempel;
+  von?: string;
+  /** Wann erledigt (für „Erledigt“-Liste). */
+  erledigtAm?: Zeitstempel;
 }
 
 export interface Uebersicht {
@@ -196,6 +201,16 @@ export interface SchnellstartLink {
   symbol: Symbol;
   /** Webadresse oder Programmpfad. */
   ziel: string;
+  /** Farbe des Symbols (Bild 8), z. B. „#0a64d0“. */
+  farbe?: string;
+  /** Anzeige unter dem Namen, z. B. „Microsoft Outlook (installiert)“. */
+  beschreibung?: string;
+}
+
+/** Person im Team (Zuständig bei Aufgaben) – bis zur Microsoft-Anmeldung (M5b) in Einstellungen gepflegt. */
+export interface TeamMitglied {
+  id: Id;
+  name: string;
 }
 
 export type Darstellung = 'auto' | 'hell' | 'dunkel';
@@ -211,4 +226,12 @@ export interface Einstellungen {
   aufbewahrungJahre: number;
   /** Angepinnte Übersichten (max. 4). */
   angepinnt: Id[];
+  /** Team-Liste für „Zuständig“ (ohne einen selbst). */
+  team: TeamMitglied[];
+  /** „Alte Kunden zum Löschen vorschlagen“ (Bild 16). */
+  alteKundenVorschlagen: boolean;
+  /** „Hinweis vor jedem KI-Import zeigen“ (Bild 16, wirkt ab M5b). */
+  kiHinweis: boolean;
+  /** Desktop-Dateien standardmäßig mit Passwort (Bild 10). */
+  dateiPasswortStandard: boolean;
 }

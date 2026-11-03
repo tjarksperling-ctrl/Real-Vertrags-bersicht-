@@ -10,7 +10,10 @@ import {
   BEREICH_TYPEN,
   Editor,
   aenderungen,
+  aufgabenJeVertrag,
+  bezugFinden,
   fassungSumme,
+  heuteDatum,
   formatBetrag,
   vergleicheBetraege,
   type Aenderung,
@@ -29,6 +32,7 @@ import { Bereich, BereichAus, FARBE } from '../editor/Bereich';
 import { EditorKontext, FokusRegister, useEditorKontext, type EditorKontextWert } from '../editor/kontext';
 import { TextFeld } from '../editor/felder';
 import { PdfDialog } from '../dialoge/Pdf';
+import { AufgabenPanel } from '../aufgaben/Aufgaben';
 
 export type Ansicht = FassungName | 'neben';
 
@@ -96,9 +100,34 @@ export function EditorSeite({
   setAnsicht,
   band,
   benutzer,
+  team = [],
   pdfPasswortStandard = false,
   pdfZiel,
+  aufgabenStart = false,
+  titelStart = false,
+  onKunde,
+  onEreignis,
+  extra,
+  menuExtra,
+  nurLesen = false,
+  kopf,
 }: {
+  team?: string[];
+  titelStart?: boolean;
+  /** Klick auf den Kundennamen in der Kopfzeile → Kundenakte. */
+  onKunde?: () => void;
+  /** Für das Protokoll (z. B. „PDF erstellt“). */
+  onEreignis?: (was: string) => void;
+  /** Seitenfeld „Aufgaben“ gleich offen (z. B. von der Startseite aus). */
+  aufgabenStart?: boolean;
+  /** Weitere Knöpfe in der Kopfzeile vor „PDF / E-Mail“ (z. B. „Auf Desktop speichern“). */
+  extra?: ReactNode;
+  /** Weitere Einträge im Menü „…“. */
+  menuExtra?: (zu: () => void) => ReactNode;
+  /** Nur ansehen (Desktop-Datei, Bild 10): eigene Kopfzeile, keine Bearbeitung. */
+  nurLesen?: boolean;
+  /** Ersetzt die Kopfzeile (Desktop-Datei). */
+  kopf?: (tabs: ReactNode, pdf: () => void) => ReactNode;
   pdfPasswortStandard?: boolean;
   pdfZiel?: string | undefined;
   doc: Y.Doc;
@@ -121,10 +150,11 @@ export function EditorSeite({
   const [hinweisDaten, setHinweis] = useState<HinweisDaten | null>(null);
   const [nur, setNur] = useState<BereichTyp | null>(null);
   const [nurAenderungen, setNurAenderungen] = useState(false);
-  const [titelBearbeiten, setTitelBearbeiten] = useState(false);
+  const [titelBearbeiten, setTitelBearbeiten] = useState(titelStart);
   const [uebertragung, setUebertragung] = useState<Uebertragung | null>(null);
   const [menu, setMenu] = useState(false);
   const [pdfOffen, setPdfOffen] = useState(false);
+  const [aufgabenOffen, setAufgabenOffen] = useState(aufgabenStart);
   const inhalt = useRef<HTMLDivElement>(null);
   const fassung: FassungName = ansicht === 'neben' ? 'aktuell' : ansicht;
 
@@ -174,7 +204,24 @@ export function EditorSeite({
     neueZeile,
     setNeueZeile,
     nachAenderung,
+    aufgabenMarken: useMemo(() => aufgabenJeVertrag(u.aufgaben, heuteDatum()), [u]),
+    aufgabenZeigen: () => setAufgabenOffen(true),
+    nurLesen,
   };
+
+  const zumVertrag = (id: string) => {
+    const b = bezugFinden(u, id);
+    if (!b) return;
+    if (ansicht === 'neben') setAnsicht('aktuell');
+    setNur(null);
+    requestAnimationFrame(() => {
+      const zeile = document.querySelector<HTMLElement>(`tr[data-vertrag="${id}"]`) ?? [...document.querySelectorAll<HTMLElement>('tr[data-vertrag]')].find((t) => t.dataset['quelle'] === id);
+      zeile?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      if (zeile) setMarkiert(zeile.dataset['vertrag'] ?? null);
+    });
+  };
+  const offeneAufgaben = u.aufgaben.filter((a) => !a.erledigt);
+  const aufgabeUeberfaellig = offeneAufgaben.some((a) => a.faellig !== null && a.faellig < heuteDatum());
 
   // Tastatur: Strg+Z / Strg+Y (Mac ⇧⌘Z), Entf auf markierter Zeile, Strg+1/2/3 (Festlegung 3 und 6)
   useEffect(() => {
@@ -182,6 +229,7 @@ export function EditorSeite({
       const ziel = e.target as HTMLElement;
       const imFeld = ziel.matches?.('input,textarea');
       const mod = e.ctrlKey || e.metaKey;
+      if (nurLesen && (e.key === 'Delete' || e.key === 'Backspace' || (mod && /^[zy]$/i.test(e.key)))) return;
       if (mod && !e.altKey && (e.key === 'z' || e.key === 'Z' || e.key === 'y' || e.key === 'Y')) {
         if (imFeld && ziel.dataset['geaendert'] === '1') return; // Tippen im Feld zurücknehmen: Browser
         e.preventDefault();
@@ -210,7 +258,7 @@ export function EditorSeite({
     };
     window.addEventListener('keydown', taste);
     return () => window.removeEventListener('keydown', taste);
-  }, [editor, fassung, markiert, hinweis, setAnsicht]);
+  }, [editor, fassung, markiert, hinweis, setAnsicht, nurLesen]);
 
   useEffect(() => {
     const klick = (e: MouseEvent) => {
@@ -360,7 +408,8 @@ export function EditorSeite({
       <div>
         <b>Übernehmen ist aus</b> – Änderungen in „Aktuell“ werden nicht nach „Neu“ übertragen.
         <small>
-          {u.syncAusSeit ? `Ausgeschaltet ${uhrzeit(u.syncAusSeit)}${u.syncAusVon ? ` von ${u.syncAusVon}` : ''} · ` : ''}Wieder eingeschaltet wird nur übernommen, was Sie ab dann in „Aktuell“ ändern – nichts rückwirkend.
+          {u.syncAusSeit ? `Ausgeschaltet ${uhrzeit(u.syncAusSeit)}${u.syncAusVon ? ` von ${u.syncAusVon}` : ''} · ` : ''}Wieder eingeschaltet wird nur übernommen, was Sie ab dann in „Aktuell“ ändern
+          – nichts rückwirkend.
         </small>
       </div>
       <span className="spacer" />
@@ -412,96 +461,125 @@ export function EditorSeite({
     );
   };
 
+  /** Nur ansehen (Bild 10): keine Eingabe, kein Ziehen, keine Knöpfe im Inhalt. */
+  const sperre = nurLesen
+    ? {
+        onBeforeInputCapture: (e: React.FormEvent) => e.preventDefault(),
+        onFocusCapture: (e: React.FocusEvent) => {
+          if ((e.target as HTMLElement).matches('input,textarea,select')) (e.target as HTMLElement).blur();
+        },
+        onPointerDownCapture: (e: React.PointerEvent) => {
+          if ((e.target as HTMLElement).closest('.grip,button,input,textarea,select,.switch')) {
+            e.preventDefault();
+            e.stopPropagation();
+          }
+        },
+      }
+    : {};
+
+  const tabs = (
+    <div className="seg" style={{ marginLeft: 6 }} role="tablist">
+      {(
+        [
+          ['aktuell', 'Aktuell', '1'],
+          ['neu', 'Neu', '2'],
+          ['neben', 'Nebeneinander', '3'],
+        ] as const
+      ).map(([a, t, z]) => (
+        <button type="button" role="tab" key={a} aria-selected={ansicht === a} className={`knopf-rein ${ansicht === a ? 'on' : ''}`} title={`${STRG} + ${z}`} onClick={() => setAnsicht(a)}>
+          {t}
+        </button>
+      ))}
+    </div>
+  );
+
   return (
     <EditorKontext.Provider value={kontext}>
-      <main className="main">
-        <div className="toolbar v1">
-          <Avatar id={kunde.id} name={kunde.name} />
-          <div className="crumb">
-            <span className="kunde">
-              {kunde.name} <Sym n="chev" />
-            </span>
-            {titelBearbeiten ? (
-              <input
-                className="titel-feld"
-                autoFocus
-                defaultValue={u.titel ?? ''}
-                aria-label="Titel der Übersicht"
-                onBlur={(e) => {
-                  editor.titelAendern(e.target.value);
-                  setTitelBearbeiten(false);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') e.currentTarget.blur();
-                  if (e.key === 'Escape') setTitelBearbeiten(false);
-                }}
-              />
-            ) : (
-              <h1 title="Doppelklick zum Umbenennen" onDoubleClick={() => setTitelBearbeiten(true)}>
-                {titel}
-              </h1>
-            )}
-          </div>
-          <div className="seg" style={{ marginLeft: 6 }} role="tablist">
-            {(
-              [
-                ['aktuell', 'Aktuell', '1'],
-                ['neu', 'Neu', '2'],
-                ['neben', 'Nebeneinander', '3'],
-              ] as const
-            ).map(([a, t, z]) => (
-              <button type="button" role="tab" key={a} aria-selected={ansicht === a} className={`knopf-rein ${ansicht === a ? 'on' : ''}`} title={`${STRG} + ${z}`} onClick={() => setAnsicht(a)}>
-                {t}
+      <main className={`main au-main-wrap ${aufgabenOffen && !nurLesen ? 'mit-au' : ''} ${nurLesen ? 'nur-lesen' : ''}`}>
+        {kopf ? (
+          kopf(tabs, () => setPdfOffen(true))
+        ) : (
+          <div className="toolbar v1">
+            <Avatar id={kunde.id} name={kunde.name} />
+            <div className="crumb">
+              <button type="button" className="kunde knopf-rein" title="Zur Kundenakte" onClick={onKunde}>
+                {kunde.name} <Sym n="chev" />
               </button>
-            ))}
-          </div>
-          <SyncSchalter u={u} onChange={syncSetzen} uebertragung={uebertragung} />
-          <span className="spacer" />
-          <button type="button" className="btn" disabled title="folgt mit Meilenstein 5">
-            <Sym n="tasks" /> Aufgaben
-          </button>
-          <button type="button" className="btn" disabled title="folgt mit Meilenstein 5">
-            <Sym n="monitor" /> Auf Desktop speichern
-          </button>
-          <button type="button" className="btn primary" title={`${STRG} + P`} onClick={() => setPdfOffen(true)}>
-            <Sym n="pdf" /> PDF / E-Mail
-          </button>
-          <span className="mehr-menu">
-            <button type="button" className="btn icon" title="Weitere: Umbenennen, Neu wieder wie Aktuell" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
-              <Sym n="more" />
+              {titelBearbeiten ? (
+                <input
+                  className="titel-feld"
+                  autoFocus
+                  defaultValue={u.titel ?? ''}
+                  aria-label="Titel der Übersicht"
+                  onBlur={(e) => {
+                    editor.titelAendern(e.target.value);
+                    setTitelBearbeiten(false);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') e.currentTarget.blur();
+                    if (e.key === 'Escape') setTitelBearbeiten(false);
+                  }}
+                />
+              ) : (
+                <h1 title="Doppelklick zum Umbenennen" onDoubleClick={() => setTitelBearbeiten(true)}>
+                  {titel}
+                </h1>
+              )}
+            </div>
+            {tabs}
+            <SyncSchalter u={u} onChange={syncSetzen} uebertragung={uebertragung} />
+            <span className="spacer" />
+            <button
+              type="button"
+              className={`btn ${aufgabenOffen ? 'on' : ''}`}
+              title={`Offene Aufgaben dieser Übersicht${aufgabeUeberfaellig ? ' · rot = eine ist überfällig' : ''}`}
+              aria-pressed={aufgabenOffen}
+              onClick={() => setAufgabenOffen(!aufgabenOffen)}
+            >
+              <Sym n="tasks" /> Aufgaben {offeneAufgaben.length > 0 && <span className={`badge ${aufgabeUeberfaellig ? 'rot' : 'grau'}`}>{offeneAufgaben.length}</span>}
             </button>
-            {menu && (
-              <div className="ub-menu" role="menu">
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="ub-mi knopf-rein"
-                  onClick={() => {
-                    setMenu(false);
-                    setTitelBearbeiten(true);
-                  }}
-                >
-                  <Sym n="pencil" />
-                  <span>Umbenennen</span>
-                </button>
-                <button
-                  type="button"
-                  role="menuitem"
-                  className="ub-mi knopf-rein"
-                  onClick={() => {
-                    setMenu(false);
-                    editor.neuWieAktuell();
-                    hinweis('„Neu“ ist wieder wie „Aktuell“');
-                  }}
-                >
-                  <Sym n="copy" />
-                  <span>Neu wieder wie Aktuell</span>
-                  <small>überschreibt „Neu“</small>
-                </button>
-              </div>
-            )}
-          </span>
-        </div>
+            {extra}
+            <button type="button" className="btn primary" title={`${STRG} + P`} onClick={() => setPdfOffen(true)}>
+              <Sym n="pdf" /> PDF / E-Mail
+            </button>
+            <span className="mehr-menu">
+              <button type="button" className="btn icon" title="Weitere: Umbenennen, Neu wieder wie Aktuell" aria-haspopup="menu" aria-expanded={menu} onClick={() => setMenu(!menu)}>
+                <Sym n="more" />
+              </button>
+              {menu && (
+                <div className="ub-menu" role="menu">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="ub-mi knopf-rein"
+                    onClick={() => {
+                      setMenu(false);
+                      setTitelBearbeiten(true);
+                    }}
+                  >
+                    <Sym n="pencil" />
+                    <span>Umbenennen</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="ub-mi knopf-rein"
+                    onClick={() => {
+                      setMenu(false);
+                      editor.neuWieAktuell();
+                      hinweis('„Neu“ ist wieder wie „Aktuell“');
+                    }}
+                  >
+                    <Sym n="copy" />
+                    <span>Neu wieder wie Aktuell</span>
+                    <small>überschreibt „Neu“</small>
+                  </button>
+                  {menuExtra?.(() => setMenu(false))}
+                </div>
+              )}
+            </span>
+          </div>
+        )}
         <div className="bleiste">
           <button type="button" className={`bl-item bl-gesamt knopf-rein ${nur ? '' : 'on'}`} onClick={() => setNur(null)}>
             <Sym n="columns" />
@@ -552,7 +630,7 @@ export function EditorSeite({
           )}
         </div>
         {ansicht === 'neben' ? (
-          <div className="content neu2 side2 ub v2e" ref={inhalt}>
+          <div className={`content neu2 side2 ub v2e ${nurLesen ? 'nurlesen' : ''}`} ref={inhalt} {...sperre}>
             {aenderungsLeiste(true)}
             {syncAus}
             <div className="side-head v1">
@@ -581,7 +659,7 @@ export function EditorSeite({
             )}
           </div>
         ) : (
-          <div className={`content narrow ub v2e b13 ${fassung === 'neu' ? 'neu2' : ''}`} ref={inhalt} data-fassung={fassung}>
+          <div className={`content narrow ub v2e b13 ${fassung === 'neu' ? 'neu2' : ''} ${nurLesen ? 'nurlesen' : ''}`} ref={inhalt} data-fassung={fassung} {...sperre}>
             {band}
             {fassung === 'neu' && aenderungsLeiste(false)}
             {fassung === 'neu' && syncAus}
@@ -589,6 +667,19 @@ export function EditorSeite({
             {!nur && gesamtKarte(fassung, summe, fassung === 'neu')}
             {!nur && fassung === 'neu' && <Vorteile u={u} sa={sa.gesamtMonat} sn={sn.gesamtMonat} />}
           </div>
+        )}
+        {aufgabenOffen && !nurLesen && (
+          <AufgabenPanel
+            u={u}
+            editor={editor}
+            kunde={kunde.name}
+            benutzer={benutzer}
+            team={team}
+            hinweis={hinweis}
+            onSchliessen={() => setAufgabenOffen(false)}
+            onZumVertrag={zumVertrag}
+            bezugName={(id) => bezugFinden(u, id)?.name ?? null}
+          />
         )}
         {pdfOffen && (
           <PdfDialog
@@ -600,6 +691,7 @@ export function EditorSeite({
             onSchliessen={() => setPdfOffen(false)}
             onFertig={(text) => {
               setPdfOffen(false);
+              onEreignis?.(`PDF erstellt${text.includes('Passwort') ? ' (mit Passwort)' : ''}`);
               setHinweis((h) => ({ text, n: (h?.n ?? 0) + 1, info: true }));
             }}
           />
@@ -731,4 +823,3 @@ function Vorteile({ u, sa, sn }: { u: Uebersicht; sa: number; sn: number }) {
     </div>
   );
 }
-

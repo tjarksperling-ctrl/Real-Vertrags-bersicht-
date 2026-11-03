@@ -6,6 +6,7 @@
  */
 import * as Y from 'yjs';
 import type { Cent, Kunde } from '../modell/typen';
+import type { AufgabeKurz } from '../aufgaben/aufgaben';
 
 export interface UebersichtInfo {
   id: string;
@@ -15,6 +16,14 @@ export interface UebersichtInfo {
   geaendert: string;
   gesamtAktuell: Cent;
   gesamtNeu: Cent;
+  /** Wer zuletzt geändert hat (Anzeigename). */
+  geaendertVon?: string;
+  /** Kurzform der Aufgaben (M5a) – Startseite/Kundenakte ohne alle Übersichten zu laden. */
+  aufgaben?: AufgabeKurz[];
+  /** „Umgesetzt“ am (Kundenakte Bild 1b); fehlt = „In Arbeit“. */
+  umgesetzt?: string;
+  /** Zuletzt als Datei „eingefroren“ (Bild 10). */
+  eingefroren?: string;
 }
 
 export interface Bestand {
@@ -55,13 +64,42 @@ export function uebersichtEintragen(doc: Y.Doc, info: UebersichtInfo): void {
   doc.getMap<YMap>('uebersichten').set(info.id, alsY(info));
 }
 
-/** Aktualisiert Titel/Summen/Zeit im Verzeichnis (nur geänderte Werte werden geschrieben). */
-export function uebersichtAktualisieren(doc: Y.Doc, id: string, teil: Partial<Omit<UebersichtInfo, 'id'>>): void {
+/** Aktualisiert Titel/Summen/Zeit im Verzeichnis (nur geänderte Werte werden geschrieben; `null` entfernt ein Feld). */
+export function uebersichtAktualisieren(doc: Y.Doc, id: string, teil: { [K in keyof Omit<UebersichtInfo, 'id'>]?: UebersichtInfo[K] | null }): void {
   const m = doc.getMap<YMap>('uebersichten').get(id);
   if (!m) return;
   doc.transact(() => {
-    for (const [k, w] of Object.entries(teil)) if (w !== undefined && m.get(k) !== w) m.set(k, w);
+    for (const [k, w] of Object.entries(teil)) {
+      if (w === undefined) continue;
+      if (w === null) {
+        if (m.has(k)) m.delete(k);
+      } else if (typeof w === 'object' ? JSON.stringify(m.get(k)) !== JSON.stringify(w) : m.get(k) !== w) m.set(k, w);
+    }
   });
+}
+
+/** Entfernt eine Übersicht aus dem Verzeichnis. */
+export function uebersichtEntfernen(doc: Y.Doc, id: string): void {
+  doc.getMap<YMap>('uebersichten').delete(id);
+}
+
+/** Entfernt Kunde und alle seine Übersichten aus dem Verzeichnis; gibt die Ids der Übersichten zurück (Dateien löscht der Aufrufer). */
+export function kundeEntfernen(doc: Y.Doc, kundeId: string): string[] {
+  const ue = doc.getMap<YMap>('uebersichten');
+  const ids = [...ue.values()].filter((m) => m.get('kundeId') === kundeId).map((m) => m.get('id') as string);
+  doc.transact(() => {
+    for (const id of ids) ue.delete(id);
+    doc.getMap<YMap>('kunden').delete(kundeId);
+  });
+  return ids;
+}
+
+/** Letzte Änderung eines Kunden = jüngste Änderung an Kunde oder einer seiner Übersichten. */
+export function letzteAenderung(b: Bestand, kundeId: string): string {
+  const k = b.kunden.find((x) => x.id === kundeId);
+  let z = k?.geaendert ?? '';
+  for (const u of b.uebersichten) if (u.kundeId === kundeId && u.geaendert > z) z = u.geaendert;
+  return z;
 }
 
 function normal(name: string): string {
@@ -76,7 +114,10 @@ export function findeDublette(kunden: readonly Kunde[], name: string): Kunde | u
 
 /** Kürzel für den Kreis: „Familie Berger“ → FB, „Jonas & Mira Albers“ → JA, „Elif Yılmaz“ → EY. */
 export function initialen(name: string): string {
-  const w = name.trim().split(/\s+/).filter((t) => /[\p{L}\p{N}]/u.test(t));
+  const w = name
+    .trim()
+    .split(/\s+/)
+    .filter((t) => /[\p{L}\p{N}]/u.test(t));
   if (w.length === 0) return '?';
   const erst = (t: string) => [...t][0]!.toLocaleUpperCase('de');
   return w.length === 1 ? erst(w[0]!) : erst(w[0]!) + erst(w[w.length - 1]!);

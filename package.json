@@ -11,7 +11,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "screenshots": "node werkzeug/screenshots.mjs"
+    "screenshots": "node werkzeug/screenshots.mjs",
+    "installer": "electron-vite build && electron-builder --win nsis --publish never"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
@@ -19,6 +20,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.2.1",
     "electron": "^45.2.1",
+    "electron-builder": "^26.18.0",
     "electron-vite": "^6.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.5",
@@ -34,5 +36,6 @@
     "react-dom": "^19.3.1",
     "yjs": "^13.6.33"
   },
-  "main": "out/main/index.js"
+  "main": "out/main/index.js",
+  "author": "Versicherungsagentur"
 }

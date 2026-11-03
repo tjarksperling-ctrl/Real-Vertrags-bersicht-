@@ -115,6 +115,7 @@ export function VertragZeile({
       style={stil}
       className={`${k.markiert === v.id ? 'focus markiert' : ''} ${sortable.isDragging ? 'zieht' : ''}`}
       data-vertrag={v.id}
+      data-quelle={v.quelleId}
       data-paar={v.quelleId ?? v.id}
       onMouseDown={(e) => {
         if (!(e.target as HTMLElement).closest('input,textarea,button')) k.setMarkiert(v.id);
@@ -341,6 +342,7 @@ function NameZelle({
           </span>
         )}
       </span>
+      <AufgabenMarke vertrag={v} />
       {offen && (
         <div className="ac-menu" role="listbox">
           <div className="ac-k">
@@ -401,5 +403,24 @@ function NameZelle({
         </div>
       )}
     </td>
+  );
+}
+
+/** Marke „☑ 1“ am Vertrag, wenn offene Aufgaben darauf verweisen (Bild 9); Klick öffnet das Seitenfeld. */
+function AufgabenMarke({ vertrag }: { vertrag: Vertrag }) {
+  const k = useEditorKontext();
+  const m = k.aufgabenMarken?.get(vertrag.id) ?? (vertrag.quelleId ? k.aufgabenMarken?.get(vertrag.quelleId) : undefined);
+  if (!m) return null;
+  return (
+    <button
+      type="button"
+      className={`v-auf knopf-rein ${m.ueberfaellig ? 'over' : ''}`}
+      title={`${m.n} ${m.n === 1 ? 'Aufgabe' : 'Aufgaben'}: ${m.texte.join(', ')}`}
+      tabIndex={-1}
+      onClick={() => k.aufgabenZeigen?.()}
+    >
+      <Sym n="tasks" />
+      {m.n}
+    </button>
   );
 }

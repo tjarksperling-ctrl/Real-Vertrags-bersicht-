@@ -47,6 +47,11 @@ export interface EditorKontextWert {
   setNeueZeile: (id: string | null) => void;
   /** Nach dem Speichern eines Feldes (z. B. Hinweis „auch in ‚Neu‘“, Bild 14). */
   nachAenderung?: (vertragId: string, feld: import('../../../shared').VertragFeld) => void;
+  /** Offene Aufgaben je Vertrag (Marke am Vertrag, Bild 9). */
+  aufgabenMarken?: Map<string, { n: number; ueberfaellig: boolean; texte: string[] }>;
+  aufgabenZeigen?: () => void;
+  /** Nur ansehen (geöffnete Desktop-Datei, Bild 10). */
+  nurLesen?: boolean;
 }
 
 export const EditorKontext = createContext<EditorKontextWert | null>(null);

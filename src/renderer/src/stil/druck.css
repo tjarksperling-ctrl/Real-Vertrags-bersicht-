@@ -14,3 +14,15 @@ table.pt .bem { white-space: pre-wrap; }
 table.pt .strich { color: var(--faint); }
 .p-gesamt .neben b.mehr { color: #ff9f8a; }
 .p-vorteile .ersparnis.mehrbeitrag div { color: var(--orange); border-color: color-mix(in srgb, var(--orange) 30%, transparent); }
+
+/* Auskunft nach Art. 15 DSGVO (Bild 16) */
+.ak h1 { font-size: 15pt; margin: 4mm 0 1mm; }
+.ak h2 { font-size: 10pt; margin: 6mm 0 1.5mm; break-after: avoid; }
+.ak-lead { color: var(--muted); margin: 0 0 2mm; }
+.ak-t { margin-bottom: 1mm; }
+.ak-t td.ak-k { width: 34mm; color: var(--muted); }
+.ak-leer { color: var(--muted); margin: 0; }
+.ak-fuss { margin-top: 8mm; color: var(--muted); }
+.ak-kopf th { font-weight: 500; color: var(--muted); font-size: 7.4pt; text-align: left; padding: .8mm 1.4mm; border-bottom: .2mm solid var(--line); }
+.ak-kopf th.num { text-align: right; }
+.ak-t { width: 100%; }

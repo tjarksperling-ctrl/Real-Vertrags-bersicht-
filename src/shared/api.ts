@@ -28,16 +28,67 @@ export interface PdfAuftrag {
   vorschau?: boolean;
   /** Ohne Rückfrage in diesen Pfad schreiben (Tests/Screenshots). */
   ziel?: string;
+  /** Auskunft nach Art. 15 DSGVO (Bild 16): Deckblatt + alle Übersichten des Kunden. */
+  auskunft?: AuskunftDaten;
+}
+
+export interface AuskunftDaten {
+  kunde: { name: string; erstellt: string; geaendert: string };
+  /** Je Übersicht der Yjs-Stand (Aufgaben inklusive). */
+  uebersichten: Uint8Array[];
+  protokoll: ProtokollEintrag[];
+  erstelltVon: string;
 }
 
 /** Was die Druckansicht vom Hauptprozess bekommt. */
-export type DruckDaten = Pick<PdfAuftrag, 'daten' | 'kunde' | 'optionen' | 'datum'>;
+export type DruckDaten = Pick<PdfAuftrag, 'daten' | 'kunde' | 'optionen' | 'datum' | 'auskunft'>;
 
 export interface PdfErgebnis {
   pfad: string | null;
   seiten?: number;
   fehler?: string;
 }
+
+/** Eintrag im Protokoll (Bild 16): wer hat wann was getan – lokal, 12 Monate aufbewahrt. */
+export interface ProtokollEintrag {
+  zeit: string;
+  wer: string;
+  kunde?: string;
+  uebersicht?: string;
+  was: string;
+}
+
+/** „Auf Desktop speichern“ (Bild 10): eingefrorener Stand als `.vtue`. */
+export interface DateiAuftrag {
+  /** Dateiname ohne Endung, z. B. „Familie Berger – Jahresgespräch 2026 – 02.11.2026“. */
+  name: string;
+  /** Auf dem Desktop speichern oder Ort wählen. */
+  ort: 'desktop' | 'waehlen';
+  meta: VtueMeta;
+  /** Yjs-Stand der Übersicht. */
+  daten: Uint8Array;
+  passwort?: string;
+  imOrdnerZeigen?: boolean;
+}
+
+/** Unverschlüsselte Angaben einer `.vtue`-Datei (für die Passwortabfrage). */
+export interface VtueMeta {
+  kunde: string;
+  kundeId: string;
+  uebersichtId: string;
+  titel: string;
+  /** ISO-Zeitstempel des eingefrorenen Stands. */
+  gespeichert: string;
+  von: string;
+}
+
+export interface DateiInfo extends VtueMeta {
+  dateiname: string;
+  verschluesselt: boolean;
+}
+
+/** Befehle aus einem Datei-Fenster an das Hauptfenster. */
+export type AppBefehl = { art: 'uebersichtOeffnen'; uebersichtId: string; kundeId: string } | { art: 'alsNeuUebernehmen'; meta: VtueMeta; daten: Uint8Array };
 
 export interface Api {
   info(): Promise<AppInfo>;
@@ -51,4 +102,25 @@ export interface Api {
   /** Druckansicht: Auftrag abholen (Schlüssel aus der Adresse) und „fertig gezeichnet“ melden. */
   druckDaten(schluessel: string): Promise<DruckDaten | null>;
   druckBereit(): void;
+  // ---- M5a
+  /** Schnellstart: Webadresse im Browser bzw. Programm öffnen. */
+  oeffnenExtern(ziel: string): Promise<boolean>;
+  /** „App hinzufügen“: Programm auswählen. */
+  programmWaehlen(): Promise<{ pfad: string; name: string } | null>;
+  /** Löscht eine gespeicherte Datei (Name wie bei `speichern`). */
+  loeschen(name: string): Promise<void>;
+  protokollLaden(): Promise<ProtokollEintrag[]>;
+  protokollSchreiben(e: ProtokollEintrag): Promise<void>;
+  /** Text-Datei über den Speichern-Dialog ablegen (z. B. Verarbeitungsverzeichnis). */
+  textSpeichern(dateiname: string, text: string): Promise<string | null>;
+  dateiSpeichern(auftrag: DateiAuftrag): Promise<{ pfad: string | null; fehler?: string }>;
+  /** Datei-Fenster: Angaben zur geöffneten Datei, Entsperren (null = falsches Passwort). */
+  dateiInfo(schluessel: string): Promise<DateiInfo | null>;
+  dateiEntsperren(schluessel: string, passwort?: string): Promise<Uint8Array | null>;
+  /** „Datei öffnen …“ in der App (ohne Doppelklick). */
+  dateiOeffnenDialog(): Promise<void>;
+  /** Datei-Fenster → Hauptfenster. */
+  anApp(b: AppBefehl): Promise<void>;
+  /** Hauptfenster: Befehle aus Datei-Fenstern empfangen. */
+  aufBefehl(fn: (b: AppBefehl) => void): () => void;
 }

@@ -1,9 +1,19 @@
-/** Einstellungen (Stil Bild 8): „Allgemein“ (Darstellung + Tastenkürzel) und „Vorlagen“ (Bild 11 v1). Weitere Seiten folgen mit M5. */
+/**
+ * Einstellungen (Stil Bild 8): „Allgemein“ (Darstellung, Team, Standards, Tastenkürzel), „Schnellstart“ (Bild 8),
+ * „Vorlagen“ (Bild 11 v1), „Datenschutz“ (Bild 16). KI-Konto, Outlook und Speicherort folgen mit M5b.
+ */
 import { useState } from 'react';
 import {
   BEREICH_NAME,
   BEREICH_TYPEN,
+  AGENTUR_SCHNELLSTART,
+  linksAus,
   neueId,
+  zielGueltig,
+  type Bestand,
+  type Einstellungen,
+  type Kunde,
+  type Uebersicht,
   type BereichTyp,
   type Darstellung,
   type Fassung,
@@ -15,17 +25,20 @@ import { FARBE } from '../editor/Bereich';
 import { SYMBOLE } from '../editor/spalten';
 import { vorlageUntertitel } from './NeuerKunde';
 import type { Gespeichert } from '../daten/speicher';
+import { SchnellstartSeite } from './einst/Schnellstart';
+import { DatenschutzSeite } from './einst/Datenschutz';
+import { Avatar } from '../komponenten/ui';
 
-export type EinstSeite = 'Allgemein' | 'Vorlagen';
+export type EinstSeite = 'Allgemein' | 'Schnellstart' | 'Vorlagen' | 'Datenschutz';
 
 const NAV: [string, string, EinstSeite | null][] = [
   ['sliders', 'Allgemein', 'Allgemein'],
   ['sparkles', 'KI-Konto', null],
   ['mail', 'Outlook', null],
   ['cloud', 'Speicherort', null],
-  ['ext', 'Schnellstart', null],
+  ['ext', 'Schnellstart', 'Schnellstart'],
   ['tpl', 'Vorlagen', 'Vorlagen'],
-  ['lock', 'Datenschutz', null],
+  ['lock', 'Datenschutz', 'Datenschutz'],
 ];
 
 export const KUERZEL: [string, string][] = [
@@ -39,6 +52,8 @@ export const KUERZEL: [string, string][] = [
   [`${STRG} K`, 'Kundensuche'],
   [`${STRG} P`, 'PDF-Dialog'],
   [`${STRG} 1 / 2 / 3`, 'Aktuell / Neu / Nebeneinander'],
+  [`${STRG} O`, 'Gespeicherten Stand (.vtue) öffnen'],
+  ['N', 'Neue Aufgabe (im Seitenfeld „Aufgaben“)'],
   [`${STRG} /`, 'Diese Übersicht der Tastenkürzel'],
 ];
 
@@ -100,9 +115,19 @@ export function EinstellungenDialog({
   aktuelleFassung,
   onSpeichern,
   onSchliessen,
+  benutzer,
+  bestand,
+  onKundeLoeschen,
+  ladeUebersichten,
+  onProtokoll,
 }: {
   start: EinstSeite;
   gespeichert: Gespeichert;
+  benutzer: string;
+  bestand: Bestand;
+  onKundeLoeschen: (k: Kunde) => Promise<void>;
+  ladeUebersichten: (kundeId: string) => Promise<{ u: Uebersicht; daten: Uint8Array }[]>;
+  onProtokoll: (was: string, kundeId?: string) => void;
   /** „Neue Vorlage aus dieser Übersicht“ – nur wenn eine Übersicht offen ist. */
   aktuelleFassung: Fassung | null;
   onSpeichern: (g: Gespeichert) => void;
@@ -113,11 +138,39 @@ export function EinstellungenDialog({
   const [auswahl, setAuswahl] = useState(entwurf.vorlagen.find((v) => v.standard)?.id ?? entwurf.vorlagen[0]?.id ?? '');
   const geaendert = JSON.stringify(entwurf) !== JSON.stringify(gespeichert);
 
-  const darstellung = (d: Darstellung) => {
-    const neu = { ...entwurf, einstellungen: { ...entwurf.einstellungen, darstellung: d } };
+  const darstellung = (d: Darstellung) => sofort({ darstellung: d });
+  /** Allgemein: wirkt sofort. */
+  const sofort = (teil: Partial<Einstellungen>) => {
+    const neu = { ...entwurf, einstellungen: { ...entwurf.einstellungen, ...teil } };
     setEntwurf(neu);
-    onSpeichern({ ...gespeichert, einstellungen: neu.einstellungen }); // wirkt sofort
+    onSpeichern({ ...gespeichert, einstellungen: { ...gespeichert.einstellungen, ...teil } });
   };
+  /** Schnellstart/Datenschutz: erst mit „Speichern“. */
+  const entwurfSetzen = (teil: Partial<Einstellungen>) => setEntwurf((e) => ({ ...e, einstellungen: { ...e.einstellungen, ...teil } }));
+  const [teamName, setTeamName] = useState('');
+  const speichernFuss = (extra?: React.ReactNode, info = 'Änderungen gelten nach „Speichern“.', ok = true) => (
+    <>
+      <span className="kk-fuss">
+        <Sym n="info" /> {info}
+      </span>
+      <span className="spacer" />
+      {extra}
+      <button type="button" className="btn" onClick={onSchliessen}>
+        Abbrechen
+      </button>
+      <button
+        type="button"
+        className="btn primary"
+        disabled={!geaendert || !ok}
+        onClick={() => {
+          onSpeichern(entwurf);
+          onSchliessen();
+        }}
+      >
+        Speichern
+      </button>
+    </>
+  );
 
   const vorlagen = entwurf.vorlagen;
   const v = vorlagen.find((x) => x.id === auswahl);
@@ -145,7 +198,14 @@ export function EinstellungenDialog({
               ['dunkel', 'Dunkel'],
             ] as const
           ).map(([w, t]) => (
-            <button key={w} type="button" role="radio" aria-checked={entwurf.einstellungen.darstellung === w} className={`knopf-rein ${entwurf.einstellungen.darstellung === w ? 'on' : ''}`} onClick={() => darstellung(w)}>
+            <button
+              key={w}
+              type="button"
+              role="radio"
+              aria-checked={entwurf.einstellungen.darstellung === w}
+              className={`knopf-rein ${entwurf.einstellungen.darstellung === w ? 'on' : ''}`}
+              onClick={() => darstellung(w)}
+            >
               {t}
             </button>
           ))}
@@ -165,6 +225,42 @@ export function EinstellungenDialog({
             }}
           />
         </div>
+        <div className="optrow">
+          <div>
+            Desktop-Dateien standardmäßig mit Passwort<small>Im Dialog „Auf Desktop speichern“ ist „Mit Passwort schützen“ dann schon an (empfohlen).</small>
+          </div>
+          <Schalter an={entwurf.einstellungen.dateiPasswortStandard} onChange={(an) => sofort({ dateiPasswortStandard: an })} />
+        </div>
+        <div className="ex-sec">Team</div>
+        <p className="kk-lead klein">Namen für „Zuständig“ bei Aufgaben. Sobald die Microsoft-Anmeldung eingerichtet ist, kommen sie automatisch aus dem Agentur-Konto.</p>
+        <div className="team-liste">
+          <span className="chip on">
+            <Avatar id={benutzer} name={benutzer} cls="mini" /> {benutzer} <small>(Sie)</small>
+          </span>
+          {entwurf.einstellungen.team.map((t) => (
+            <span key={t.id} className="chip">
+              <Avatar id={t.name} name={t.name} cls="mini" /> {t.name}
+              <button type="button" className="knopf-rein team-x" aria-label={`${t.name} entfernen`} onClick={() => sofort({ team: entwurf.einstellungen.team.filter((x) => x.id !== t.id) })}>
+                <Sym n="x" />
+              </button>
+            </span>
+          ))}
+          <form
+            className="team-neu"
+            onSubmit={(ev) => {
+              ev.preventDefault();
+              const n = teamName.trim();
+              if (!n || n === benutzer || entwurf.einstellungen.team.some((t) => t.name === n)) return;
+              sofort({ team: [...entwurf.einstellungen.team, { id: neueId(), name: n }] });
+              setTeamName('');
+            }}
+          >
+            <input className="kk-input" placeholder="Name, z. B. Sabine K." value={teamName} aria-label="Name im Team" onChange={(ev) => setTeamName(ev.target.value)} />
+            <button type="submit" className="btn" disabled={!teamName.trim()}>
+              <Sym n="plus" /> Hinzufügen
+            </button>
+          </form>
+        </div>
         <div className="ex-sec">Tastenkürzel</div>
         <KuerzelListe />
       </>
@@ -180,6 +276,44 @@ export function EinstellungenDialog({
         </button>
       </>
     );
+  } else if (seite === 'Schnellstart') {
+    const links = entwurf.einstellungen.schnellstart;
+    titel = es_titel('ext', 'Schnellstart', false, `${links.length} von 8 Links`);
+    inhalt = <SchnellstartSeite links={links} onChange={(l) => entwurfSetzen({ schnellstart: l })} />;
+    fuss = speichernFuss(
+      <button type="button" className="btn ghost" onClick={() => entwurfSetzen({ schnellstart: linksAus(AGENTUR_SCHNELLSTART) })}>
+        Agentur-Standard laden
+      </button>,
+      'Höchstens 8 Links, damit die Startseite übersichtlich bleibt.',
+      links.every((l) => l.name.trim() && zielGueltig(l.ziel)),
+    );
+  } else if (seite === 'Datenschutz') {
+    titel = (
+      <div className="kk-titel">
+        <h3>
+          <Sym n="lock" /> Datenschutz
+        </h3>
+        <span className="kk-status">
+          <Sym n="check" /> DSGVO-Einstellungen aktiv
+        </span>
+        <span className="spacer" />
+        <span className="es-scope ag">
+          <Sym n="user" /> Ganze Agentur
+        </span>
+      </div>
+    );
+    inhalt = (
+      <DatenschutzSeite
+        e={entwurf.einstellungen}
+        onChange={entwurfSetzen}
+        bestand={bestand}
+        benutzer={benutzer}
+        onKundeLoeschen={onKundeLoeschen}
+        ladeUebersichten={ladeUebersichten}
+        onProtokoll={onProtokoll}
+      />
+    );
+    fuss = speichernFuss(undefined, 'Gilt bis zur Microsoft-Anmeldung nur auf diesem Computer. Löschen wirkt sofort.');
   } else {
     titel = es_titel('tpl', 'Vorlagen', true, `${vorlagen.length} ${vorlagen.length === 1 ? 'Vorlage' : 'Vorlagen'}`);
     const karte = (x: Vorlage) => (
@@ -227,7 +361,8 @@ export function EinstellungenDialog({
             )}
             <div className="vl-auto">
               <div className="vl-auto-k">
-                <Sym n="wand" /> Autovervollständigung<span className="spacer" />
+                <Sym n="wand" /> Autovervollständigung
+                <span className="spacer" />
                 <Schalter an={entwurf.autovervollstaendigung} onChange={(an) => setEntwurf((e) => ({ ...e, autovervollstaendigung: an }))} />
               </div>
               <div className="vl-auto-t">Schlägt beim Tippen Vertragsnamen mit üblicher Zahlweise vor – aus Vorlagen und allen Kunden der Agentur.</div>
@@ -293,7 +428,7 @@ export function EinstellungenDialog({
                 key={n}
                 className={`kk-nav-i knopf-rein ${seite === n ? 'on' : ''}`}
                 disabled={!ziel}
-                title={ziel ? undefined : 'folgt mit Meilenstein 5'}
+                title={ziel ? undefined : 'folgt mit Meilenstein 5b (Konto nötig)'}
                 onClick={() => ziel && setSeite(ziel)}
               >
                 <Sym n={sym} />
@@ -315,10 +450,8 @@ export function EinstellungenDialog({
 function VorlageBearbeiten({ v, onChange }: { v: Vorlage; onChange: (v: Vorlage) => void }) {
   const [offen, setOffen] = useState<string | null>(null);
   const [neuerVorschlag, setNeuerVorschlag] = useState('');
-  const bereich = (t: BereichTyp, fn: (b: Vorlage['bereiche'][BereichTyp]) => Vorlage['bereiche'][BereichTyp]) =>
-    onChange({ ...v, bereiche: { ...v.bereiche, [t]: fn(v.bereiche[t]) } });
-  const ug = (t: BereichTyp, i: number, teil: Partial<VorlageUntergruppe>) =>
-    bereich(t, (b) => ({ ...b, untergruppen: b.untergruppen.map((u, j) => (j === i ? { ...u, ...teil } : u)) }));
+  const bereich = (t: BereichTyp, fn: (b: Vorlage['bereiche'][BereichTyp]) => Vorlage['bereiche'][BereichTyp]) => onChange({ ...v, bereiche: { ...v.bereiche, [t]: fn(v.bereiche[t]) } });
+  const ug = (t: BereichTyp, i: number, teil: Partial<VorlageUntergruppe>) => bereich(t, (b) => ({ ...b, untergruppen: b.untergruppen.map((u, j) => (j === i ? { ...u, ...teil } : u)) }));
 
   return (
     <div className="vl-ed-box">
@@ -405,7 +538,14 @@ function VorlageBearbeiten({ v, onChange }: { v: Vorlage; onChange: (v: Vorlage)
                     <div className="vl-ed">
                       <div className="vl-ed-r">
                         <span className="kk-input vl-n">
-                          <input className="eingabe-rein" autoFocus aria-label="Name der Untergruppe" value={u.name} onChange={(e) => ug(t, i, { name: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && setOffen(null)} />
+                          <input
+                            className="eingabe-rein"
+                            autoFocus
+                            aria-label="Name der Untergruppe"
+                            value={u.name}
+                            onChange={(e) => ug(t, i, { name: e.target.value })}
+                            onKeyDown={(e) => e.key === 'Enter' && setOffen(null)}
+                          />
                         </span>
                         <span className="vl-vor">
                           {u.vorschlaege.map((s) => (

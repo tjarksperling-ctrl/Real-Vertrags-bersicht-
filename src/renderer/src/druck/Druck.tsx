@@ -350,18 +350,145 @@ function Abschnitt({ a, u, d }: { a: PdfAbschnitt; u: Uebersicht; d: DruckDaten 
   );
 }
 
+const ZEIT = (iso: string) => {
+  const d = new Date(iso);
+  return `${formatDatum(iso.slice(0, 10))}, ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+};
+
+/** Deckblatt der Auskunft (Art. 15 DSGVO): welche Daten, wozu, wo, wie lange – danach alle Übersichten. */
+function AuskunftDeckblatt({ d, liste }: { d: DruckDaten; liste: Uebersicht[] }) {
+  const a = d.auskunft!;
+  const aufgaben = liste.flatMap((u) => u.aufgaben.map((x) => ({ ...x, titel: u.titel || 'Vertragsübersicht' })));
+  const zeile = (k: string, w: ReactNode) => (
+    <tr>
+      <td className="ak-k">{k}</td>
+      <td>{w}</td>
+    </tr>
+  );
+  return (
+    <div className="page v1 druck-seite">
+      <table className="p-rahmen">
+        <thead>
+          <tr>
+            <td>
+              <Kopf kunde={d.kunde} fassung="Auskunft" datum={d.datum} />
+            </td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div className="ak">
+                <h1>Auskunft über gespeicherte Daten</h1>
+                <p className="ak-lead">
+                  nach Art. 15 DSGVO · erstellt am {d.datum} von {a.erstelltVon}
+                </p>
+                <h2>Gespeicherte Angaben zur Person</h2>
+                <table className="pt ak-t">
+                  <tbody>
+                    {zeile('Name', a.kunde.name)}
+                    {zeile('Angelegt', ZEIT(a.kunde.erstellt))}
+                    {zeile('Weitere Angaben', 'keine – gespeichert wird nur der Name')}
+                  </tbody>
+                </table>
+                <h2>Zweck, Speicherort, Dauer</h2>
+                <table className="pt ak-t">
+                  <tbody>
+                    {zeile('Zweck', 'Übersicht der Versicherungs-, Spar-, Darlehens- und Vorsorgeverträge für die Beratung')}
+                    {zeile('Speicherort', 'Arbeitsplatz der Agentur (Benutzerprofil); später Microsoft 365 der Agentur in der EU')}
+                    {zeile('Empfänger', 'keine; PDFs und Dateien nur, wenn sie der Agentur bzw. Ihnen ausgehändigt werden')}
+                    {zeile('KI-Auswertung', 'Unterlagen werden nur ausgewertet, nicht gespeichert; der Name wird vorher entfernt')}
+                    {zeile('Aufbewahrung', 'bis zur Löschung; Hinweis zur Prüfung nach Jahren ohne Änderung')}
+                  </tbody>
+                </table>
+                <h2>Vertragsübersichten ({liste.length})</h2>
+                <table className="pt ak-t">
+                  <tbody>
+                    <tr className="ak-kopf">
+                      <th>Titel</th>
+                      <th>Angelegt</th>
+                      <th>Zuletzt geändert</th>
+                      <th className="num">Aktuell / Monat</th>
+                      <th className="num">Neu / Monat</th>
+                    </tr>
+                                      {liste.map((u) => (
+                      <tr key={u.id}>
+                        <td className="vname">{u.titel || 'Vertragsübersicht'}</td>
+                        <td>{formatDatum(u.erstellt.slice(0, 10))}</td>
+                        <td>{formatDatum(u.geaendert.slice(0, 10))}</td>
+                        <td className="num">{formatBetrag(fassungSumme(u.aktuell).gesamtMonat)}</td>
+                        <td className="num">{formatBetrag(fassungSumme(u.neu).gesamtMonat)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <h2>Aufgaben ({aufgaben.length})</h2>
+                {aufgaben.length === 0 ? (
+                  <p className="ak-leer">keine</p>
+                ) : (
+                  <table className="pt ak-t">
+                    <tbody>
+                      <tr className="ak-kopf">
+                        <th>Aufgabe</th>
+                        <th>Übersicht</th>
+                        <th>Fällig</th>
+                        <th>Stand</th>
+                      </tr>
+                                          {aufgaben.map((x) => (
+                        <tr key={x.id}>
+                          <td>{x.text}</td>
+                          <td>{x.titel}</td>
+                          <td>{x.faellig ? formatDatum(x.faellig) : '–'}</td>
+                          <td>{x.erledigt ? 'erledigt' : 'offen'}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                <h2>Protokoll (letzte 12 Monate)</h2>
+                {a.protokoll.length === 0 ? (
+                  <p className="ak-leer">keine Einträge</p>
+                ) : (
+                  <table className="pt ak-t">
+                    <tbody>
+                      {a.protokoll.map((p, i) => (
+                        <tr key={i}>
+                          <td className="ak-k">{ZEIT(p.zeit)}</td>
+                          <td>
+                            {p.wer} · {p.uebersicht ? `${p.uebersicht} · ` : ''}
+                            {p.was}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+                <p className="ak-fuss">Auf den folgenden Seiten stehen alle Vertragsübersichten vollständig (Fassung „Aktuell“ und „Neu“).</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 /** Seite für das unsichtbare Druckfenster (Route #druck?s=<Schlüssel>). */
 export function DruckSeite({ schluessel }: { schluessel: string }) {
-  const [daten, setDaten] = useState<{ u: Uebersicht; d: DruckDaten } | null>(null);
+  const [daten, setDaten] = useState<{ u: Uebersicht; d: DruckDaten; weitere: Uebersicht[] } | null>(null);
   const [fehler, setFehler] = useState(false);
   useEffect(() => {
     document.documentElement.classList.add('druck');
     document.documentElement.classList.remove('dunkel');
     void window.api.druckDaten(schluessel).then((d) => {
       if (!d) return setFehler(true);
-      const doc = new Y.Doc();
-      Y.applyUpdate(doc, d.daten);
-      setDaten({ u: leseUebersicht(doc), d });
+      const lies = (b: Uint8Array) => {
+        const doc = new Y.Doc();
+        Y.applyUpdate(doc, b);
+        return leseUebersicht(doc);
+      };
+      const weitere = d.auskunft ? d.auskunft.uebersichten.map(lies) : [];
+      setDaten({ u: weitere[0] ?? lies(d.daten), d, weitere });
     });
   }, [schluessel]);
   useEffect(() => {
@@ -369,6 +496,16 @@ export function DruckSeite({ schluessel }: { schluessel: string }) {
     void document.fonts.ready.then(() => requestAnimationFrame(() => window.api.druckBereit()));
   }, [daten, fehler]);
   if (!daten) return null;
+  if (daten.d.auskunft)
+    return (
+      <div className="druck-wurzel">
+        <AuskunftDeckblatt d={daten.d} liste={daten.weitere} />
+        {daten.weitere.map((u) => {
+          const d = { ...daten.d, optionen: { inhalt: 'beide' as const, vergleich: false, vorteile: true, ersparnis: u.ersparnisAnzeigen, titel: true } };
+          return pdfAbschnitte(u, d.optionen).map((a, i) => <Abschnitt key={`${u.id}-${i}`} a={a} u={{ ...u, titel: u.titel || 'Vertragsübersicht' }} d={d} />);
+        })}
+      </div>
+    );
   return (
     <div className="druck-wurzel">
       {pdfAbschnitte(daten.u, daten.d.optionen).map((a, i) => (

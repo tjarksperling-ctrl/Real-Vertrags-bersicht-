@@ -12,6 +12,23 @@ const api: Api = {
   pdfErstellen: (auftrag) => ipcRenderer.invoke('pdf:erstellen', auftrag),
   druckDaten: (schluessel) => ipcRenderer.invoke('druck:daten', schluessel),
   druckBereit: () => ipcRenderer.send('druck:bereit'),
+  oeffnenExtern: (ziel) => ipcRenderer.invoke('extern:oeffnen', ziel),
+  programmWaehlen: () => ipcRenderer.invoke('programm:waehlen'),
+  loeschen: (name) => ipcRenderer.invoke('daten:loeschen', name),
+  protokollLaden: () => ipcRenderer.invoke('protokoll:laden'),
+  protokollSchreiben: (e) => ipcRenderer.invoke('protokoll:schreiben', e),
+  textSpeichern: (dateiname, text) => ipcRenderer.invoke('text:speichern', dateiname, text),
+  dateiSpeichern: (a) => ipcRenderer.invoke('datei:speichern', a),
+  dateiInfo: (k) => ipcRenderer.invoke('datei:info', k),
+  dateiEntsperren: (k, passwort) => ipcRenderer.invoke('datei:entsperren', k, passwort),
+  dateiOeffnenDialog: () => ipcRenderer.invoke('datei:oeffnenDialog'),
+  anApp: (b) => ipcRenderer.invoke('app:befehl', b),
+  aufBefehl: (fn) => {
+    const h = (_e: Electron.IpcRendererEvent, b: Parameters<typeof fn>[0]) => fn(b);
+    ipcRenderer.on('app:befehl', h);
+    ipcRenderer.send('app:bereit');
+    return () => ipcRenderer.off('app:befehl', h);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);

@@ -5,7 +5,11 @@
 import * as Y from 'yjs';
 import {
   AGENTUR_VORLAGEN,
+  Editor,
+  kundeEntfernen,
+  uebersichtEntfernen,
   STANDARD_EINSTELLUNGEN,
+  aufgabenKurz,
   fassungSumme,
   kundeEintragen,
   leseBestand,
@@ -40,15 +44,22 @@ export function standardGespeichert(): Gespeichert {
 
 export class Speicher {
   readonly bestand = new Y.Doc();
+  /** Anzeigename der Person (für „zuletzt geändert von“). */
+  benutzer = '';
   private readonly docs = new Map<string, Y.Doc>();
   private readonly timer = new Map<string, ReturnType<typeof setTimeout>>();
 
-  static async oeffnen(demo: boolean): Promise<Speicher> {
+  static async oeffnen(demo: boolean, benutzer = ''): Promise<Speicher> {
     const s = new Speicher();
+    s.benutzer = benutzer;
     const daten = await window.api.laden('bestand');
     if (daten) Y.applyUpdate(s.bestand, daten);
     s.beobachten('bestand', s.bestand);
-    if (demo && leseBestand(s.bestand).kunden.length === 0) for (const d of demoKunden()) s.anlegen(d.kunde, d.uebersicht);
+    if (demo && leseBestand(s.bestand).kunden.length === 0)
+      for (const d of demoKunden()) {
+        s.anlegen(d.kunde, d.uebersicht, d.von);
+        if (d.umgesetzt) uebersichtAktualisieren(s.bestand, d.uebersicht.id, { umgesetzt: d.umgesetzt });
+      }
     window.addEventListener('beforeunload', () => s.sofortSpeichern());
     return s;
   }
@@ -77,7 +88,7 @@ export class Speicher {
   }
 
   /** Legt Kunde + erste Übersicht an. */
-  anlegen(kunde: Kunde, u: Uebersicht): void {
+  anlegen(kunde: Kunde, u: Uebersicht, von = this.benutzer): void {
     const doc = neuesDokument(u);
     this.registrieren(u.id, doc);
     void window.api.speichern(`u-${u.id}`, Y.encodeStateAsUpdate(doc));
@@ -91,6 +102,8 @@ export class Speicher {
         geaendert: u.geaendert,
         gesamtAktuell: fassungSumme(u.aktuell).gesamtMonat,
         gesamtNeu: fassungSumme(u.neu).gesamtMonat,
+        aufgaben: aufgabenKurz(u),
+        ...(von ? { geaendertVon: von } : {}),
       });
     });
   }
@@ -104,6 +117,8 @@ export class Speicher {
         geaendert: u.geaendert,
         gesamtAktuell: fassungSumme(u.aktuell).gesamtMonat,
         gesamtNeu: fassungSumme(u.neu).gesamtMonat,
+        aufgaben: aufgabenKurz(u),
+        ...(this.benutzer ? { geaendertVon: this.benutzer } : {}),
       });
     });
   }
@@ -117,6 +132,60 @@ export class Speicher {
     Y.applyUpdate(doc, daten);
     this.registrieren(id, doc);
     return doc;
+  }
+
+  /** Weitere Übersicht für einen bestehenden Kunden (Kundenakte). */
+  uebersichtHinzufuegen(kundeId: string, u: Uebersicht): void {
+    const doc = neuesDokument(u);
+    this.registrieren(u.id, doc);
+    void window.api.speichern(`u-${u.id}`, Y.encodeStateAsUpdate(doc));
+    uebersichtEintragen(this.bestand, {
+      id: u.id,
+      kundeId,
+      titel: u.titel ?? '',
+      erstellt: u.erstellt,
+      geaendert: u.geaendert,
+      gesamtAktuell: fassungSumme(u.aktuell).gesamtMonat,
+      gesamtNeu: fassungSumme(u.neu).gesamtMonat,
+      aufgaben: aufgabenKurz(u),
+      ...(this.benutzer ? { geaendertVon: this.benutzer } : {}),
+    });
+  }
+
+  /** Eine Änderung an einer (ggf. noch nicht geladenen) Übersicht, z. B. Aufgabe abhaken von der Startseite. */
+  async mitEditor(id: string, fn: (e: Editor) => void): Promise<void> {
+    const doc = await this.uebersicht(id);
+    if (!doc) return;
+    const e = new Editor(doc);
+    try {
+      fn(e);
+    } finally {
+      e.undo.destroy();
+    }
+  }
+
+  private vergessen(id: string): void {
+    const name = `u-${id}`;
+    clearTimeout(this.timer.get(name));
+    this.timer.delete(name);
+    this.docs.get(id)?.destroy();
+    this.docs.delete(id);
+  }
+
+  /** Übersicht endgültig löschen (Verzeichnis + Datei). */
+  async uebersichtLoeschen(id: string): Promise<void> {
+    this.vergessen(id);
+    uebersichtEntfernen(this.bestand, id);
+    await window.api.loeschen(`u-${id}`);
+  }
+
+  /** Kunde endgültig löschen (Bild 16): alle Übersichten mit Aufgaben, Verzeichnis-Einträge und Dateien. */
+  async kundeLoeschen(kundeId: string): Promise<number> {
+    const ids = kundeEntfernen(this.bestand, kundeId);
+    for (const id of ids) this.vergessen(id);
+    await Promise.all(ids.map((id) => window.api.loeschen(`u-${id}`)));
+    this.sofortSpeichern();
+    return ids.length;
   }
 
   /** Alle Übersichten (für Vorschläge beim Tippen). */

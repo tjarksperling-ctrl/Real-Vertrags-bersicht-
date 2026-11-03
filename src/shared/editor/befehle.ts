@@ -13,7 +13,7 @@ import * as Y from 'yjs';
 import { neueId, jetzt } from '../modell/ids';
 import { neuerVertrag, neueUntergruppe, fassungAusVorlage } from '../modell/fabrik';
 import { kopiereFassung } from '../fassung/kopieren';
-import type { BereichTyp, Fassung, Uebersicht, Vertrag, Vorlage } from '../modell/typen';
+import type { Aufgabe, BereichTyp, Fassung, Uebersicht, Vertrag, Vorlage } from '../modell/typen';
 import {
   bereichY,
   fassungAlsY,
@@ -242,6 +242,54 @@ export class Editor {
     return this.vorteileY().get('stichpunkte') as Y.Array<string>;
   }
 
+  // ---------------------------------------------------------------- Aufgaben (M5a, Bild 9)
+
+  private aufgabenY(): Y.Array<YMap> {
+    const w = wurzel(this.doc);
+    let af = w.get('aufgaben') as Y.Array<YMap> | undefined;
+    if (!af) {
+      af = new Y.Array<YMap>();
+      w.set('aufgaben', af);
+    }
+    return af;
+  }
+
+  aufgabeAnlegen(a: Aufgabe): string {
+    return this.tx(() => {
+      const m = new Y.Map<unknown>();
+      for (const [k, w] of Object.entries(a)) if (w !== undefined) m.set(k, w);
+      this.aufgabenY().push([m]);
+      return a.id;
+    });
+  }
+
+  /** Ändert Felder einer Aufgabe; `undefined` entfernt ein optionales Feld. Erledigt setzt/entfernt „erledigtAm“. */
+  aufgabeAendern(id: string, teil: { [K in keyof Omit<Aufgabe, 'id'>]?: Aufgabe[K] | undefined }): void {
+    this.tx(() => {
+      const m = this.aufgabenY()
+        .toArray()
+        .find((x) => x.get('id') === id);
+      if (!m) return;
+      for (const [k, w] of Object.entries(teil)) {
+        if (w === undefined) m.delete(k);
+        else if (m.get(k) !== w) m.set(k, w);
+      }
+      if (teil.erledigt === true && !m.get('erledigtAm')) m.set('erledigtAm', this.zeit());
+      if (teil.erledigt === false) m.delete('erledigtAm');
+    });
+  }
+
+  aufgabeLoeschen(id: string): Aufgabe | null {
+    return this.tx(() => {
+      const arr = this.aufgabenY();
+      const i = arr.toArray().findIndex((x) => x.get('id') === id);
+      if (i < 0) return null;
+      const a = arr.get(i).toJSON() as Aufgabe;
+      arr.delete(i, 1);
+      return a;
+    });
+  }
+
   // ---------------------------------------------------------------- Bereiche
 
   /** Bereich an-/abwählen (Bild 13). Bei Sync an wird Abwählen in „Neu“ übernommen (Bild 14). */
@@ -408,4 +456,3 @@ export class Editor {
 export function untergruppenListe(u: Uebersicht, f: FassungName, typ: BereichTyp): { id: string; name: string }[] {
   return u[f].bereiche[typ].untergruppen.map((ug) => ({ id: ug.id, name: ug.name }));
 }
-

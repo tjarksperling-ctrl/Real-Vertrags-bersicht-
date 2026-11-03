@@ -1,17 +1,6 @@
 /** Erzeugt neue, leere Elemente mit sinnvollen Standardwerten. */
 import { neueId, jetzt } from './ids';
-import type {
-  Aufgabe,
-  Bereich,
-  BereichTyp,
-  Einstellungen,
-  Fassung,
-  Kunde,
-  Untergruppe,
-  Uebersicht,
-  VertragJeTyp,
-  Vorlage,
-} from './typen';
+import type { Aufgabe, Bereich, BereichTyp, Einstellungen, Fassung, Kunde, Untergruppe, Uebersicht, VertragJeTyp, Vorlage } from './typen';
 import { BEREICH_TYPEN } from './typen';
 import { kopiereFassung } from '../fassung/kopieren';
 
@@ -78,8 +67,10 @@ export function neueUebersicht(kundeId: string, aktuell: Fassung = leereFassung(
   };
 }
 
-export function neueAufgabe(text: string, faellig: string | null = null): Aufgabe {
-  return { id: neueId(), text, faellig, erledigt: false, outlookErinnerung: false };
+export function neueAufgabe(text: string, faellig: string | null = null, von?: string): Aufgabe {
+  const a: Aufgabe = { id: neueId(), text: text.trim(), faellig, erledigt: false, outlookErinnerung: false, erstellt: jetzt() };
+  if (von) a.von = von;
+  return a;
 }
 
 export const STANDARD_EINSTELLUNGEN: Readonly<Einstellungen> = Object.freeze({
@@ -90,4 +81,8 @@ export const STANDARD_EINSTELLUNGEN: Readonly<Einstellungen> = Object.freeze({
   mailKonto: null,
   aufbewahrungJahre: 10,
   angepinnt: [],
+  team: [],
+  alteKundenVorschlagen: true,
+  kiHinweis: true,
+  dateiPasswortStandard: true,
 });

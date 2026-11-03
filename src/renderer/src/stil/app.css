@@ -218,3 +218,187 @@ button.cbl { text-align: left; }
 .pdf-fehler { margin-top: 10px; color: var(--red); font-size: 12px; }
 :root.dunkel .choice .mini i { background: var(--card); }
 :root.dunkel .cbx:not(.on) { background: var(--card); }
+
+/* ---------- M5a: Aufgaben (Bild 9) ---------- */
+.seg.sm button { padding: 3px 11px; font-size: 12.5px; display: inline-flex; align-items: center; gap: 4px; }
+.seg.sm button svg.i { width: 12px; height: 12px; }
+.badge.grau { background: var(--line); color: var(--text); }
+.toolbar.v1 .btn .badge { padding: 0 6px; }
+.tin input, .tin-feld { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--text); padding: 0; }
+.chip.knopf-rein { border: 1px solid var(--line); background: var(--card); }
+.chip.knopf-rein.on { border-color: #b9d6f6; background: var(--accent-soft); color: var(--accent); }
+.datum-chip { position: relative; }
+.datum-chip input { position: absolute; inset: 0; opacity: 0; width: 100%; }
+.datum-chip input::-webkit-calendar-picker-indicator { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+.au-sel select { flex: 1; min-width: 0; appearance: none; border: 0; outline: 0; background: none; font: inherit; color: var(--text); }
+.au-fw.gesperrt { opacity: .55; }
+.au-row .box, .trow .box { display: grid; place-items: center; color: #fff; }
+.au-row .box:hover, .trow .box:hover { border-color: var(--accent); }
+.au-row .box.on, .trow .box.on { background: var(--green); border-color: var(--green); }
+.au-row .box svg.i, .trow .box svg.i { width: 11px; height: 11px; stroke-width: 3; }
+.au-row.erledigt .au-t { color: var(--muted); text-decoration: line-through; }
+.au-row:hover { background: #f7faff; }
+.au-row:hover .box:not(.on) { border-color: var(--accent); }
+.au-akt { display: none; }
+.au-row:hover .au-akt, .au-row:focus-within .au-akt { display: flex; }
+.au-akt > button, .au-akt .au-mehr > button { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--text); background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 2px 8px; }
+.au-akt > button:hover, .au-akt .au-mehr > button:hover { border-color: var(--accent); color: var(--accent); }
+.au-mehr { position: relative; }
+.au-mehr .ub-menu { top: 26px; left: 0; right: auto; width: 180px; }
+.ub-mi.rot { color: var(--red); }
+.ub-mi.rot:hover { background: var(--red); }
+.au-leer { padding: 18px; color: var(--faint); text-align: center; }
+button.au-neu { width: calc(100% - 28px); text-align: left; }
+button.au-neu:hover { border-color: var(--accent); }
+button.tmore { width: 100%; text-align: left; }
+.au-t { cursor: default; }
+.v-auf.knopf-rein { cursor: default; }
+:root.dunkel .au-panel, :root.dunkel .chip, :root.dunkel .au-akt > button, :root.dunkel .au-akt .au-mehr > button { background: var(--card); color: var(--text); }
+:root.dunkel .au-form { background: var(--side); border-color: var(--line); }
+:root.dunkel .au-row:hover, :root.dunkel .trow:hover { background: rgba(255,255,255,.04); }
+.au-akt svg.i { width: 12px; height: 12px; }
+.au-mehr > button { padding: 2px 6px; }
+
+/* ---------- M5a: Startseite (Bild 1 v4) ---------- */
+button.lnk { width: 100%; text-align: left; min-width: 0; }
+button.lnk > div { min-width: 0; }
+button.lnk b, button.lnk small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button.lnk:hover { border-color: #b9d6f6; box-shadow: 0 2px 8px rgba(0,113,227,.08); }
+button.lnk.add:hover { color: var(--accent); }
+.trow.klickbar:hover, .urow.klickbar:hover { background: #f7faff; }
+.trow .go.on, .urow .go.on { display: none; }
+.trow.klickbar:hover .go.on, .urow.klickbar:hover .go.on { display: inline-flex; }
+.trow.klickbar:hover .go:not(.on), .urow.klickbar:hover .go:not(.on) { display: none; }
+.trow.klickbar:hover .kunde, .urow.klickbar:hover .u-titel { color: var(--accent); }
+.trow.klickbar:hover .tside .prio { display: none; }
+.trow .ttext { margin-left: 30px; }
+.trow .tmain .ttext.k { margin-left: 0; }
+.trow > .avatar.mini, .au-row .avatar.mini { width: 18px; height: 18px; font-size: 7.5px; flex: none; }
+.trow.erledigt .ttext { color: var(--muted); text-decoration: line-through; }
+.crow .pinbtn.on { visibility: hidden; cursor: default; }
+.crow.klickbar:hover .pinbtn.on { visibility: visible; }
+.crow.klickbar:hover .cdiff { visibility: hidden; }
+.pinbtn:disabled { opacity: .5; }
+.pcard.klickbar { cursor: default; }
+.pcard.klickbar:hover { box-shadow: 0 0 0 1.5px #b9d6f6, var(--shadow); }
+.pin-los { display: grid; place-items: center; align-self: flex-start; }
+.pin-los:hover svg.pin { fill: none; color: var(--muted); }
+.pt { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+.pt svg.i { width: 13px; height: 13px; }
+.pins-leer { background: var(--card); border: 1.5px dashed var(--line); border-radius: var(--radius); padding: 14px 16px; color: var(--muted); font-size: 12.5px; }
+.start-hinweis { display: flex; align-items: center; gap: 9px; width: 100%; margin: -4px 0 16px; padding: 8px 12px; border-radius: 9px; background: var(--orange-soft); color: #7a4100; font-size: 12.5px; text-align: left; }
+.start-hinweis svg.i { width: 15px; height: 15px; color: var(--orange); flex: none; }
+.start-hinweis span { flex: 1; }
+.start-aufgaben .au-form { margin: 10px 12px; }
+.aufgaben-seite { max-width: 760px; }
+.toolbar.start { display: flex; align-items: center; gap: 10px; }
+.section-title > svg.i { width: 15px; height: 15px; color: var(--muted); margin-right: 6px; }
+
+/* ---------- M5a: Kundenakte (Bild 1b) ---------- */
+.toolbar.kunde { display: flex; align-items: center; }
+.toolbar.kunde h1 { margin: 0; }
+.kunde-name { font-size: 20px; font-weight: 650; }
+.urow { position: relative; }
+.urow .u-titel { overflow: hidden; text-overflow: ellipsis; }
+.urow svg.pin-mini { width: 13px; height: 13px; color: var(--accent); fill: var(--accent-soft); flex: none; }
+.u-mehr { position: absolute; right: 6px; top: 6px; }
+.u-mehr-k { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; color: var(--faint); visibility: hidden; }
+.urow:hover .u-mehr-k, .u-mehr-k[aria-expanded='true'] { visibility: visible; }
+.u-mehr-k:hover { background: var(--line-soft); color: var(--text); }
+.u-mehr .ub-menu { top: 26px; right: 0; width: 230px; }
+.neu-menu { width: 330px !important; }
+.neu-menu small { display: block; color: var(--muted); font-size: 11.5px; }
+.ub-mi:disabled { opacity: .45; }
+.tchips .chip { cursor: default; }
+.sel-chip { position: relative; max-width: 190px; }
+.sel-chip select { position: absolute; inset: 0; opacity: 0; width: 100%; }
+.chip.rot-chip { color: var(--red); background: #fdecec; border-color: #f6c6c6; }
+.tadd .tin input { font-size: 13px; }
+.trow > .avatar.mini { margin-left: 2px; }
+
+/* ---------- M5a: Einstellungen Schnellstart / Allgemein / Datenschutz ---------- */
+.es-l[role='button'] { cursor: default; }
+.es-l[role='button']:hover { background: #f7faff; }
+.es-grip { cursor: grab; touch-action: none; }
+.es-ed input.kk-input, .es-ed .es-z input { font: inherit; color: var(--text); outline: 0; }
+.es-ed .es-z { display: flex; align-items: center; gap: 6px; }
+.es-ed .es-z input { flex: 1; min-width: 0; border: 0; background: none; padding: 0; }
+.es-syms > button.knopf-rein { width: 26px; height: 26px; }
+.es-farben > button { width: 16px; height: 16px; border-radius: 99px; display: block; }
+.es-farben > button.on { box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px var(--text); }
+button.es-add-b { text-align: left; }
+button.es-add-b:hover:not(:disabled) { border-color: var(--accent); }
+button.es-add-b:disabled { opacity: .5; }
+.kk-input.fehler, .ds-mask.fehler { border-color: var(--red) !important; box-shadow: 0 0 0 3px rgba(255,59,48,.12) !important; }
+.team-liste { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-bottom: 6px; }
+.team-liste .chip small { color: var(--muted); }
+.team-x { display: grid; place-items: center; color: var(--faint); margin-left: 2px; }
+.team-x:hover { color: var(--red); }
+.team-neu { display: inline-flex; gap: 6px; margin-left: 4px; }
+.team-neu .kk-input { padding: 4px 9px; width: 190px; font: inherit; color: var(--text); }
+.team-neu .btn { padding: 4px 10px; }
+.ds-wahl-box { position: relative; }
+.ds-frist { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--muted); margin-right: 10px; white-space: nowrap; }
+.ds-sel { display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px; }
+.ds-sel select { appearance: none; border: 0; background: none; font: inherit; color: var(--text); outline: 0; }
+.ds-sel svg.i { width: 13px; height: 13px; color: var(--muted); }
+.ds-alt { border-top: 1px solid var(--line-soft); padding: 6px 0 8px; }
+.ds-alt-i { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 12.5px; }
+.ds-alt-i small { color: var(--muted); }
+.ds-alt-i .spacer { flex: 1; }
+.ds-alt-i .btn { padding: 2px 9px; font-size: 12px; }
+.ds-meldung { margin: 8px 0 0; padding: 7px 11px; border-radius: 8px; background: #e6f4ea; color: var(--green); font-size: 12.5px; font-weight: 500; }
+.ds-prot.alles { max-height: 320px; overflow: auto; }
+.btn.rot, .btn.ghost.rot { color: var(--red); }
+.btn.primary.rot { background: var(--red); border-color: var(--red); color: #fff; }
+.btn.primary.rot:disabled { opacity: .45; }
+.kw { position: absolute; z-index: 30; right: 14px; top: 44px; width: 320px; background: var(--card); border-radius: 12px; box-shadow: 0 14px 40px rgba(0,0,0,.18), 0 0 0 1px rgba(0,0,0,.06); padding: 10px; }
+.kw-k { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.kw-k .spacer { flex: 1; }
+.kw-s { margin-bottom: 6px; }
+.kw-s input { flex: 1; border: 0; background: none; outline: 0; font: inherit; color: var(--text); }
+.kw-l { max-height: 240px; overflow: auto; display: flex; flex-direction: column; }
+.kw-i { display: flex; align-items: center; gap: 9px; padding: 6px 8px; border-radius: 7px; text-align: left; }
+.kw-i:hover { background: var(--accent); color: #fff; }
+.kw-i .avatar { width: 22px; height: 22px; font-size: 9px; }
+.rf-sheet { width: 480px; }
+.rf-label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 6px; }
+.rf-feld { width: 100%; font: inherit; color: var(--text); outline: 0; }
+
+/* ---------- M5a: Desktop-Datei (Bild 10) ---------- */
+.ds-df .kk-input input, .ds-mask input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--text); padding: 0; }
+.ds-df label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.ds-pw { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; padding: 12px 14px; }
+.ds-pwf label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.ds-mask { display: flex; align-items: center; gap: 6px; }
+.ds-mask:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,113,227,.15); }
+.ds-mask input[type='password'] { letter-spacing: .12em; }
+.ds-bar i { background: var(--line); }
+.ds-bar.stufe-1 i:nth-child(-n + 1) { background: var(--red); }
+.ds-bar.stufe-2 i:nth-child(-n + 2) { background: var(--orange); }
+.ds-bar.stufe-3 i:nth-child(-n + 3) { background: #34c759; }
+.ds-bar.stufe-4 i { background: #34c759; }
+.ds-st b.st-1 { color: var(--red); } .ds-st b.st-2 { color: var(--orange); }
+.ds-ungleich { color: var(--red); font-size: 12.5px; }
+button.ds-link { cursor: default; }
+button.ds-nach { display: inline-flex; gap: 8px; }
+.dk-fenster { min-height: 100vh; display: grid; place-items: center; background: var(--bg); }
+.dk-fenster .dk-pw { width: 100%; max-width: 440px; }
+.dk-falsch { margin-top: 6px; color: var(--red); font-size: 12px; }
+.dk-fehler { padding: 40px; text-align: center; color: var(--muted); }
+.app.ds-app .main { grid-column: 1 / -1; }
+.nurlesen .grip, .nurlesen .ug-more, .nurlesen .v2-del, .nurlesen .ug-kopf .v2-del { visibility: hidden; }
+.nurlesen .add-v, .nurlesen .add-ug, .nurlesen .vorteile .add, .nurlesen .sp-x { display: none !important; }
+.nurlesen .zw-sel svg.i, .nurlesen .kal { display: none; }
+.nurlesen input::placeholder, .nurlesen textarea::placeholder { color: transparent; }
+.nur-lesen .bl-item .chk { pointer-events: auto; }
+:root.dunkel .dk-fenster, :root.dunkel .kw, :root.dunkel .lnk, :root.dunkel .pcard, :root.dunkel .kpi { background: var(--card); color: var(--text); }
+:root.dunkel .es-l, :root.dunkel .es-l.edit { background: var(--card); }
+:root.dunkel .ds-datei { background: var(--side); }
+:root.dunkel .start-hinweis { color: var(--orange); }
+:root.dunkel .trow.klickbar:hover, :root.dunkel .urow.klickbar:hover, :root.dunkel .es-l[role='button']:hover { background: rgba(255,255,255,.04); }
+.es-ed-r { flex-wrap: wrap; row-gap: 6px; }
+.u-mehr { position: static; order: 10; margin-left: -6px; }
+.urow .go { width: 62px; }
+.urow .umain { overflow: hidden; }
+.urow .umain small { overflow: hidden; text-overflow: ellipsis; }

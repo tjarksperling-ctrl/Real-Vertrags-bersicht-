@@ -1,0 +1,33 @@
+# Test-Installer (M5a, unsigniert): Windows-Setup mit Dateizuordnung .vtue (Doppelklick öffnet den Stand, Bild 10).
+# Signatur und automatische Updates folgen mit M5c.
+appId: de.agentur.vertragsuebersicht
+productName: Vertragsübersicht
+copyright: Versicherungsagentur
+directories:
+  output: dist
+  buildResources: build
+files:
+  - out/**/*
+  - package.json
+asarUnpack: []
+fileAssociations:
+  - ext: vtue
+    name: Vertragsübersicht-Stand
+    description: Gespeicherter Stand einer Vertragsübersicht
+    role: Viewer
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+  # ohne Zertifikat: keine Signatur, kein Bearbeiten der .exe unter Linux (rcedit bräuchte Wine)
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: Vertragsübersicht
+  artifactName: Vertragsuebersicht-Setup-${version}-unsigniert.${ext}
+mac:
+  target: dmg
+  category: public.app-category.business

@@ -1,7 +1,7 @@
 /**
  * Startet die gebaute App (npm run build) mit Vorführdaten per Playwright und legt Screenshots
  * zum Vergleich mit den Mockups nach mockups/bilder/app-m<n>-*.png.
- * Aufruf: node werkzeug/screenshots.mjs [m2|m3|m4|alle]
+ * Aufruf: node werkzeug/screenshots.mjs [m2|m3|m4|m5|alle]
  * Playwright wird nicht als Abhängigkeit installiert: es wird die vorhandene, globale Installation genutzt
  * (Pfad über PLAYWRIGHT_PFAD oder NODE_PATH).
  */
@@ -54,6 +54,13 @@ async function ziehen(win, von, nach) {
   await pause(200);
 }
 
+/** Seitenleiste → Kundenakte → „Jahresgespräch 2026“ (seit M5a öffnet der Kunde zuerst die Kundenakte). */
+async function bergerOeffnen(win) {
+  await win.click('.nav li:has-text("Familie Berger")');
+  await win.click('.urow:has-text("Jahresgespräch 2026")');
+  await win.waitForSelector('.bereich.v1.vers');
+}
+
 const bild = (win, name) => win.screenshot({ path: join(bilder, `app-${name}.png`) });
 const pause = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -61,8 +68,7 @@ async function m2() {
   const { app, win, daten } = await starten();
   try {
     await bild(win, 'm2-start');
-    await win.click('.nav li:has-text("Familie Berger")');
-    await win.waitForSelector('.bereich.v1.vers');
+    await bergerOeffnen(win);
     await pause(300);
     await bild(win, 'm2-aktuell');
 
@@ -137,7 +143,7 @@ async function m2() {
     await pause(300);
     await bild(win, 'm2-allgemein-dunkel');
     await win.click('.sheet footer .btn.primary');
-    await win.click('.nav li:has-text("Familie Berger")');
+    await bergerOeffnen(win);
     await pause(300);
     await bild(win, 'm2-aktuell-dunkel');
   } finally {
@@ -161,8 +167,7 @@ async function betrag(win, fassung, name) {
 async function m3() {
   const { app, win, daten } = await starten();
   try {
-    await win.click('.nav li:has-text("Familie Berger")');
-    await win.waitForSelector('.bereich.v1.vers');
+    await bergerOeffnen(win);
     await win.click('.seg button:has-text("Neu")');
     await pause(300);
     await bild(win, 'm3-neu');
@@ -214,8 +219,7 @@ async function m4() {
   const ziel = join(ausgabe, 'beide.pdf');
   const { app, win, daten } = await starten({ VTUE_PDF_ZIEL: ziel });
   try {
-    await win.click('.nav li:has-text("Familie Berger")');
-    await win.waitForSelector('.bereich.v1.vers');
+    await bergerOeffnen(win);
     await win.keyboard.press('Control+p');
     await win.waitForSelector('.sheet.ex2');
     await pause(200);
@@ -245,7 +249,132 @@ async function m4() {
   return ausgabe;
 }
 
-const schritte = { m2, m3, m4 };
+/** M5a: Startseite (Bild 1 v4), Aufgaben (Bild 9), Kundenakte (Bild 1b), Einstellungen (Bild 8/16), Desktop-Datei (Bild 10). */
+async function m5() {
+  const desktop = mkdtempSync(join(tmpdir(), 'vtue-desktop-'));
+  const auskunft = join(desktop, 'auskunft.pdf');
+  const { app, win, daten } = await starten({ VTUE_DESKTOP: desktop, VTUE_PDF_ZIEL: auskunft });
+  let datei;
+  try {
+    await win.waitForSelector('.links');
+    await pause(300);
+    await win.hover('.trow:has-text("Unterlagen BU-Antrag")');
+    await pause(150);
+    await bild(win, 'm5-start');
+    await win.click('.nav li:has-text("Aufgaben")');
+    await pause(200);
+    await bild(win, 'm5-aufgaben-alle');
+
+    // Kundenakte
+    await win.click('.nav li:has-text("Familie Berger")');
+    await win.waitForSelector('.kpis');
+    await pause(400);
+    await win.click('.tadd .tin-feld');
+    await win.keyboard.type('Termin zur Unterschrift vereinbaren');
+    await win.hover('.urow:has-text("Anschlussfinanzierung")');
+    await pause(150);
+    await bild(win, 'm5-kundenakte');
+
+    // Aufgaben im Editor
+    await win.click('.urow:has-text("Jahresgespräch 2026")');
+    await win.waitForSelector('.bereich.v1.vers');
+    await win.click('.toolbar .btn:has-text("Aufgaben")');
+    await win.waitForSelector('.au-panel');
+    await win.click('.au-neu');
+    await win.keyboard.type('Termin zur Unterschrift vereinbaren');
+    await pause(200);
+    await bild(win, 'm5-aufgaben');
+    await win.keyboard.press('Enter');
+    await win.hover('.au-row:has-text("BU-Unterlagen")');
+    await pause(150);
+    await bild(win, 'm5-aufgaben-liste');
+    await win.click('.au-x');
+
+    // Auf Desktop speichern (Bild 10)
+    await win.click('.toolbar .btn:has-text("Auf Desktop speichern")');
+    await win.waitForSelector('.sheet.ds1');
+    await win.fill('#ds-pw1', 'Mond-Hafen-Eule-47');
+    await win.fill('#ds-pw2', 'Mond-Hafen-Eule-47');
+    await pause(150);
+    await bild(win, 'm5-desktop-speichern');
+    await win.click('.sheet.ds1 footer .btn.primary');
+    await win.waitForSelector('.ub-toast:has-text("Gespeichert")', { timeout: 20000 });
+    console.log('  ' + (await win.textContent('.ub-toast span')));
+
+    // Einstellungen: Schnellstart, Datenschutz, Allgemein (Team)
+    await win.click('.einst-knopf');
+    await win.waitForSelector('.sheet.es1');
+    await win.click('.kk-nav-i:has-text("Schnellstart")');
+    await win.click('.es-l:has-text("Maklerportal")');
+    await pause(150);
+    await bild(win, 'm5-einst-schnellstart');
+    await win.click('.kk-nav-i:has-text("Datenschutz")');
+    await pause(400);
+    await bild(win, 'm5-einst-datenschutz');
+    // Auskunft (Art. 15) als PDF
+    await win.click('.optrow:has-text("Auskunft") .btn');
+    await win.click('.kw-i:has-text("Familie Berger")');
+    await win.waitForSelector('.ds-meldung:has-text("Auskunft gespeichert")', { timeout: 30000 });
+    console.log('  ' + (await win.textContent('.ds-meldung')));
+    execFileSync('pdftoppm', ['-png', '-r', '80', '-f', '1', '-l', '1', auskunft, join(bilder, 'app-m5-auskunft')]);
+    // Kunde endgültig löschen (mit Rückfrage und Namen eintippen)
+    await win.click('.optrow:has-text("endgültig löschen") .btn');
+    await win.click('.kw-i:has-text("Katharina Vogt")');
+    await win.waitForSelector('.rf-sheet');
+    await win.fill('.rf-feld', 'Katharina Vogt');
+    await bild(win, 'm5-kunde-loeschen');
+    await win.click('.rf-sheet .btn.primary');
+    await win.waitForSelector('.ds-meldung:has-text("gelöscht")');
+    console.log('  Kunde gelöscht, noch in der Seitenleiste:', await win.locator('.sidebar li:has-text("Katharina Vogt")').count());
+    await win.click('.kk-nav-i:has-text("Allgemein")');
+    await win.evaluate(() => document.querySelector('.team-liste')?.scrollIntoView());
+    await pause(150);
+    await bild(win, 'm5-einst-allgemein');
+    await win.keyboard.press('Escape');
+    datei = execFileSync('ls', [desktop]).toString().trim().split('\n').find((d) => d.endsWith('.vtue'));
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+  }
+
+  // Doppelklick auf die Datei: eigenes Fenster mit Passwortabfrage, dann nur ansehen (Bild 10)
+  const pfad = join(desktop, datei);
+  console.log('  Datei:', pfad);
+  const daten2 = mkdtempSync(join(tmpdir(), 'vtue-'));
+  const app2 = await pw._electron.launch({
+    executablePath: electronPfad,
+    args: ['--no-sandbox', join(wurzel, 'out/main/index.js'), pfad],
+    env: { ...process.env, VTUE_DATEN: daten2, VTUE_BENUTZER: 'Tjark S.' },
+  });
+  try {
+    const w = await app2.firstWindow();
+    await w.waitForSelector('.dk-pw');
+    await w.evaluate(() => document.fonts.ready);
+    await w.fill('#dk-pw', 'falsch');
+    await w.keyboard.press('Enter');
+    await w.waitForSelector('.dk-falsch');
+    await w.fill('#dk-pw', 'Mond-Hafen-Eule');
+    await pause(100);
+    await w.screenshot({ path: join(bilder, 'app-m5-datei-passwort.png') });
+    await w.fill('#dk-pw', 'Mond-Hafen-Eule-47');
+    await w.keyboard.press('Enter');
+    await w.waitForSelector('.ds-banner');
+    await w.setViewportSize({ width: 1440, height: 900 });
+    await pause(400);
+    await w.screenshot({ path: join(bilder, 'app-m5-datei-geoeffnet.png') });
+    // „Als neue Übersicht übernehmen“ öffnet das Hauptfenster und legt Kunde + Übersicht an
+    await w.click('.btn:has-text("Als neue Übersicht übernehmen")');
+    const haupt = await app2.waitForEvent('window', { timeout: 20000 });
+    await haupt.waitForSelector('.toolbar.v1 h1', { timeout: 20000 });
+    console.log('  Übernommen als:', await haupt.textContent('.toolbar.v1 h1'), '·', await haupt.textContent('.toolbar.v1 .kunde'));
+  } finally {
+    await app2.close();
+    rmSync(daten2, { recursive: true, force: true });
+    rmSync(desktop, { recursive: true, force: true });
+  }
+}
+
+const schritte = { m2, m3, m4, m5 };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

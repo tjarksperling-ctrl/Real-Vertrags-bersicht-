@@ -15,3 +15,5 @@ export * from './editor/bestand';
 export * from './editor/vorschlaege';
 export * from './fassung/vergleich';
 export * from './pdf/auftrag';
+export * from './aufgaben/aufgaben';
+export * from './modell/schnellstart';
