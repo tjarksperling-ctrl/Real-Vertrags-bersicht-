@@ -1,7 +1,9 @@
 /** Seitenleiste wie Bild 1 v4 / Bild 2 v3: Suche, „Neuer Kunde“, Start, Kundenliste, Konto + Einstellungen. */
 import { forwardRef, useState } from 'react';
 import { heuteDatum, zaehleFaellige, type Bestand } from '../../../shared';
+import { zeigeHinweis } from '../../../shared/update/update';
 import { Avatar, STRG, Sym } from './ui';
+import { useUpdate } from './update';
 
 export interface SeitenleisteProps {
   bestand: Bestand;
@@ -21,6 +23,7 @@ export interface SeitenleisteProps {
 
 export const Seitenleiste = forwardRef<HTMLInputElement, SeitenleisteProps>(function Seitenleiste(p, sucheRef) {
   const [suche, setSuche] = useState('');
+  const update = useUpdate();
   const q = suche.trim().toLocaleLowerCase('de');
   const treffer = p.bestand.kunden.filter((k) => !q || k.name.toLocaleLowerCase('de').includes(q));
   const pinKunden = [...new Set(p.angepinnt.map((id) => p.bestand.uebersichten.find((u) => u.id === id)?.kundeId).filter((x): x is string => !!x))]
@@ -91,6 +94,18 @@ export const Seitenleiste = forwardRef<HTMLInputElement, SeitenleisteProps>(func
         {kunden.length === 0 && <li className="leer">{q ? 'Kein Kunde gefunden' : pinKunden.length ? 'Alle Kunden sind angepinnt' : 'Noch keine Kunden'}</li>}
       </ul>
       <div className="bottom">
+        {update && zeigeHinweis(update.zustand) && update.zustand.art === 'bereit' && (
+          <div className="update-hinweis" role="status">
+            <Sym n="download" />
+            <div>
+              <b>Update bereit</b>
+              <small>Version {update.zustand.version} wird beim nächsten Start installiert.</small>
+            </div>
+            <button type="button" className="btn klein" onClick={() => void window.api.updateNeustart()}>
+              Jetzt neu starten
+            </button>
+          </div>
+        )}
         <div className="row" title="Gespeichert im Benutzerprofil. Der Abgleich über OneDrive folgt mit Meilenstein 5.">
           <Sym n="cloud" /> Lokal gespeichert <span className="dot" style={{ marginLeft: 'auto' }} />
         </div>

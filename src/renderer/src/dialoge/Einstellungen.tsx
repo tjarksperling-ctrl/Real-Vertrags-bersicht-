@@ -3,6 +3,8 @@
  * „Vorlagen“ (Bild 11 v1), „Datenschutz“ (Bild 16). KI-Konto, Outlook und Speicherort folgen mit M5b.
  */
 import { useState } from 'react';
+import { pruefenMoeglich, pruefZeit, statusText } from '../../../shared/update/update';
+import { useUpdate } from '../komponenten/update';
 import {
   BEREICH_NAME,
   BEREICH_TYPEN,
@@ -263,6 +265,7 @@ export function EinstellungenDialog({
         </div>
         <div className="ex-sec">Tastenkürzel</div>
         <KuerzelListe />
+        <UpdateAbschnitt />
       </>
     );
     fuss = (
@@ -593,5 +596,42 @@ function VorlageBearbeiten({ v, onChange }: { v: Vorlage; onChange: (v: Vorlage)
         );
       })}
     </div>
+  );
+}
+
+/** Einstellungen → Allgemein: Version und Updates (M5c). */
+function UpdateAbschnitt() {
+  const stand = useUpdate();
+  if (!stand) return null;
+  const z = stand.zustand;
+  const zeit = pruefZeit(stand.letztePruefung, new Date());
+  return (
+    <>
+      <div className="ex-sec">Version und Updates</div>
+      <div className="optrow update-zeile">
+        <div>
+          Vertragsübersicht {stand.version}
+          <small className={z.art === 'fehler' ? 'update-fehler' : z.art === 'bereit' ? 'update-ok' : ''}>
+            {statusText(stand)}
+            {zeit && z.art !== 'aus' && z.art !== 'pruefe' && z.art !== 'laedt' ? ` Zuletzt geprüft: ${zeit}.` : ''}
+          </small>
+          {z.art === 'laedt' && (
+            <span className="update-balken" aria-hidden>
+              <i style={{ width: `${z.prozent}%` }} />
+            </span>
+          )}
+        </div>
+        {z.art === 'bereit' ? (
+          <button type="button" className="btn primary" onClick={() => void window.api.updateNeustart()}>
+            Jetzt neu starten
+          </button>
+        ) : (
+          <button type="button" className="btn" disabled={!pruefenMoeglich(z)} onClick={() => void window.api.updatePruefen()}>
+            <Sym n="sync" /> Nach Updates suchen
+          </button>
+        )}
+      </div>
+      <p className="kk-lead klein">Updates werden automatisch im Hintergrund geladen und beim nächsten Start installiert. Ihre Daten bleiben dabei erhalten.</p>
+    </>
   );
 }

@@ -1,0 +1,73 @@
+# Auslieferung (M5c): baut Windows-Setup und Mac-DMG auf echten Windows-/Mac-Rechnern von GitHub.
+# - Von Hand starten (Actions → Auslieferung → Run workflow): baut nur, Dateien unter „Artifacts“ zum Herunterladen.
+# - Tag „v1.2.3“ pushen: baut und veröffentlicht als Update im öffentlichen Repo vertragsuebersicht-updates
+#   (braucht das Repository-Secret UPDATES_TOKEN mit Schreibrecht auf dieses Repo).
+# Signatur: Secrets CSC_LINK/CSC_KEY_PASSWORD (Windows: WIN_CSC_LINK/WIN_CSC_KEY_PASSWORD) und APPLE_* – fehlen sie, wird unsigniert gebaut.
+name: Auslieferung
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+jobs:
+  bauen:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            ziel: --win nsis
+          - os: macos-latest
+            ziel: --mac
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run typecheck
+      - run: npx electron-vite build
+      - name: Installer bauen (und bei Tag veröffentlichen)
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.UPDATES_TOKEN }}
+          WIN_CSC_LINK: ${{ secrets.WIN_CSC_LINK }}
+          WIN_CSC_KEY_PASSWORD: ${{ secrets.WIN_CSC_KEY_PASSWORD }}
+          CSC_LINK: ${{ secrets.CSC_LINK }}
+          CSC_KEY_PASSWORD: ${{ secrets.CSC_KEY_PASSWORD }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          extra=""
+          # Windows: auf Windows darf die .exe Symbol/Versionsinfo bekommen
+          if [ "${{ runner.os }}" = "Windows" ]; then extra="-c.win.signAndEditExecutable=true"; fi
+          # ohne Zertifikat keine Suche im Schlüsselbund
+          if [ -z "$CSC_LINK" ] && [ -z "$WIN_CSC_LINK" ]; then export CSC_IDENTITY_AUTO_DISCOVERY=false; fi
+          if [ -z "$CSC_LINK" ]; then
+            unset CSC_LINK CSC_KEY_PASSWORD
+            # Mac ohne Apple-Zertifikat: ad-hoc signieren, sonst startet die App auf Apple-Silicon-Macs nicht
+            if [ "${{ runner.os }}" = "macOS" ]; then extra="-c.mac.identity=-"; fi
+          fi
+          if [ -z "$WIN_CSC_LINK" ]; then unset WIN_CSC_LINK WIN_CSC_KEY_PASSWORD; fi
+          if [ -z "$APPLE_ID" ]; then unset APPLE_ID APPLE_APP_SPECIFIC_PASSWORD APPLE_TEAM_ID; fi
+          veroeffentlichen=never
+          if [[ "$GITHUB_REF" == refs/tags/v* ]] && [ -n "$GH_TOKEN" ]; then veroeffentlichen=always; fi
+          npx electron-builder ${{ matrix.ziel }} $extra --publish $veroeffentlichen
+      - uses: actions/upload-artifact@v4
+        with:
+          name: installer-${{ runner.os }}
+          path: |
+            dist/*.exe
+            dist/*.dmg
+            dist/*.zip
+            dist/*.yml
+          if-no-files-found: error
+          retention-days: 30

@@ -1,5 +1,7 @@
-# Test-Installer (M5a, unsigniert): Windows-Setup mit Dateizuordnung .vtue (Doppelklick öffnet den Stand, Bild 10).
-# Signatur und automatische Updates folgen mit M5c.
+# Installer (M5a/M5c): Windows-Setup + Mac-DMG, Dateizuordnung .vtue (Bild 10), automatische Updates.
+# Signatur: sobald ein Zertifikat da ist, nur die Umgebungsvariablen setzen (siehe ANLEITUNG-AUSLIEFERUNG.md):
+#   Windows: CSC_LINK (Pfad/Base64 der .pfx) + CSC_KEY_PASSWORD
+#   Mac:     CSC_LINK + CSC_KEY_PASSWORD (Developer-ID-Zertifikat), APPLE_ID + APPLE_APP_SPECIFIC_PASSWORD + APPLE_TEAM_ID (Beglaubigung)
 appId: de.agentur.vertragsuebersicht
 productName: Vertragsübersicht
 copyright: Versicherungsagentur
@@ -15,19 +17,40 @@ fileAssociations:
     name: Vertragsübersicht-Stand
     description: Gespeicherter Stand einer Vertragsübersicht
     role: Viewer
+# Update-Quelle: GitHub Releases eines öffentlichen Repos nur für Installer (kein Quellcode, keine Daten).
+publish:
+  provider: github
+  owner: tjarksperling-ctrl
+  repo: vertragsuebersicht-updates
+  releaseType: release
 win:
   target:
     - target: nsis
       arch: [x64]
-  # ohne Zertifikat: keine Signatur, kein Bearbeiten der .exe unter Linux (rcedit bräuchte Wine)
+  # Unter Linux ohne Wine: .exe nicht bearbeiten (Symbol/Versionsinfo setzt der Build auf Windows bzw. in GitHub Actions).
+  # Mit Zertifikat: auf true setzen oder per -c.win.signAndEditExecutable=true.
   signAndEditExecutable: false
 nsis:
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
+  createStartMenuShortcut: true
   shortcutName: Vertragsübersicht
-  artifactName: Vertragsuebersicht-Setup-${version}-unsigniert.${ext}
+  # Kundendaten liegen im Benutzerprofil und bleiben bei Deinstallation und Updates erhalten.
+  deleteAppDataOnUninstall: false
+  artifactName: Vertragsuebersicht-Setup-${version}.${ext}
 mac:
-  target: dmg
+  # zip wird für automatische Updates auf dem Mac gebraucht (erst mit Apple-Signatur wirksam)
+  target:
+    - target: dmg
+      arch: [arm64, x64]
+    - target: zip
+      arch: [arm64, x64]
   category: public.app-category.business
+  artifactName: Vertragsuebersicht-${version}-${arch}.${ext}
+  # Ohne Apple-Konto baut GitHub Actions ad-hoc signiert (-c.mac.identity=-), läuft nach Rechtsklick → Öffnen.
+  hardenedRuntime: false
+  gatekeeperAssess: false
+dmg:
+  title: Vertragsübersicht ${version}

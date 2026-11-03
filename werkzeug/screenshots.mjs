@@ -23,7 +23,7 @@ async function starten(extraEnv = {}) {
   const daten = mkdtempSync(join(tmpdir(), 'vtue-'));
   const app = await pw._electron.launch({
     executablePath: electronPfad,
-    args: ['--no-sandbox', join(wurzel, 'out/main/index.js')],
+    args: ['--no-sandbox', wurzel],
     env: { ...process.env, VTUE_DATEN: daten, VTUE_DEMO: '1', VTUE_BENUTZER: 'Tjark S.', ...extraEnv },
   });
   const win = await app.firstWindow();
@@ -343,7 +343,7 @@ async function m5() {
   const daten2 = mkdtempSync(join(tmpdir(), 'vtue-'));
   const app2 = await pw._electron.launch({
     executablePath: electronPfad,
-    args: ['--no-sandbox', join(wurzel, 'out/main/index.js'), pfad],
+    args: ['--no-sandbox', wurzel, pfad],
     env: { ...process.env, VTUE_DATEN: daten2, VTUE_BENUTZER: 'Tjark S.' },
   });
   try {
@@ -374,7 +374,30 @@ async function m5() {
   }
 }
 
-const schritte = { m2, m3, m4, m5 };
+/** M5c: Update-Hinweis in der Seitenleiste und Einstellungen → Allgemein (Zustände per VTUE_UPDATE_DEMO). */
+async function m5c() {
+  for (const art of ['bereit', 'laedt', 'aktuell', 'fehler']) {
+    const { app, win, daten } = await starten({ VTUE_UPDATE_DEMO: art });
+    try {
+      await win.waitForSelector('.links');
+      await pause(300);
+      if (art === 'bereit') {
+        await win.waitForSelector('.update-hinweis');
+        await bild(win, 'm5c-update-hinweis');
+      }
+      await win.click('.einst-knopf');
+      await win.waitForSelector('.update-zeile');
+      await win.evaluate(() => document.querySelector('.update-zeile')?.scrollIntoView({ block: 'center' }));
+      await pause(250);
+      await bild(win, `m5c-update-${art}`);
+    } finally {
+      await app.close();
+      rmSync(daten, { recursive: true, force: true });
+    }
+  }
+}
+
+const schritte = { m2, m3, m4, m5, m5c };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

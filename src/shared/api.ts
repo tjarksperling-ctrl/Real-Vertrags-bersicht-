@@ -1,6 +1,7 @@
 /** Schnittstelle zwischen Oberfläche (Renderer) und Electron-Hauptprozess – nur Typen. */
 import type { Darstellung } from './modell/typen';
 import type { PdfOptionen } from './pdf/auftrag';
+import type { UpdateStand } from './update/update';
 
 export interface AppInfo {
   plattform: string;
@@ -123,4 +124,11 @@ export interface Api {
   anApp(b: AppBefehl): Promise<void>;
   /** Hauptfenster: Befehle aus Datei-Fenstern empfangen. */
   aufBefehl(fn: (b: AppBefehl) => void): () => void;
+  // ---- M5c
+  updateStand(): Promise<UpdateStand>;
+  /** „Nach Updates suchen“ (Einstellungen → Allgemein). */
+  updatePruefen(): Promise<void>;
+  /** „Jetzt neu starten“: geladenes Update sofort installieren. */
+  updateNeustart(): Promise<void>;
+  aufUpdate(fn: (s: UpdateStand) => void): () => void;
 }

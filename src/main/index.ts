@@ -7,6 +7,7 @@ import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
 import { basename, extname, isAbsolute, join } from 'node:path';
 import { userInfo } from 'node:os';
 import type { AppBefehl, AppInfo, DateiAuftrag, DateiInfo, DruckDaten, PdfAuftrag, PdfErgebnis, ProtokollEintrag } from '../shared/api';
+import { updatesEinrichten } from './update';
 import { istVerschluesselt, vtueInhalt, vtueLesen, vtueSchreiben, VtueFehler } from './vtue';
 import { randomUUID } from 'node:crypto';
 import type { Darstellung } from '../shared/modell/typen';
@@ -417,6 +418,7 @@ app.whenReady().then(() => {
   if (!einzig) return;
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
   ipcEinrichten();
+  updatesEinrichten();
   const start = [...dateienAusArgs(process.argv), ...fruehe];
   // Doppelklick auf eine Datei bei geschlossener App: nur das Datei-Fenster (Bild 10), sonst die App
   if (start.length) for (const p of start) void dateiOeffnen(p);

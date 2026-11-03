@@ -402,3 +402,15 @@ button.ds-nach { display: inline-flex; gap: 8px; }
 .urow .go { width: 62px; }
 .urow .umain { overflow: hidden; }
 .urow .umain small { overflow: hidden; text-overflow: ellipsis; }
+
+/* ---------- M5c: Updates (Seitenleiste + Einstellungen → Allgemein) ---------- */
+.update-hinweis { display: grid; grid-template-columns: 18px 1fr; gap: 4px 8px; align-items: start; padding: 10px 10px 10px 10px; border-radius: 10px; background: var(--accent-soft); color: var(--text); }
+.update-hinweis > svg { width: 16px; height: 16px; color: var(--accent); margin-top: 1px; }
+.update-hinweis b { display: block; font-size: 12.5px; font-weight: 600; }
+.update-hinweis small { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.35; margin-top: 1px; }
+.update-hinweis .btn { grid-column: 2; justify-self: start; margin-top: 4px; padding: 4px 10px; font-size: 12px; }
+.update-zeile { gap: 16px; }
+.update-zeile small.update-ok { color: var(--green); }
+.update-zeile small.update-fehler { color: var(--orange); }
+.update-balken { display: block; width: 260px; height: 5px; border-radius: 3px; background: var(--line); margin-top: 6px; overflow: hidden; }
+.update-balken i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }

@@ -29,6 +29,14 @@ const api: Api = {
     ipcRenderer.send('app:bereit');
     return () => ipcRenderer.off('app:befehl', h);
   },
+  updateStand: () => ipcRenderer.invoke('update:stand'),
+  updatePruefen: () => ipcRenderer.invoke('update:pruefen'),
+  updateNeustart: () => ipcRenderer.invoke('update:neustart'),
+  aufUpdate: (fn) => {
+    const h = (_e: Electron.IpcRendererEvent, s: Parameters<typeof fn>[0]) => fn(s);
+    ipcRenderer.on('update:stand', h);
+    return () => ipcRenderer.off('update:stand', h);
+  },
 };
 
 contextBridge.exposeInMainWorld('api', api);
