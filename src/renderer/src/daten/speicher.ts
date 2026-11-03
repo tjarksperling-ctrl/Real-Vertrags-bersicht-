@@ -262,7 +262,7 @@ export async function gespeichertLaden(): Promise<Gespeichert> {
   const std = standardGespeichert();
   if (!roh) return std;
   return {
-    einstellungen: { ...std.einstellungen, ...(roh.einstellungen ?? {}) },
+    einstellungen: { ...std.einstellungen, ...(roh.einstellungen ?? {}), outlook: { ...std.einstellungen.outlook, ...(roh.einstellungen?.outlook ?? {}) } },
     vorlagen: Array.isArray(roh.vorlagen) && roh.vorlagen.length ? roh.vorlagen : std.vorlagen,
     autovervollstaendigung: roh.autovervollstaendigung ?? true,
   };

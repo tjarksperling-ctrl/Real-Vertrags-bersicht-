@@ -454,7 +454,52 @@ async function m5b() {
   }
 }
 
-const schritte = { m2, m3, m4, m5, m5c, m5b };
+/** M5b Teil 2: Outlook (Vorführmodus ohne Microsoft-Konto). */
+async function m5bOutlook() {
+  const { app, win, daten } = await starten({ VTUE_MS_DEMO: '1', VTUE_MS_DEMO_ANGEMELDET: '1' });
+  try {
+    await win.click('.einst-knopf');
+    await win.click('.kk-nav-i:has-text("Outlook")');
+    await win.waitForSelector('.es-konto-t b');
+    await pause(300);
+    await bild(win, 'm5b-einst-outlook');
+    await win.click('footer .btn:has-text("Abbrechen")');
+    await bergerOeffnen(win);
+    await win.click('.btn.primary:has-text("PDF / E-Mail")');
+    await win.waitForSelector('.sheet.ex1');
+    await win.click('.ex-sec-row:has-text("Per E-Mail senden") .switch');
+    await win.keyboard.type('Ber');
+    await pause(400);
+    await bild(win, 'm5b-pdf-mail-kontakte');
+    await win.click('.mail-vorschlaege button >> nth=0');
+    await pause(200);
+    await bild(win, 'm5b-pdf-mail');
+    await win.click('.btn.primary:has-text("Erstellen & senden")');
+    await win.waitForSelector('.ub-toast, .hinweis, [role=status]');
+    await pause(400);
+    await bild(win, 'm5b-pdf-mail-gesendet');
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+  }
+}
+
+/** Outlook ohne eingerichteten Microsoft-Zugang (erste Einrichtung). */
+async function m5bZugang() {
+  const { app, win, daten } = await starten();
+  try {
+    await win.click('.einst-knopf');
+    await win.click('.kk-nav-i:has-text("Outlook")');
+    await win.waitForSelector('text=Microsoft-Zugang der Agentur einrichten');
+    await pause(300);
+    await bild(win, 'm5b-einst-outlook-zugang');
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+  }
+}
+
+const schritte = { m2, m3, m4, m5, m5c, m5b, m5bOutlook, m5bZugang };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

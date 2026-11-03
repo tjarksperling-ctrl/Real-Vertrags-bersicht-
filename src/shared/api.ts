@@ -29,6 +29,8 @@ export interface PdfAuftrag {
   vorschau?: boolean;
   /** Ohne Rückfrage in diesen Pfad schreiben (Tests/Screenshots). */
   ziel?: string;
+  /** Nur die PDF-Daten zurückgeben (E-Mail-Anhang), nichts speichern. */
+  nurDaten?: boolean;
   /** Auskunft nach Art. 15 DSGVO (Bild 16): Deckblatt + alle Übersichten des Kunden. */
   auskunft?: AuskunftDaten;
 }
@@ -46,6 +48,8 @@ export type DruckDaten = Pick<PdfAuftrag, 'daten' | 'kunde' | 'optionen' | 'datu
 
 export interface PdfErgebnis {
   pfad: string | null;
+  /** Bei `nurDaten`. */
+  daten?: Uint8Array;
   seiten?: number;
   fehler?: string;
 }
@@ -143,6 +147,22 @@ export interface OrdnerInfo {
   personen: Person[];
 }
 
+// ---- M5b Microsoft (Outlook, Copilot)
+/** Anwendungs-ID (Client) und Verzeichnis-ID (Mandant) aus Entra ID – keine geheimen Werte. */
+export interface MsZugang {
+  clientId: string;
+  tenantId: string;
+}
+export interface MsKonto {
+  /** Zugang der Agentur eingetragen. */
+  eingerichtet: boolean;
+  angemeldet: boolean;
+  name?: string;
+  mail?: string;
+  /** ISO-Zeit der Anmeldung. */
+  seit?: string;
+}
+
 export interface Api {
   info(): Promise<AppInfo>;
   /** Liest ein gespeichertes Yjs-Dokument (Name nur a–z, 0–9, „-“). */
@@ -197,4 +217,12 @@ export interface Api {
   ablageOeffnen(): Promise<void>;
   /** Speicherort wechseln: übernimmt alle Daten (nichts geht verloren) und lädt die Oberfläche neu. */
   ablageWechseln(ort: AblageOrt): Promise<{ ok: boolean; uebernommen: number; fehler?: string }>;
+  // ---- M5b Microsoft
+  msKonto(): Promise<MsKonto>;
+  msZugang(): Promise<MsZugang | null>;
+  msZugangSetzen(z: MsZugang): Promise<{ ok: boolean; fehler?: string }>;
+  msAnmelden(): Promise<{ konto?: MsKonto; fehler?: string }>;
+  msAbmelden(): Promise<void>;
+  mailSenden(m: import('./microsoft/mail').MailAuftrag): Promise<{ ok: boolean; fehler?: string; geoeffnet?: boolean }>;
+  kontakteSuchen(q: string): Promise<{ name: string; mail: string }[]>;
 }

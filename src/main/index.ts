@@ -9,6 +9,7 @@ import { userInfo } from 'node:os';
 import type { AppBefehl, AppInfo, DateiAuftrag, DateiInfo, DruckDaten, PdfAuftrag, PdfErgebnis, ProtokollEintrag } from '../shared/api';
 import { updatesEinrichten } from './update';
 import { ablageEinrichten, aktuelleAblage, gespeichertMelden } from './ablage-ipc';
+import { microsoftEinrichten } from './microsoft-ipc';
 import { istVerschluesselt, vtueInhalt, vtueLesen, vtueSchreiben, VtueFehler } from './vtue';
 import { randomUUID } from 'node:crypto';
 import type { Darstellung } from '../shared/modell/typen';
@@ -243,7 +244,7 @@ function seitenZahl(pdf: Buffer): number {
 async function pdfErstellen(auftrag: PdfAuftrag, eltern: BrowserWindow | null): Promise<PdfErgebnis> {
   let ziel = auftrag.ziel ?? process.env['VTUE_PDF_ZIEL'];
   if (auftrag.vorschau) ziel = join(app.getPath('temp'), auftrag.dateiname);
-  if (!ziel) {
+  if (!ziel && !auftrag.nurDaten) {
     const optionen = {
       title: 'PDF speichern',
       defaultPath: join(app.getPath('documents'), auftrag.dateiname),
@@ -273,9 +274,11 @@ async function pdfErstellen(auftrag: PdfAuftrag, eltern: BrowserWindow | null): 
     let pdf: Buffer = Buffer.from(await win.webContents.printToPDF({ pageSize: 'A4', printBackground: true, preferCSSPageSize: true, margins: { top: 0, bottom: 0, left: 0, right: 0 } }));
     const seiten = seitenZahl(pdf);
     if (auftrag.passwort) pdf = await verschluesseln(pdf, auftrag.passwort);
-    await writeFile(ziel, pdf);
-    if (auftrag.vorschau) void shell.openPath(ziel);
-    return { pfad: ziel, seiten };
+    if (auftrag.nurDaten) return { pfad: null, seiten, daten: new Uint8Array(pdf) };
+    const pfad = ziel!;
+    await writeFile(pfad, pdf);
+    if (auftrag.vorschau) void shell.openPath(pfad);
+    return { pfad, seiten };
   } catch (e) {
     return { pfad: null, fehler: (e as Error).message };
   } finally {
@@ -446,6 +449,7 @@ app.whenReady().then(async () => {
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
   await ablageEinrichten(datenOrdner(), benutzerName());
   ipcEinrichten();
+  microsoftEinrichten();
   updatesEinrichten();
   const start = [...dateienAusArgs(process.argv), ...fruehe];
   // Doppelklick auf eine Datei bei geschlossener App: nur das Datei-Fenster (Bild 10), sonst die App

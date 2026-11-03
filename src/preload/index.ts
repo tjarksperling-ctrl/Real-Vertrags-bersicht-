@@ -55,6 +55,13 @@ const api: Api = {
   ordnerInfo: (ort) => ipcRenderer.invoke('ablage:info', ort),
   ablageOeffnen: () => ipcRenderer.invoke('ablage:oeffnen'),
   ablageWechseln: (ort) => ipcRenderer.invoke('ablage:wechseln', ort),
+  msKonto: () => ipcRenderer.invoke('ms:konto'),
+  msZugang: () => ipcRenderer.invoke('ms:zugang'),
+  msZugangSetzen: (z) => ipcRenderer.invoke('ms:zugangSetzen', z),
+  msAnmelden: () => ipcRenderer.invoke('ms:anmelden'),
+  msAbmelden: () => ipcRenderer.invoke('ms:abmelden'),
+  mailSenden: (m) => ipcRenderer.invoke('mail:senden', m),
+  kontakteSuchen: (q) => ipcRenderer.invoke('mail:kontakte', q),
 };
 
 contextBridge.exposeInMainWorld('api', api);

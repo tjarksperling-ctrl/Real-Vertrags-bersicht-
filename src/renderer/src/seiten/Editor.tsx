@@ -26,6 +26,7 @@ import {
   type Vertrag,
   type VertragFeld,
   vertragOrt,
+  type OutlookEinstellungen,
 } from '../../../shared';
 import { useDocVersion } from '../daten/hooks';
 import { Anwesende, type Mitarbeit } from '../mitarbeit/mitarbeit';
@@ -115,7 +116,11 @@ export function EditorSeite({
   kopf,
   uebersichtId,
   mitarbeit,
+  outlook,
+  onOutlookEinstellungen,
 }: {
+  outlook?: OutlookEinstellungen;
+  onOutlookEinstellungen?: () => void;
   /** Für Anwesenheit (Bild 15). */
   uebersichtId?: string;
   mitarbeit?: Mitarbeit;
@@ -727,10 +732,13 @@ export function EditorSeite({
             kunde={kunde.name}
             passwortStandard={pdfPasswortStandard}
             ziel={pdfZiel}
+            outlook={outlook}
+            benutzer={benutzer}
+            onOutlookEinstellungen={onOutlookEinstellungen}
             onSchliessen={() => setPdfOffen(false)}
             onFertig={(text) => {
               setPdfOffen(false);
-              onEreignis?.(`PDF erstellt${text.includes('Passwort') ? ' (mit Passwort)' : ''}`);
+              onEreignis?.(text.startsWith('E-Mail') ? `PDF per E-Mail ${text.includes('geöffnet') ? 'in Outlook geöffnet' : 'gesendet'}` : `PDF erstellt${text.includes('Passwort') ? ' (mit Passwort)' : ''}`);
               setHinweis((h) => ({ text, n: (h?.n ?? 0) + 1, info: true }));
             }}
           />

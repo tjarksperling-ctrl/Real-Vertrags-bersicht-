@@ -234,4 +234,6 @@ export interface Einstellungen {
   kiHinweis: boolean;
   /** Desktop-Dateien standardmäßig mit Passwort (Bild 10). */
   dateiPasswortStandard: boolean;
+  /** Outlook (Bild 8 „Outlook“, M5b). */
+  outlook: import('../microsoft/mail').OutlookEinstellungen;
 }

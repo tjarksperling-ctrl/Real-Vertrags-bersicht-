@@ -354,6 +354,8 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
           onEreignis={(was) => protokoll(was, kunde.id, offeneInfo?.titel)}
           pdfPasswortStandard={e.pdfPasswortStandard}
           pdfZiel={info.pdfZiel}
+          outlook={e.outlook}
+          onOutlookEinstellungen={() => setDialog({ art: 'einstellungen', seite: 'Outlook' })}
           extra={
             <button
               type="button"

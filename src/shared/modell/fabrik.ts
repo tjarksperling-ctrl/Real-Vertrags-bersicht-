@@ -1,4 +1,5 @@
 /** Erzeugt neue, leere Elemente mit sinnvollen Standardwerten. */
+import { STANDARD_OUTLOOK } from '../microsoft/mail';
 import { neueId, jetzt } from './ids';
 import type { Aufgabe, Bereich, BereichTyp, Einstellungen, Fassung, Kunde, Untergruppe, Uebersicht, VertragJeTyp, Vorlage } from './typen';
 import { BEREICH_TYPEN } from './typen';
@@ -85,4 +86,5 @@ export const STANDARD_EINSTELLUNGEN: Readonly<Einstellungen> = Object.freeze({
   alteKundenVorschlagen: true,
   kiHinweis: true,
   dateiPasswortStandard: true,
+  outlook: STANDARD_OUTLOOK,
 });

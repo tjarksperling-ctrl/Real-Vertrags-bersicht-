@@ -30,6 +30,7 @@ import type { Gespeichert } from '../daten/speicher';
 import { SchnellstartSeite } from './einst/Schnellstart';
 import { DatenschutzSeite } from './einst/Datenschutz';
 import { SpeicherortSeite, ortGleich } from './einst/Speicherort';
+import { OutlookSeite, useMsKonto } from './einst/Outlook';
 import { useAblage } from '../mitarbeit/mitarbeit';
 import type { AblageOrt } from '../../../shared/api';
 import { Avatar } from '../komponenten/ui';
@@ -39,7 +40,7 @@ export type EinstSeite = 'Allgemein' | 'KI-Konto' | 'Outlook' | 'Speicherort' | 
 const NAV: [string, string, EinstSeite | null][] = [
   ['sliders', 'Allgemein', 'Allgemein'],
   ['sparkles', 'KI-Konto', null],
-  ['mail', 'Outlook', null],
+  ['mail', 'Outlook', 'Outlook'],
   ['cloud', 'Speicherort', 'Speicherort'],
   ['ext', 'Schnellstart', 'Schnellstart'],
   ['tpl', 'Vorlagen', 'Vorlagen'],
@@ -145,6 +146,7 @@ export function EinstellungenDialog({
   const [entwurf, setEntwurf] = useState<Gespeichert>(() => structuredClone(gespeichert));
   const [auswahl, setAuswahl] = useState(entwurf.vorlagen.find((v) => v.standard)?.id ?? entwurf.vorlagen[0]?.id ?? '');
   const ablage = useAblage();
+  const [msKonto, setMsKonto] = useMsKonto();
   const [ort, setOrt] = useState<AblageOrt | null>(null);
   const [wechselt, setWechselt] = useState<string | null>(null);
   const ortNeu = !!ort && !!ablage && !ortGleich(ort, ablage.ort) && (ort.art === 'lokal' || !!ort.ordner);
@@ -297,6 +299,10 @@ export function EinstellungenDialog({
         </button>
       </>
     );
+  } else if (seite === 'Outlook') {
+    titel = es_titel('mail', 'Outlook', false, msKonto?.angemeldet ? 'Verbunden' : msKonto?.eingerichtet ? 'Nicht angemeldet' : 'Zugang fehlt');
+    inhalt = <OutlookSeite o={entwurf.einstellungen.outlook} onChange={(o) => entwurfSetzen({ outlook: o })} konto={msKonto} setKonto={setMsKonto} />;
+    fuss = speichernFuss(undefined, 'Anmeldung über Microsoft. Gesendete Mails liegen wie gewohnt in Outlook, die App speichert keine Kopie.');
   } else if (seite === 'Speicherort') {
     const o = ort ?? ablage?.ort ?? { art: 'lokal' as const, ordner: null };
     titel = es_titel(

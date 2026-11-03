@@ -18,3 +18,4 @@ export * from './pdf/auftrag';
 export * from './aufgaben/aufgaben';
 export * from './modell/schnellstart';
 export * from './mitarbeit/mitarbeit';
+export * from './microsoft/mail';

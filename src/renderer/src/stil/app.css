@@ -431,3 +431,23 @@ button.ds-nach { display: inline-flex; gap: 8px; }
 .toolbar.v1 .crumb { min-width: 0; flex-shrink: 1; }
 .toolbar.v1 .crumb h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .toolbar.v1 > :not(.crumb) { flex-shrink: 0; }
+
+/* ---------- M5b: Outlook (Bild 8 „Outlook“, Bild 5 „Per E-Mail senden“) ---------- */
+.mailbox .r input.eingabe-rein, .mailbox .r textarea.eingabe-rein { flex: 1; min-width: 0; font: inherit; color: var(--text); background: transparent; border: 0; outline: 0; padding: 0; }
+.mailbox .r textarea.eingabe-rein { resize: vertical; line-height: 1.45; }
+.mailbox .r.mail-text { align-items: flex-start; }
+.mail-an { position: relative; }
+.mail-vorschlaege { position: absolute; left: 64px; right: 0; top: calc(100% - 2px); z-index: 30; background: var(--card); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,.18), 0 0 0 1px var(--line); padding: 4px; }
+.mail-vorschlaege button { display: flex; gap: 8px; align-items: baseline; width: 100%; padding: 6px 8px; border-radius: 6px; text-align: left; }
+.mail-vorschlaege button:hover { background: var(--accent-soft); }
+.mail-vorschlaege small { color: var(--muted); }
+.mail-text-kurz { flex: 1; min-width: 0; display: flex; align-items: center; gap: 6px; text-align: left; color: var(--text); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.mail-text-kurz svg.i { width: 13px; height: 13px; color: var(--muted); flex: none; }
+.ex-sec-row small .mb-link { padding: 0; font-size: inherit; }
+.es-vorlage input.kk-input, .es-vorlage textarea.kk-input, textarea.es-signatur { width: 100%; font: inherit; color: var(--text); box-sizing: border-box; }
+.es-vorlage textarea.kk-input, textarea.es-signatur { resize: vertical; line-height: 1.45; padding: 8px 10px; height: auto; }
+textarea.es-signatur { margin: 0 0 8px; }
+button.es-ph { cursor: pointer; }
+.es-fehler { color: var(--red); }
+.es-wechsel { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; }
+.es-vorlage.es-zugang .es-vz { grid-template-columns: 168px 1fr; }
