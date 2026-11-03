@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><defs><linearGradient id='an' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#3a3a3e'/><stop offset='1' stop-color='#161618'/></linearGradient><linearGradient id='bl' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6fb4ff'/><stop offset='1' stop-color='#1f7ae6'/></linearGradient></defs><path d='M52 10h104l56 56v172a10 10 0 0 1-10 10H52a10 10 0 0 1-10-10V20a10 10 0 0 1 10-10z' fill='#fff' stroke='#c7d3e4' stroke-width='5'/>
+<path d='M156 10v46a10 10 0 0 0 10 10h46' fill='#eef3fa' stroke='#c7d3e4' stroke-width='5' stroke-linejoin='round'/>
+<g transform='translate(66 62) scale(.5)'><path d='M70 16h116c32 0 54 22 54 54v116c0 32-22 54-54 54H70c-32 0-54-22-54-54V70c0-32 22-54 54-54z' fill='url(#an)'/><path d='M70 16h116c32 0 54 22 54 54v116c0 32-22 54-54 54H70c-32 0-54-22-54-54V70c0-32 22-54 54-54z' fill='none' stroke='#ffffff' stroke-opacity='.10' stroke-width='3'/>
+<path d='M70 66l58 128' fill='none' stroke='#f5f5f7' stroke-width='26' stroke-linecap='round'/>
+<path d='M128 194l58-128' fill='none' stroke='url(#bl)' stroke-width='26' stroke-linecap='round'/></g>
+<text x='127' y='226' text-anchor='middle' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-weight='750' font-size='30' fill='#5a6b85' letter-spacing='1.5'>VTÜ</text></svg>

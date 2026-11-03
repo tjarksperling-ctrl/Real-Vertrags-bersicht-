@@ -88,3 +88,38 @@ open('entwuerfe-2.html', 'w').write(
     f"<!doctype html><meta charset=utf-8><style>{css}</style><h1>Symbol – neue Entwürfe</h1>"
     "<p style='margin:0'>App-Symbol in vier Größen, in der Windows-Taskleiste und auf dem Desktop neben einer .vtue-Datei.</p>"
     + "".join(zeile(k) for k in V))
+
+
+# ---------- Runde 3: dunkel und edel ----------
+NB = """<linearGradient id='nb' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#1d3158'/><stop offset='1' stop-color='#0b1630'/></linearGradient>"""
+AN = """<linearGradient id='an' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#3a3a3e'/><stop offset='1' stop-color='#161618'/></linearGradient>"""
+GOLD = """<linearGradient id='gd' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#f3e2b3'/><stop offset='1' stop-color='#c9a55c'/></linearGradient>"""
+BL = """<linearGradient id='bl' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6fb4ff'/><stop offset='1' stop-color='#1f7ae6'/></linearGradient>"""
+RAND = f"<path d='{SQ}' fill='none' stroke='#ffffff' stroke-opacity='.10' stroke-width='3'/>"
+# H · Nachtblau, Schild in Champagner-Linie mit Häkchen
+H_app = svg(f"""<path d='{SQ}' fill='url(#nb)'/>{RAND}
+<path d='M128 50c20 13 42 18 64 18v56c0 44-26 72-64 88-38-16-64-44-64-88V68c22 0 44-5 64-18z' fill='none' stroke='url(#gd)' stroke-width='11' stroke-linejoin='round'/>
+<path d='M100 130l20 20 38-40' fill='none' stroke='url(#gd)' stroke-width='12' stroke-linecap='round' stroke-linejoin='round'/>""", NB + GOLD)
+# I · Anthrazit, Monogramm V (ein Schenkel weiß, einer blau)
+I_app = svg(f"""<path d='{SQ}' fill='url(#an)'/>{RAND}
+<path d='M70 66l58 128' fill='none' stroke='#f5f5f7' stroke-width='26' stroke-linecap='round'/>
+<path d='M128 194l58-128' fill='none' stroke='url(#bl)' stroke-width='26' stroke-linecap='round'/>""", AN + BL)
+# K · Nachtblau, Vergleich: zwei Säulen (Aktuell gedämpft, Neu leuchtend) + Pfeil
+K_app = svg(f"""<path d='{SQ}' fill='url(#nb)'/>{RAND}
+<rect x='66' y='70' width='48' height='124' rx='14' fill='#ffffff' fill-opacity='.22'/>
+<rect x='142' y='104' width='48' height='90' rx='14' fill='url(#bl)'/>
+<path d='M96 52c26-16 54-14 72 6' fill='none' stroke='url(#gd)' stroke-width='9' stroke-linecap='round'/>
+<path d='M170 40l1 22-22 2' fill='none' stroke='url(#gd)' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/>
+<rect x='54' y='204' width='148' height='6' rx='3' fill='#ffffff' fill-opacity='.25'/>""", NB + GOLD + BL)
+V = {
+    'H': (H_app, 'H · Nachtblau mit Schild', 'Tiefes Nachtblau, feines Schild mit Häkchen in Champagner. Steht für Absicherung, ruhig und hochwertig.'),
+    'I': (I_app, 'I · Anthrazit-Monogramm', 'Anthrazit mit einem klaren „V“: ein Schenkel weiß (Aktuell), einer blau (Neu). Reduziert, wie eine Marke.'),
+    'K': (K_app, 'K · Nachtblau-Vergleich', 'Zwei Säulen: Aktuell gedämpft, Neu leuchtend blau, darüber ein goldener Pfeil. Zeigt die Verbesserung für den Kunden.'),
+}
+for k, (a, _, _) in V.items():
+    open(f'{k}_app.svg', 'w').write(a)
+    open(f'{k}_datei.svg', 'w').write(datei(a))
+open('entwuerfe-3.html', 'w').write(
+    f"<!doctype html><meta charset=utf-8><style>{css}</style><h1>Symbol – Runde 3: dunkel und edel</h1>"
+    "<p style='margin:0'>App-Symbol in vier Größen, in der Windows-Taskleiste und auf dem Desktop neben einer .vtue-Datei.</p>"
+    + "".join(zeile(k) for k in V))

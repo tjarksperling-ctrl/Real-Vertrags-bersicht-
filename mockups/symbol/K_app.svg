@@ -1,0 +1,6 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'><defs><linearGradient id='nb' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#1d3158'/><stop offset='1' stop-color='#0b1630'/></linearGradient><linearGradient id='gd' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#f3e2b3'/><stop offset='1' stop-color='#c9a55c'/></linearGradient><linearGradient id='bl' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='#6fb4ff'/><stop offset='1' stop-color='#1f7ae6'/></linearGradient></defs><path d='M70 16h116c32 0 54 22 54 54v116c0 32-22 54-54 54H70c-32 0-54-22-54-54V70c0-32 22-54 54-54z' fill='url(#nb)'/><path d='M70 16h116c32 0 54 22 54 54v116c0 32-22 54-54 54H70c-32 0-54-22-54-54V70c0-32 22-54 54-54z' fill='none' stroke='#ffffff' stroke-opacity='.10' stroke-width='3'/>
+<rect x='66' y='70' width='48' height='124' rx='14' fill='#ffffff' fill-opacity='.22'/>
+<rect x='142' y='104' width='48' height='90' rx='14' fill='url(#bl)'/>
+<path d='M96 52c26-16 54-14 72 6' fill='none' stroke='url(#gd)' stroke-width='9' stroke-linecap='round'/>
+<path d='M170 40l1 22-22 2' fill='none' stroke='url(#gd)' stroke-width='9' stroke-linecap='round' stroke-linejoin='round'/>
+<rect x='54' y='204' width='148' height='6' rx='3' fill='#ffffff' fill-opacity='.25'/></svg>
