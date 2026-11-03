@@ -1,5 +1,6 @@
 # Auslieferung (M5c): baut Windows-Setup und Mac-DMG auf echten Windows-/Mac-Rechnern von GitHub.
 # - Von Hand starten (Actions → Auslieferung → Run workflow): baut nur, Dateien unter „Artifacts“ zum Herunterladen.
+# - Push auf einen Arbeitsbranch mit „[bauen]“ in der Commit-Nachricht: baut nur (wie von Hand).
 # - Tag „v1.2.3“ pushen: baut und veröffentlicht als Update im öffentlichen Repo vertragsuebersicht-updates
 #   (braucht das Repository-Secret UPDATES_TOKEN mit Schreibrecht auf dieses Repo).
 # Signatur: Secrets CSC_LINK/CSC_KEY_PASSWORD (Windows: WIN_CSC_LINK/WIN_CSC_KEY_PASSWORD) und APPLE_* – fehlen sie, wird unsigniert gebaut.
@@ -9,12 +10,14 @@ on:
   workflow_dispatch:
   push:
     tags: ['v*']
+    branches: ['claude/**']
 
 permissions:
   contents: read
 
 jobs:
   bauen:
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[bauen]')
     strategy:
       fail-fast: false
       matrix:
