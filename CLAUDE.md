@@ -3,7 +3,7 @@
 Desktop-App (Windows, zusätzlich Mac) für eine Versicherungsagentur: Vertragsübersicht je Kunde in zwei Fassungen „Aktuell“ und „Neu“, hochwertiger PDF-Export. Neutral, Apple-Stil, extrem einfach. Details: `STAND.md` (Briefing + Entscheidungen), `PLAN.md` (freigegebener Plan), `HANDOFF.md` (letzter Stand).
 
 ## Arbeitsregeln
-- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen (M1 freigegeben; M2 Editor, M3 Aktuell/Neu + Sync + Vorteile, M4 PDF umgesetzt, Freigabe ausstehend). Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
+- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen (M1–M4 freigegeben; M5 Zusatzfunktionen als Nächstes). Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
 - Kein App-Code vor Phase 4. Bei Mockup-Feedback nur die betroffene Seite ändern.
 - Rückfragen immer zum Antippen (Auswahl-Dialog, max. 4 je Runde).
 - Token-effizient: kurze Zusammenfassungen, keine kompletten Dateien im Chat, Abhängigkeiten nur mit echtem Mehrwert.
