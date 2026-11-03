@@ -356,6 +356,8 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
           pdfZiel={info.pdfZiel}
           outlook={e.outlook}
           onOutlookEinstellungen={() => setDialog({ art: 'einstellungen', seite: 'Outlook' })}
+          kiHinweis={e.kiHinweis}
+          onKiEinstellungen={() => setDialog({ art: 'einstellungen', seite: 'KI-Konto' })}
           extra={
             <button
               type="button"

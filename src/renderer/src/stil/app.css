@@ -451,3 +451,40 @@ button.es-ph { cursor: pointer; }
 .es-fehler { color: var(--red); }
 .es-wechsel { display: flex; gap: 6px; align-items: flex-start; margin-top: 8px; }
 .es-vorlage.es-zugang .es-vz { grid-template-columns: 168px 1fr; }
+
+/* ---------- M5b: KI-Import (Bild 6) + KI-Konto (Bild 6b) ---------- */
+.ki1-rechts { min-width: 0; }
+.kdrop.ueber { border-color: var(--accent); background: var(--accent-soft); color: var(--text); }
+.ki-waehlen { color: var(--accent); padding: 0; font: inherit; }
+.kd .ki-x { width: 18px; height: 18px; border-radius: 99px; background: #fdecea; color: var(--red); display: grid; place-items: center; flex: none; }
+.kd .ki-x svg { width: 11px; height: 11px; stroke-width: 3; }
+.ki-dreht { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--accent); animation: ki-dreh .8s linear infinite; flex: none; }
+@keyframes ki-dreh { to { transform: rotate(360deg); } }
+.ki-fehler { color: var(--red) !important; }
+.ki-ok { color: var(--green); }
+.ki-start { display: flex; gap: 14px; align-items: flex-start; margin-top: 40px; padding: 22px 24px; border-radius: 14px; background: var(--side); }
+.ki-start > svg.i { width: 22px; height: 22px; color: var(--accent); flex: none; margin-top: 2px; }
+.ki-start b { font-size: 15px; font-weight: 600; }
+.ki-start p { margin: 6px 0 12px; color: var(--muted); line-height: 1.45; max-width: 560px; }
+.ki-start small { display: block; margin-top: 10px; color: var(--muted); font-size: 12px; }
+.ki-start.leer p { margin-bottom: 0; }
+table.review1 td .ki-feld { width: 100%; font: inherit; color: inherit; background: transparent; border: 0; border-radius: 5px; padding: 2px 4px; margin: -2px -4px; outline: 0; text-overflow: ellipsis; }
+table.review1 td .ki-feld:hover { box-shadow: inset 0 0 0 1px var(--line); }
+table.review1 td .ki-feld:focus { box-shadow: inset 0 0 0 2px var(--accent); background: var(--card); }
+table.review1 td .ki-feld.num { text-align: right; }
+table.review1 td.bem .ki-feld { color: var(--muted); }
+table.review1 .vn .ki-feld { font-weight: 500; }
+table.review1 .unsure { display: inline-block; max-width: 100%; }
+table.review1 .unsure .ki-feld { color: var(--orange); width: 80px; margin: 0; }
+.ki1 select.sel { appearance: none; -webkit-appearance: none; font: inherit; font-size: 12.5px; color: var(--text); padding: 3px 22px 3px 7px; max-width: 100%; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2386868b' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 7px center; cursor: pointer; }
+.ki1 .unsure select.sel { color: var(--orange); background-color: transparent; }
+.ki1 select.sel.ziel { box-shadow: inset 3px 0 0 var(--bc); }
+.ki-test { display: flex; align-items: center; gap: 12px; margin: 8px 0 0; }
+.ki-test span { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; }
+.ki-test svg.i { width: 14px; height: 14px; }
+.kk-anb.kk-spaeter { opacity: .55; }
+.kk-anb .es-sym.kk-copilot { background: linear-gradient(135deg, #0f6cbd, #8a3ffc 55%, #e8486e); color: #fff; }
+.kk-anb .es-sym.kk-copilot svg.i { color: #fff; }
+.es-platz.ki-test { padding-left: 0; }
+:root.dunkel .ki1 select.sel { background-color: var(--card); }
+:root.dunkel .kpriv { background: var(--side); }

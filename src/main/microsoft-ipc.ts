@@ -1,5 +1,7 @@
-/** IPC für Microsoft (M5b): Konto, Zugang, Outlook. */
-import { ipcMain } from 'electron';
+/** IPC für Microsoft (M5b): Konto, Zugang, Outlook, KI-Import über Copilot. */
+import { BrowserWindow, ipcMain } from 'electron';
+import { kiAuswerten, kiDateienWaehlen, kiTesten } from './copilot';
+import type { KiDatei } from '../shared/api';
 import type { MsZugang } from '../shared/api';
 import type { MailAuftrag } from '../shared/microsoft/mail';
 import { abmelden, anmelden, kontakteSuchen, kontoInfo, mailSenden, zugangLesen, zugangSetzen } from './microsoft';
@@ -27,4 +29,7 @@ export function microsoftEinrichten(): void {
   ipcMain.handle('ms:abmelden', () => abmelden());
   ipcMain.handle('mail:senden', (_e, m: MailAuftrag) => mailSenden(m));
   ipcMain.handle('mail:kontakte', (_e, q: string) => kontakteSuchen(q));
+  ipcMain.handle('ki:auswerten', (_e, d: KiDatei) => kiAuswerten(d));
+  ipcMain.handle('ki:testen', () => kiTesten());
+  ipcMain.handle('ki:dateienWaehlen', (e) => kiDateienWaehlen(BrowserWindow.fromWebContents(e.sender)));
 }

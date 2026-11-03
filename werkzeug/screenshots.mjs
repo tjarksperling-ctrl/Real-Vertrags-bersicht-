@@ -6,7 +6,7 @@
  * (Pfad über PLAYWRIGHT_PFAD oder NODE_PATH).
  */
 import { createRequire } from 'node:module';
-import { mkdtempSync, rmSync, mkdirSync } from 'node:fs';
+import { mkdtempSync, rmSync, mkdirSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { execFileSync } from 'node:child_process';
 import { join, resolve } from 'node:path';
@@ -499,7 +499,47 @@ async function m5bZugang() {
   }
 }
 
-const schritte = { m2, m3, m4, m5, m5c, m5b, m5bOutlook, m5bZugang };
+/** M5b Teil 3: KI-Import über Copilot (Vorführmodus mit Antworten wie Bild 6). */
+async function m5bKi() {
+  const ordner = mkdtempSync(join(tmpdir(), 'vtue-ki-'));
+  const dateien = ['Police_Wohngebaeude.pdf', 'Kfz_Beitragsrechnung_2026.pdf', 'Scan_BU_Nachtrag.jpg'].map((n, i) => {
+    const p = join(ordner, n);
+    writeFileSync(p, Buffer.alloc(40_000 + i * 90_000, 1));
+    return p;
+  });
+  const { app, win, daten } = await starten({ VTUE_MS_DEMO: '1', VTUE_MS_DEMO_ANGEMELDET: '1', VTUE_KI_DATEIEN: dateien.join('|') });
+  try {
+    // Kunde ohne diese Verträge (bei Familie Berger gibt es sie schon → nicht vorausgewählt)
+    await win.click('.nav li:has-text("Lea Nowak")');
+    await win.click('.urow >> nth=0');
+    await win.waitForSelector('.bereich.v1.vers');
+    await win.click('.mehr-menu .btn.icon');
+    await win.click('.ub-mi:has-text("Unterlagen per KI einlesen")');
+    await win.waitForSelector('.sheet.ki1');
+    await pause(300);
+    await bild(win, 'm5b-ki-hinweis');
+    await win.click('.ki-start .btn.primary:has-text("Verstanden")');
+    await win.click('.ki-waehlen');
+    await win.waitForSelector('.kd:nth-child(3) .ok', { timeout: 15000 });
+    await pause(400);
+    await bild(win, 'm5b-ki-import');
+    await win.click('.sheet.ki1 footer .btn.primary');
+    await pause(600);
+    await bild(win, 'm5b-ki-uebernommen');
+    // Einstellungen → KI-Konto
+    await win.click('.einst-knopf');
+    await win.click('.kk-nav-i:has-text("KI-Konto")');
+    await win.click('.ki-test .btn, .btn:has-text("Verbindung testen")');
+    await pause(400);
+    await bild(win, 'm5b-einst-ki-konto');
+  } finally {
+    await app.close();
+    rmSync(daten, { recursive: true, force: true });
+    rmSync(ordner, { recursive: true, force: true });
+  }
+}
+
+const schritte = { m2, m3, m4, m5, m5c, m5b, m5bOutlook, m5bZugang, m5bKi };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);

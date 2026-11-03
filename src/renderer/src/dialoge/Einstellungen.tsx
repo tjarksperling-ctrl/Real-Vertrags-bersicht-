@@ -31,6 +31,7 @@ import { SchnellstartSeite } from './einst/Schnellstart';
 import { DatenschutzSeite } from './einst/Datenschutz';
 import { SpeicherortSeite, ortGleich } from './einst/Speicherort';
 import { OutlookSeite, useMsKonto } from './einst/Outlook';
+import { KiKontoSeite } from './einst/KiKonto';
 import { useAblage } from '../mitarbeit/mitarbeit';
 import type { AblageOrt } from '../../../shared/api';
 import { Avatar } from '../komponenten/ui';
@@ -39,7 +40,7 @@ export type EinstSeite = 'Allgemein' | 'KI-Konto' | 'Outlook' | 'Speicherort' | 
 
 const NAV: [string, string, EinstSeite | null][] = [
   ['sliders', 'Allgemein', 'Allgemein'],
-  ['sparkles', 'KI-Konto', null],
+  ['sparkles', 'KI-Konto', 'KI-Konto'],
   ['mail', 'Outlook', 'Outlook'],
   ['cloud', 'Speicherort', 'Speicherort'],
   ['ext', 'Schnellstart', 'Schnellstart'],
@@ -299,6 +300,10 @@ export function EinstellungenDialog({
         </button>
       </>
     );
+  } else if (seite === 'KI-Konto') {
+    titel = es_titel('sparkles', 'KI-Konto', false, msKonto?.angemeldet ? 'Verbunden mit Microsoft 365 Copilot' : 'Nicht verbunden');
+    inhalt = <KiKontoSeite konto={msKonto} setKonto={setMsKonto} kiHinweis={entwurf.einstellungen.kiHinweis} onKiHinweis={(an) => entwurfSetzen({ kiHinweis: an })} />;
+    fuss = speichernFuss(undefined, 'Anmeldung über Microsoft. Gleiches Konto wie für Outlook.');
   } else if (seite === 'Outlook') {
     titel = es_titel('mail', 'Outlook', false, msKonto?.angemeldet ? 'Verbunden' : msKonto?.eingerichtet ? 'Nicht angemeldet' : 'Zugang fehlt');
     inhalt = <OutlookSeite o={entwurf.einstellungen.outlook} onChange={(o) => entwurfSetzen({ outlook: o })} konto={msKonto} setKonto={setMsKonto} />;

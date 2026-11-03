@@ -62,6 +62,9 @@ const api: Api = {
   msAbmelden: () => ipcRenderer.invoke('ms:abmelden'),
   mailSenden: (m) => ipcRenderer.invoke('mail:senden', m),
   kontakteSuchen: (q) => ipcRenderer.invoke('mail:kontakte', q),
+  kiAuswerten: (d) => ipcRenderer.invoke('ki:auswerten', d),
+  kiTesten: () => ipcRenderer.invoke('ki:testen'),
+  kiDateienWaehlen: () => ipcRenderer.invoke('ki:dateienWaehlen'),
 };
 
 contextBridge.exposeInMainWorld('api', api);

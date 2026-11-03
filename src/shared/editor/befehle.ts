@@ -380,8 +380,9 @@ export class Editor {
       const i = Math.max(0, Math.min(index ?? vs.length, vs.length));
       const v = neuerVertrag(fund.typ) as Vertrag;
       const ym = vertragAlsY(v);
-      for (const [k, w] of Object.entries(werte)) schreibeFeld(ym, k as VertragFeld, w as FeldWert);
       vs.insert(i, [ym]);
+      // erst nach dem Einfügen schreiben: verschachtelte Felder (leistung.*) gibt es vorher noch nicht
+      for (const [k, w] of Object.entries(werte)) schreibeFeld(ym, k as VertragFeld, w as FeldWert);
       if (this.spiegeln(f)) {
         const gegen = findeUg(this.doc, 'neu', ugId, true);
         if (gegen) {

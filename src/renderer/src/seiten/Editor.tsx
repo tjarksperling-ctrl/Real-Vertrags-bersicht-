@@ -30,6 +30,7 @@ import {
 } from '../../../shared';
 import { useDocVersion } from '../daten/hooks';
 import { Anwesende, type Mitarbeit } from '../mitarbeit/mitarbeit';
+import { KiImportDialog } from '../dialoge/KiImport';
 import { Avatar, STRG, Schalter, Sym } from '../komponenten/ui';
 import { Bereich, BereichAus, FARBE } from '../editor/Bereich';
 import { EditorKontext, FokusRegister, useEditorKontext, type EditorKontextWert } from '../editor/kontext';
@@ -118,7 +119,12 @@ export function EditorSeite({
   mitarbeit,
   outlook,
   onOutlookEinstellungen,
+  kiHinweis = true,
+  onKiEinstellungen,
 }: {
+  /** „Hinweis vor jedem KI-Import zeigen“ (Einstellungen → Datenschutz). */
+  kiHinweis?: boolean;
+  onKiEinstellungen?: () => void;
   outlook?: OutlookEinstellungen;
   onOutlookEinstellungen?: () => void;
   /** Für Anwesenheit (Bild 15). */
@@ -166,6 +172,7 @@ export function EditorSeite({
   const [uebertragung, setUebertragung] = useState<Uebertragung | null>(null);
   const [menu, setMenu] = useState(false);
   const [pdfOffen, setPdfOffen] = useState(false);
+  const [kiOffen, setKiOffen] = useState(false);
   const [aufgabenOffen, setAufgabenOffen] = useState(aufgabenStart);
   const inhalt = useRef<HTMLDivElement>(null);
   const fassung: FassungName = ansicht === 'neben' ? 'aktuell' : ansicht;
@@ -598,6 +605,18 @@ export function EditorSeite({
                     className="ub-mi knopf-rein"
                     onClick={() => {
                       setMenu(false);
+                      setKiOffen(true);
+                    }}
+                  >
+                    <Sym n="sparkles" />
+                    <span>Unterlagen per KI einlesen</span>
+                  </button>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="ub-mi knopf-rein"
+                    onClick={() => {
+                      setMenu(false);
                       setTitelBearbeiten(true);
                     }}
                   >
@@ -723,6 +742,25 @@ export function EditorSeite({
             onSchliessen={() => setAufgabenOffen(false)}
             onZumVertrag={zumVertrag}
             bezugName={(id) => bezugFinden(u, id)?.name ?? null}
+          />
+        )}
+        {kiOffen && (
+          <KiImportDialog
+            editor={editor}
+            u={u}
+            kunde={kunde.name}
+            hinweisZeigen={kiHinweis}
+            onSchliessen={() => setKiOffen(false)}
+            onEinstellungen={() => {
+              setKiOffen(false);
+              onKiEinstellungen?.();
+            }}
+            onFertig={(text) => {
+              setKiOffen(false);
+              if (ansicht !== 'aktuell') setAnsicht('aktuell');
+              onEreignis?.('Unterlagen per KI eingelesen');
+              setHinweis((h) => ({ text, n: (h?.n ?? 0) + 1, info: true }));
+            }}
           />
         )}
         {pdfOffen && (

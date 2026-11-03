@@ -163,6 +163,18 @@ export interface MsKonto {
   seit?: string;
 }
 
+/** Unterlage für den KI-Import (nur im Speicher, wird nicht abgelegt). */
+export interface KiDatei {
+  name: string;
+  daten: Uint8Array;
+}
+export interface KiErgebnis {
+  ok: boolean;
+  /** Antwort der KI (Text mit JSON) – Prüfung mit `kiAntwortLesen`. */
+  text?: string;
+  fehler?: string;
+}
+
 export interface Api {
   info(): Promise<AppInfo>;
   /** Liest ein gespeichertes Yjs-Dokument (Name nur a–z, 0–9, „-“). */
@@ -225,4 +237,8 @@ export interface Api {
   msAbmelden(): Promise<void>;
   mailSenden(m: import('./microsoft/mail').MailAuftrag): Promise<{ ok: boolean; fehler?: string; geoeffnet?: boolean }>;
   kontakteSuchen(q: string): Promise<{ name: string; mail: string }[]>;
+  // ---- M5b KI-Import (Copilot)
+  kiAuswerten(d: KiDatei): Promise<KiErgebnis>;
+  kiTesten(): Promise<{ ok: boolean; ms?: number; fehler?: string }>;
+  kiDateienWaehlen(): Promise<KiDatei[]>;
 }
