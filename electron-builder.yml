@@ -12,11 +12,16 @@ files:
   - out/**/*
   - package.json
 asarUnpack: []
+# App-Symbol (Entwurf H, Sitzung 28) – erzeugt mit `node werkzeug/app-symbol.mjs`
+extraResources:
+  - from: build/fenster.png
+    to: fenster.png
 fileAssociations:
   - ext: vtue
     name: Vertragsübersicht-Stand
     description: Gespeicherter Stand einer Vertragsübersicht
     role: Viewer
+    icon: vtue
 # Update-Quelle: GitHub Releases eines öffentlichen Repos nur für Installer (kein Quellcode, keine Daten).
 publish:
   provider: github
@@ -24,6 +29,7 @@ publish:
   repo: vertragsuebersicht-updates
   releaseType: release
 win:
+  icon: build/icon.ico
   target:
     - target: nsis
       arch: [x64]
@@ -31,6 +37,8 @@ win:
   # Mit Zertifikat: auf true setzen oder per -c.win.signAndEditExecutable=true.
   signAndEditExecutable: false
 nsis:
+  installerIcon: build/icon.ico
+  uninstallerIcon: build/icon.ico
   oneClick: false
   perMachine: false
   allowToChangeInstallationDirectory: true
@@ -47,6 +55,7 @@ mac:
       arch: [arm64, x64]
     - target: zip
       arch: [arm64, x64]
+  icon: build/icon.icns
   category: public.app-category.business
   artifactName: Vertragsuebersicht-${version}-${arch}.${ext}
   # Ohne Apple-Konto baut GitHub Actions ad-hoc signiert (-c.mac.identity=-), läuft nach Rechtsklick → Öffnen.

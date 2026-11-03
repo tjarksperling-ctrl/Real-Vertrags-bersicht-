@@ -43,6 +43,10 @@ function seiteLaden(win: BrowserWindow, hash = ''): Promise<void> {
   return win.loadFile(join(__dirname, '../renderer/index.html'), hash ? { hash } : {});
 }
 
+/** Fenster-/Taskleistensymbol (Windows, Linux); auf dem Mac kommt es aus dem App-Paket. */
+const fensterSymbol = (): { icon?: string } =>
+  process.platform === 'darwin' ? {} : { icon: app.isPackaged ? join(process.resourcesPath, 'fenster.png') : join(app.getAppPath(), 'build/fenster.png') };
+
 const webPreferences = () => ({
   preload: join(__dirname, '../preload/index.mjs'),
   contextIsolation: true,
@@ -62,6 +66,7 @@ function fensterOeffnen(): BrowserWindow {
     minWidth: 1100,
     minHeight: 680,
     title: 'Vertragsübersicht',
+    ...fensterSymbol(),
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1c1c1e' : '#fbfbfd',
     autoHideMenuBar: true,
     show: false,
@@ -132,6 +137,7 @@ async function dateiOeffnen(pfad: string): Promise<void> {
     resizable: !klein,
     maximizable: !klein,
     title: `${basename(pfad)} — Vertragsübersicht`,
+    ...fensterSymbol(),
     backgroundColor: nativeTheme.shouldUseDarkColors ? '#1c1c1e' : '#fbfbfd',
     autoHideMenuBar: true,
     show: false,
