@@ -291,6 +291,8 @@ Konkret unübersichtlich:
   4. **Mac-Version (unsigniert):** Build als `.dmg` (Apple Silicon + Intel) über GitHub Actions auf einem Mac-Rechner (unter Linux nicht möglich). Ohne Apple-Konto: Öffnen per Rechtsklick → „Öffnen“, **keine automatischen Updates auf dem Mac** (Apple verlangt dafür eine Signatur). Prüfen: PDF, Dateizuordnung `.vtue`, Tastenkürzel (⌘ statt Strg), Menüleiste.
   5. **Signatur vorbereitet:** `electron-builder.yml` liest Zertifikat später aus Umgebungsvariablen (`CSC_LINK`/`CSC_KEY_PASSWORD`, Apple-Daten) – sobald vorhanden, nur eintragen, kein Code nötig.
   6. **Installer-Feinschliff:** Deinstallation behält die Kundendaten (Rückfrage „Daten auch löschen?“ standardmäßig nein), Startmenü-Eintrag, Versionsnummer im Dateinamen, „Über Vertragsübersicht“.
+- **Entscheidungen Sitzung 28 (2. Runde):** Update-Quelle **GitHub Releases** in einem zweiten, **öffentlichen Repo nur für Installer** (kein Quellcode, keine Daten; muss der Nutzer anlegen, Claude darf keine Repos erstellen) · **Mac jetzt** bauen (unsigniert, GitHub Actions) · nach der Symbol-Auswahl **am Stück, ein STOPP** mit Freigabeliste.
+- **Symbol-Entwürfe (Sitzung 28):** `mockups/symbol/` (SVG je Entwurf + `entwuerfe.html`), Bild `mockups/bilder/symbol-entwuerfe.png`: **A** Dokument wie Bild 10 (App = Datei) · **B** blaue Kachel mit „VTÜ“ + Bereichsfarben, Datei = Blatt mit kleiner Kachel · **C** weiße Kachel mit vier farbigen Balken ohne Schrift, Datei = Blatt mit Balken + „VTÜ“. ⏳ Auswahl durch Nutzer ausstehend.
 - **Reihenfolge:** 1 (STOPP für Symbol-Auswahl) → 2, 3, 5, 6 am Stück → 4 → ein STOPP mit Freigabeliste.
 
 ## Fortschritt
