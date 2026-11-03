@@ -3,7 +3,7 @@
 Desktop-App (Windows, zusätzlich Mac) für eine Versicherungsagentur: Vertragsübersicht je Kunde in zwei Fassungen „Aktuell“ und „Neu“, hochwertiger PDF-Export. Neutral, Apple-Stil, extrem einfach. Details: `STAND.md` (Briefing + Entscheidungen), `PLAN.md` (freigegebener Plan), `HANDOFF.md` (letzter Stand).
 
 ## Arbeitsregeln
-- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen (M1–M4, M5a und M5c ohne Zertifikat freigegeben; offen: M5b mit Konten, Signatur). Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
+- Phasen: 1 Rückfragen ✅ · 2 Plan ✅ · 3 Mockups (statisches HTML in `/mockups`) ✅ · 4 Umsetzung in Meilensteinen (M1–M4, M5a und M5c ohne Zertifikat freigegeben; M5b umgesetzt, Freigabe ausstehend; offen: Signatur). Nach jeder Phase/jedem Meilenstein: STOPP, Freigabe abwarten.
 - Kein App-Code vor Phase 4. Bei Mockup-Feedback nur die betroffene Seite ändern.
 - Rückfragen immer zum Antippen (Auswahl-Dialog, max. 4 je Runde).
 - Token-effizient: kurze Zusammenfassungen, keine kompletten Dateien im Chat, Abhängigkeiten nur mit echtem Mehrwert.
@@ -11,8 +11,8 @@ Desktop-App (Windows, zusätzlich Mac) für eine Versicherungsagentur: Vertrags�
 
 ## Technik
 Electron + React + TypeScript · dnd-kit · Yjs (CRDT) · MSAL + Microsoft Graph · Vitest · electron-builder/-updater.
-Code: `src/shared/` reine Logik ohne Electron/React (`modell/`, `rechnen/`, `fassung/`, `editor/`, `pdf/`), Tests `*.test.ts` daneben; `npm test`, `npm run typecheck`. App: `src/main` (Electron), `src/preload`, `src/renderer` (React; Stil = Kopie von `mockups/style.css` + `app.css`); Build mit electron-vite (`npm run build`, `npm run start`), Screenshots `npm run screenshots`, Test-Installer `npm run installer` (electron-builder, `electron-builder.yml`). Desktop-Datei `.vtue`: `src/main/vtue.ts`. Updates: `src/main/update.ts` + `src/shared/update/`, Auslieferung `.github/workflows/auslieferung.yml` (Anleitung `ANLEITUNG-AUSLIEFERUNG.md`), App-Symbol `node werkzeug/app-symbol.mjs` → `build/`. Rechenlogik nur dort, nie in UI/PDF duplizieren.
-Mehrbenutzer **M2**: Yjs-Änderungsdateien je Nutzer in SharePoint/OneDrive-Ordner, konfliktfrei zusammengeführt, offlinefähig, kein Server.
+Code: `src/shared/` reine Logik ohne Electron/React (`modell/`, `rechnen/`, `fassung/`, `editor/`, `pdf/`), Tests `*.test.ts` daneben; `npm test`, `npm run typecheck`. App: `src/main` (Electron), `src/preload`, `src/renderer` (React; Stil = Kopie von `mockups/style.css` + `app.css`); Build mit electron-vite (`npm run build`, `npm run start`), Screenshots `npm run screenshots`, Test-Installer `npm run installer` (electron-builder, `electron-builder.yml`). Desktop-Datei `.vtue`: `src/main/vtue.ts`. Updates: `src/main/update.ts` + `src/shared/update/`, Auslieferung `.github/workflows/auslieferung.yml` (Anleitung `ANLEITUNG-AUSLIEFERUNG.md`), App-Symbol `node werkzeug/app-symbol.mjs` → `build/`. M5b: Ablage/gemeinsamer Ordner `src/main/ablage*.ts`, Microsoft (MSAL, Graph, Outlook) `src/main/microsoft*.ts`, Copilot `src/main/copilot.ts`, reine Logik `src/shared/mitarbeit|microsoft|ki/`, Einrichtung `ANLEITUNG-MICROSOFT.md`. Rechenlogik nur dort, nie in UI/PDF duplizieren.
+Mehrbenutzer **M2**: Yjs-Datei je Person und Dokument im per OneDrive synchronisierten SharePoint-Ordner, konfliktfrei zusammengeführt, offlinefähig, kein Server. KI-Import über Microsoft 365 Copilot (Chat-API, beta).
 
 ## Fachregeln (verbindlich)
 - 4 Bereiche, einzeln an-/abwählbar: VERS, SPAR, DARL, AV. Untergruppen (Name + Symbol) und Verträge: anlegen, umbenennen, löschen, Drag & Drop.
