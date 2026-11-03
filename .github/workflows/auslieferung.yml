@@ -1,5 +1,6 @@
 # Auslieferung (M5c): baut Windows-Setup und Mac-DMG auf echten Windows-/Mac-Rechnern von GitHub.
 # - Von Hand starten (Actions → Auslieferung → Run workflow): baut nur, Dateien unter „Artifacts“ zum Herunterladen.
+#   Mac nur mit Häkchen „Auch Mac bauen“ (macOS-Rechner bekommen derzeit kein Kontingent, Läufe hingen sonst 15 Min.).
 # - Push auf einen Arbeitsbranch mit „[bauen]“ in der Commit-Nachricht: baut nur (wie von Hand).
 # - Push auf einen Arbeitsbranch mit „[veroeffentlichen]“ in der Commit-Nachricht: wie Tag (Version aus package.json).
 # - Tag „v1.2.3“ pushen: baut und veröffentlicht als Update im öffentlichen Repo vertragsuebersicht-updates
@@ -9,6 +10,11 @@ name: Auslieferung
 
 on:
   workflow_dispatch:
+    inputs:
+      mac:
+        description: 'Auch Mac bauen'
+        type: boolean
+        default: false
   push:
     tags: ['v*']
     branches: ['claude/**']
@@ -22,11 +28,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - os: windows-latest
-            ziel: --win nsis
-          - os: macos-latest
-            ziel: --mac
+        # Windows immer; Mac nur bei Handstart mit Häkchen „Auch Mac bauen“
+        include: ${{ fromJSON(inputs.mac && '[{"os":"windows-latest","ziel":"--win nsis"},{"os":"macos-latest","ziel":"--mac"}]' || '[{"os":"windows-latest","ziel":"--win nsis"}]') }}
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4

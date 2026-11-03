@@ -13,7 +13,7 @@ Kurzanleitung für die Agentur. Technik: electron-builder + electron-updater, Ba
 1. In `package.json` die Version erhöhen (z. B. `0.1.0` → `0.2.0`), committen.
 2. Tag setzen und pushen: `git tag v0.2.0 && git push origin v0.2.0`.
    Alternativ ohne Tag: `[veroeffentlichen]` in die Commit-Nachricht schreiben und den Arbeitsbranch pushen (das Release `v<Version>` legt electron-builder im Update-Repo selbst an).
-3. GitHub Actions baut Windows-Setup und Mac-DMG, prüft Tests und Typen und veröffentlicht alles als Release in `vertragsuebersicht-updates`.
+3. GitHub Actions baut das Windows-Setup (Mac-DMG vorerst nur per Handstart mit Häkchen „Auch Mac bauen“), prüft Tests und Typen und veröffentlicht alles als Release in `vertragsuebersicht-updates`.
 4. Die installierten Apps finden das Update innerhalb von 4 Stunden (oder sofort über *Einstellungen → Allgemein → Nach Updates suchen*), laden es im Hintergrund und installieren es beim nächsten Start. Unten in der Seitenleiste erscheint „Update bereit“ mit „Jetzt neu starten“.
 
 Nur bauen, ohne zu veröffentlichen: GitHub → Actions → *Auslieferung* → *Run workflow*. Die Dateien liegen danach unter *Artifacts*.
