@@ -261,6 +261,7 @@ Konkret unübersichtlich:
   4. **Datei „Auf Desktop speichern“ (Bild 10):** eingefrorener Stand als `.vtue` (Yjs-Stand + Metadaten), optional verschlüsselt (Einstellung Bild 8), Öffnen im eigenen Fenster nur zum Ansehen, Passwortabfrage, mehrere Dateien gleichzeitig. Prüfung beim Laden (Format/Version). Doppelklick über Dateizuordnung braucht den Installer (M5c); bis dahin Öffnen per Datei-Menü/Startparameter.
   5. **Einstellungen → Datenschutz (Bild 16):** was wo gespeichert wird, Kunde vollständig löschen, Auskunft (Export), alte Kunden nach 10 Jahren zum Löschen vorschlagen, Protokoll (lokal). KI-Teile als Text, Schalter gesperrt bis M5b.
 - **Prüfung je Teil:** Vitest für reine Logik, Typprüfung, Screenshots per Playwright gegen Bild 1/1b/8/9/10/16.
+- **Entscheidungen Sitzung 27 (Auswahl-Rückfrage):** alle 5 Teile **am Stück**, ein STOPP mit gesammelter Freigabeliste am Ende · „Zuständig“ aus einer **Team-Liste in Einstellungen → Allgemein** (ab M5b aus dem Microsoft-Konto) · **unsignierter Test-Installer** (electron-builder, Windows) mit Dateizuordnung `.vtue` schon in M5a; Signatur/Updates bleiben M5c · `.vtue`-Verschlüsselung: **Passwort je Datei** (AES-256, beim Öffnen abgefragt wie Bild 10).
 
 ## Fortschritt
 | Bild | Status | Offene Punkte |
