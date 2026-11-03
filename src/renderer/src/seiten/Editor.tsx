@@ -25,8 +25,10 @@ import {
   type Uebersicht,
   type Vertrag,
   type VertragFeld,
+  vertragOrt,
 } from '../../../shared';
 import { useDocVersion } from '../daten/hooks';
+import { Anwesende, type Mitarbeit } from '../mitarbeit/mitarbeit';
 import { Avatar, STRG, Schalter, Sym } from '../komponenten/ui';
 import { Bereich, BereichAus, FARBE } from '../editor/Bereich';
 import { EditorKontext, FokusRegister, useEditorKontext, type EditorKontextWert } from '../editor/kontext';
@@ -111,7 +113,12 @@ export function EditorSeite({
   menuExtra,
   nurLesen = false,
   kopf,
+  uebersichtId,
+  mitarbeit,
 }: {
+  /** Für Anwesenheit (Bild 15). */
+  uebersichtId?: string;
+  mitarbeit?: Mitarbeit;
   team?: string[];
   titelStart?: boolean;
   /** Klick auf den Kundennamen in der Kopfzeile → Kundenakte. */
@@ -207,6 +214,37 @@ export function EditorSeite({
     aufgabenMarken: useMemo(() => aufgabenJeVertrag(u.aufgaben, heuteDatum()), [u]),
     aufgabenZeigen: () => setAufgabenOffen(true),
     nurLesen,
+    mitarbeit,
+  };
+
+  /** Bild 15: eigene Position an die anderen melden (nur mit gemeinsamem Ordner wirksam). */
+  useEffect(() => {
+    if (!uebersichtId || nurLesen) return;
+    void window.api.anwesenheit({ uebersichtId, ansicht });
+  }, [uebersichtId, ansicht, nurLesen]);
+  useEffect(() => {
+    if (!uebersichtId || nurLesen) return;
+    return () => void window.api.anwesenheit({});
+  }, [uebersichtId, nurLesen]);
+  const positionMelden = (ziel: HTMLElement) => {
+    if (!uebersichtId || nurLesen) return;
+    const zeile = ziel.closest<HTMLElement>('tr[data-vertrag]');
+    const zelle = ziel.closest<HTMLElement>('td[data-feld]');
+    const vertragId = zeile?.dataset['vertrag'];
+    const spalte = zelle?.dataset['feld'];
+    if (!vertragId || !spalte) return;
+    const o = vertragOrt(u, vertragId);
+    void window.api.anwesenheit({ uebersichtId, ansicht, ort: { vertragId, spalte, ...(o ? { wo: o.text } : {}) } });
+  };
+  const hinspringen = (vertragId: string, spalte: string) => {
+    const o = vertragOrt(u, vertragId);
+    if (!o) return;
+    if (ansicht !== o.fassung) setAnsicht(o.fassung);
+    setNur(null);
+    setTimeout(() => {
+      document.querySelector<HTMLElement>(`tr[data-vertrag="${vertragId}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      fokus.fokus(`${vertragId}:${spalte}`);
+    }, 60);
   };
 
   const zumVertrag = (id: string) => {
@@ -526,6 +564,7 @@ export function EditorSeite({
                 </h1>
               )}
             </div>
+            {mitarbeit && <Anwesende andere={mitarbeit.andere} onHinspringen={(p) => p.ort && hinspringen(p.ort.vertragId, p.ort.spalte)} />}
             {tabs}
             <SyncSchalter u={u} onChange={syncSetzen} uebertragung={uebertragung} />
             <span className="spacer" />
@@ -630,7 +669,7 @@ export function EditorSeite({
           )}
         </div>
         {ansicht === 'neben' ? (
-          <div className={`content neu2 side2 ub v2e ${nurLesen ? 'nurlesen' : ''}`} ref={inhalt} {...sperre}>
+          <div className={`content neu2 side2 ub v2e ${nurLesen ? 'nurlesen' : ''} ${mitarbeit ? 'mb' : ''}`} ref={inhalt} {...sperre} onFocus={(e) => positionMelden(e.target as HTMLElement)}>
             {aenderungsLeiste(true)}
             {syncAus}
             <div className="side-head v1">
@@ -659,7 +698,7 @@ export function EditorSeite({
             )}
           </div>
         ) : (
-          <div className={`content narrow ub v2e b13 ${fassung === 'neu' ? 'neu2' : ''} ${nurLesen ? 'nurlesen' : ''}`} ref={inhalt} data-fassung={fassung} {...sperre}>
+          <div className={`content narrow ub v2e b13 ${fassung === 'neu' ? 'neu2' : ''} ${nurLesen ? 'nurlesen' : ''} ${mitarbeit ? 'mb' : ''}`} ref={inhalt} data-fassung={fassung} {...sperre} onFocus={(e) => positionMelden(e.target as HTMLElement)}>
             {band}
             {fassung === 'neu' && aenderungsLeiste(false)}
             {fassung === 'neu' && syncAus}

@@ -91,6 +91,58 @@ export interface DateiInfo extends VtueMeta {
 /** Befehle aus einem Datei-Fenster an das Hauptfenster. */
 export type AppBefehl = { art: 'uebersichtOeffnen'; uebersichtId: string; kundeId: string } | { art: 'alsNeuUebernehmen'; meta: VtueMeta; daten: Uint8Array };
 
+// ---- M5b: gemeinsamer Ordner (Mehrbenutzer)
+export type AblageArt = 'lokal' | 'sharepoint' | 'onedrive';
+export interface AblageOrt {
+  art: AblageArt;
+  /** Gewählter Ordner (bei „lokal“ null). */
+  ordner: string | null;
+}
+export interface Person {
+  id: string;
+  name: string;
+}
+/** Wo eine Person gerade arbeitet (Bild 15). */
+export interface AnwesenheitMeldung {
+  uebersichtId?: string;
+  ansicht?: string;
+  /** Feld, in dem die Person steht; `wo` = „Wohnen › Wohngebäude“. */
+  ort?: { vertragId: string; spalte: string; wo?: string };
+}
+/** Anwesenheit einer Person (personen/<id>.json im gemeinsamen Ordner). */
+export interface PersonStand extends Person, AnwesenheitMeldung {
+  /** ISO-Zeit des letzten Herzschlags. */
+  zeit: string;
+  /** Seit wann in der aktuellen Übersicht (ISO). */
+  seit?: string;
+}
+/** Neue Änderungen einer anderen Person an einem Dokument. */
+export interface FremdeAenderung {
+  name: string;
+  von: Person;
+  daten: Uint8Array;
+}
+export interface AblageStand {
+  ort: AblageOrt;
+  ich: Person;
+  gemeinsam: boolean;
+  online: boolean;
+  /** Offline gespeicherte Änderungen, die OneDrive nachholt. */
+  wartend: number;
+  /** ISO-Zeit der letzten Speicherung. */
+  zuletzt: string | null;
+  fehler: string | null;
+  /** Ordner „…/Vertragsuebersicht“ (nur gemeinsam). */
+  wurzel: string | null;
+}
+export interface OrdnerInfo {
+  uebersichten: number;
+  /** Im Ordner liegen schon Daten (jemand aus dem Team hat ihn eingerichtet). */
+  vorhanden: boolean;
+  groesse: number;
+  personen: Person[];
+}
+
 export interface Api {
   info(): Promise<AppInfo>;
   /** Liest ein gespeichertes Yjs-Dokument (Name nur a–z, 0–9, „-“). */
@@ -131,4 +183,18 @@ export interface Api {
   /** „Jetzt neu starten“: geladenes Update sofort installieren. */
   updateNeustart(): Promise<void>;
   aufUpdate(fn: (s: UpdateStand) => void): () => void;
+  // ---- M5b gemeinsamer Ordner
+  ablageStand(): Promise<AblageStand>;
+  aufAblageStatus(fn: (s: AblageStand) => void): () => void;
+  /** Diese Dokumente auf Änderungen anderer prüfen (Bestand immer). */
+  ablageBeobachten(namen: string[]): Promise<void>;
+  aufFremdeAenderung(fn: (l: FremdeAenderung[]) => void): () => void;
+  anwesenheit(m: AnwesenheitMeldung): Promise<void>;
+  personen(): Promise<PersonStand[]>;
+  aufPersonen(fn: (l: PersonStand[]) => void): () => void;
+  ordnerWaehlen(): Promise<string | null>;
+  ordnerInfo(ort: AblageOrt): Promise<OrdnerInfo>;
+  ablageOeffnen(): Promise<void>;
+  /** Speicherort wechseln: übernimmt alle Daten (nichts geht verloren) und lädt die Oberfläche neu. */
+  ablageWechseln(ort: AblageOrt): Promise<{ ok: boolean; uebernommen: number; fehler?: string }>;
 }

@@ -1,6 +1,6 @@
 /**
  * Einstellungen (Stil Bild 8): „Allgemein“ (Darstellung, Team, Standards, Tastenkürzel), „Schnellstart“ (Bild 8),
- * „Vorlagen“ (Bild 11 v1), „Datenschutz“ (Bild 16). KI-Konto, Outlook und Speicherort folgen mit M5b.
+ * „Vorlagen“ (Bild 11 v1), „Datenschutz“ (Bild 16), M5b: „Speicherort“, „Outlook“, „KI-Konto“ (Bild 8/6b).
  */
 import { useState } from 'react';
 import { pruefenMoeglich, pruefZeit, statusText } from '../../../shared/update/update';
@@ -29,15 +29,18 @@ import { vorlageUntertitel } from './NeuerKunde';
 import type { Gespeichert } from '../daten/speicher';
 import { SchnellstartSeite } from './einst/Schnellstart';
 import { DatenschutzSeite } from './einst/Datenschutz';
+import { SpeicherortSeite, ortGleich } from './einst/Speicherort';
+import { useAblage } from '../mitarbeit/mitarbeit';
+import type { AblageOrt } from '../../../shared/api';
 import { Avatar } from '../komponenten/ui';
 
-export type EinstSeite = 'Allgemein' | 'Schnellstart' | 'Vorlagen' | 'Datenschutz';
+export type EinstSeite = 'Allgemein' | 'KI-Konto' | 'Outlook' | 'Speicherort' | 'Schnellstart' | 'Vorlagen' | 'Datenschutz';
 
 const NAV: [string, string, EinstSeite | null][] = [
   ['sliders', 'Allgemein', 'Allgemein'],
   ['sparkles', 'KI-Konto', null],
   ['mail', 'Outlook', null],
-  ['cloud', 'Speicherort', null],
+  ['cloud', 'Speicherort', 'Speicherort'],
   ['ext', 'Schnellstart', 'Schnellstart'],
   ['tpl', 'Vorlagen', 'Vorlagen'],
   ['lock', 'Datenschutz', 'Datenschutz'],
@@ -122,7 +125,10 @@ export function EinstellungenDialog({
   onKundeLoeschen,
   ladeUebersichten,
   onProtokoll,
+  onVorWechsel,
 }: {
+  /** Vor dem Wechsel des Speicherorts: offene Änderungen sofort schreiben. */
+  onVorWechsel?: () => Promise<void>;
   start: EinstSeite;
   gespeichert: Gespeichert;
   benutzer: string;
@@ -138,7 +144,11 @@ export function EinstellungenDialog({
   const [seite, setSeite] = useState<EinstSeite>(start);
   const [entwurf, setEntwurf] = useState<Gespeichert>(() => structuredClone(gespeichert));
   const [auswahl, setAuswahl] = useState(entwurf.vorlagen.find((v) => v.standard)?.id ?? entwurf.vorlagen[0]?.id ?? '');
-  const geaendert = JSON.stringify(entwurf) !== JSON.stringify(gespeichert);
+  const ablage = useAblage();
+  const [ort, setOrt] = useState<AblageOrt | null>(null);
+  const [wechselt, setWechselt] = useState<string | null>(null);
+  const ortNeu = !!ort && !!ablage && !ortGleich(ort, ablage.ort) && (ort.art === 'lokal' || !!ort.ordner);
+  const geaendert = JSON.stringify(entwurf) !== JSON.stringify(gespeichert) || ortNeu;
 
   const darstellung = (d: Darstellung) => sofort({ darstellung: d });
   /** Allgemein: wirkt sofort. */
@@ -163,13 +173,21 @@ export function EinstellungenDialog({
       <button
         type="button"
         className="btn primary"
-        disabled={!geaendert || !ok}
-        onClick={() => {
+        disabled={!geaendert || !ok || !!wechselt}
+        onClick={async () => {
           onSpeichern(entwurf);
+          if (ortNeu && ort) {
+            setWechselt('Daten werden übernommen …');
+            await onVorWechsel?.();
+            const r = await window.api.ablageWechseln(ort);
+            if (!r.ok) setWechselt(null);
+            if (!r.ok) window.alert(`Der Speicherort konnte nicht gewechselt werden.\n\n${r.fehler ?? ''}`);
+            return; // die Oberfläche lädt neu
+          }
           onSchliessen();
         }}
       >
-        Speichern
+        {wechselt ?? 'Speichern'}
       </button>
     </>
   );
@@ -278,6 +296,29 @@ export function EinstellungenDialog({
           Fertig
         </button>
       </>
+    );
+  } else if (seite === 'Speicherort') {
+    const o = ort ?? ablage?.ort ?? { art: 'lokal' as const, ordner: null };
+    titel = es_titel(
+      'cloud',
+      'Speicherort',
+      true,
+      ablage?.gemeinsam ? (ablage.online ? 'Synchronisiert' : 'Offline – Änderungen warten') : 'Nur dieser Computer',
+    );
+    inhalt = (
+      <SpeicherortSeite
+        stand={ablage}
+        ort={o}
+        setOrt={setOrt}
+        bestand={bestand}
+        passwortStandard={entwurf.einstellungen.dateiPasswortStandard}
+        onPasswortStandard={(an) => entwurfSetzen({ dateiPasswortStandard: an })}
+      />
+    );
+    fuss = speichernFuss(
+      undefined,
+      o.art === 'lokal' ? 'Daten liegen nur auf diesem Computer.' : 'Kundendaten bleiben im Microsoft-365-Konto der Agentur (Rechenzentrum EU).',
+      o.art === 'lokal' || !!o.ordner,
     );
   } else if (seite === 'Schnellstart') {
     const links = entwurf.einstellungen.schnellstart;

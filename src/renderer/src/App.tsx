@@ -27,11 +27,14 @@ import {
   type Katalog,
   type SchnellstartLink,
   type UebersichtInfo,
+  FERN,
+  type FremdMarke,
 } from '../../shared';
 import type { AppBefehl, AppInfo, VtueMeta } from '../../shared/api';
 import { gespeichertLaden, Speicher, type Gespeichert } from './daten/speicher';
 import { demoEinstellungen } from './daten/demo';
 import { useDocVersion } from './daten/hooks';
+import { OfflineHinweis, useAblage, useMitarbeit } from './mitarbeit/mitarbeit';
 import { darstellungAnwenden } from './daten/darstellung';
 import { Seitenleiste } from './komponenten/Seitenleiste';
 import { Sym } from './komponenten/ui';
@@ -107,6 +110,12 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
   const [meldung, setMeldung] = useState<string | null>(null);
   const suche = useRef<HTMLInputElement>(null);
   const e = gespeichert.einstellungen;
+  // Bild 15: gemeinsam bearbeiten
+  const ablage = useAblage();
+  const [markenStand, setMarkenStand] = useState(0);
+  useEffect(() => speicher.aufMarken(() => setMarkenStand((x) => x + 1)), [speicher]);
+  const marken = useMemo(() => (offen ? new Map(speicher.markenFuer(offen.id)) : new Map<string, FremdMarke>()), [speicher, offen?.id, markenStand]);
+  const mitarbeit = useMitarbeit(offen?.id ?? null, ablage?.gemeinsam ? ablage.ich.id : null, marken);
   const team = e.team.map((t) => t.name);
 
   const kundeName = useCallback((kundeId: string) => leseBestand(speicher.bestand).kunden.find((k) => k.id === kundeId)?.name, [speicher]);
@@ -151,7 +160,7 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
     const doc = offen.doc;
     let erst = true;
     const h = (_u: Uint8Array, ursprung: unknown) => {
-      if (!erst || ursprung === null) return;
+      if (!erst || ursprung === null || ursprung === FERN) return;
       erst = false;
       const u = leseUebersicht(doc);
       protokoll('Übersicht bearbeitet', u.kundeId, u.titel);
@@ -327,6 +336,8 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
       {offen && kunde ? (
         <EditorSeite
           key={`${offen.id}-${offen.n}`}
+          uebersichtId={offen.id}
+          {...(ablage?.gemeinsam ? { mitarbeit } : {})}
           doc={offen.doc}
           kunde={kunde}
           katalog={katalog}
@@ -462,6 +473,7 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
       )}
       {dialog?.art === 'einstellungen' && (
         <EinstellungenDialog
+          onVorWechsel={() => speicher.sofortSpeichern()}
           start={dialog.seite}
           gespeichert={gespeichert}
           benutzer={info.benutzer}
@@ -532,6 +544,7 @@ function Oberflaeche({ speicher, info, gespeichert, setGespeichert }: { speicher
           </div>
         </div>
       )}
+      <OfflineHinweis s={ablage} />
       {meldung && (
         <div className="ub-toast" role="status">
           <Sym n="info" />

@@ -1,6 +1,6 @@
 /**
  * Electron-Hauptprozess: Fenster, lokales Speichern im Benutzerprofil, PDF-Erzeugung.
- * Daten liegen als Yjs-Dateien in <Benutzerprofil>/daten (OneDrive-Abgleich folgt mit M5 ohne Umbau).
+ * Daten liegen als Yjs-Dateien in <Benutzerprofil>/daten oder (M5b) im gemeinsamen SharePoint-/OneDrive-Ordner (`ablage.ts`).
  */
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeTheme, shell } from 'electron';
 import { mkdir, readFile, rename, rm, stat, writeFile } from 'node:fs/promises';
@@ -8,6 +8,7 @@ import { basename, extname, isAbsolute, join } from 'node:path';
 import { userInfo } from 'node:os';
 import type { AppBefehl, AppInfo, DateiAuftrag, DateiInfo, DruckDaten, PdfAuftrag, PdfErgebnis, ProtokollEintrag } from '../shared/api';
 import { updatesEinrichten } from './update';
+import { ablageEinrichten, aktuelleAblage, gespeichertMelden } from './ablage-ipc';
 import { istVerschluesselt, vtueInhalt, vtueLesen, vtueSchreiben, VtueFehler } from './vtue';
 import { randomUUID } from 'node:crypto';
 import type { Darstellung } from '../shared/modell/typen';
@@ -299,6 +300,8 @@ function anzeigename(konto: string): string {
   return gross(konto || 'Ich');
 }
 
+const benutzerName = () => process.env['VTUE_BENUTZER'] || anzeigename(userInfo().username);
+
 // ---------------------------------------------------------------- IPC
 
 function ipcEinrichten(): void {
@@ -307,25 +310,43 @@ function ipcEinrichten(): void {
     (): AppInfo => ({
       plattform: process.platform,
       version: app.getVersion(),
-      benutzer: process.env['VTUE_BENUTZER'] || anzeigename(userInfo().username),
+      benutzer: benutzerName(),
       demo: process.env['VTUE_DEMO'] === '1',
       ...(process.env['VTUE_PDF_ZIEL'] ? { pdfZiel: process.env['VTUE_PDF_ZIEL'] } : {}),
     }),
   );
-  ipcMain.handle('daten:laden', async (_e, name: string) => {
-    const b = await lesenOderNull(pfad(name));
-    return b ? new Uint8Array(b) : null;
-  });
-  ipcMain.handle('daten:speichern', (_e, name: string, daten: Uint8Array) => sicherSchreiben(pfad(name), daten));
-  ipcMain.handle('einstellungen:laden', async () => {
-    const b = await lesenOderNull(pfad('einstellungen', '.json'));
+  ipcMain.handle('daten:laden', (_e, name: string) => aktuelleAblage().laden(name));
+  ipcMain.handle('daten:speichern', async (_e, name: string, daten: Uint8Array) => {
     try {
-      return b ? JSON.parse(b.toString('utf8')) : null;
-    } catch {
-      return null;
+      const ok = await aktuelleAblage().speichern(name, daten);
+      gespeichertMelden(true);
+      return ok;
+    } catch (e) {
+      gespeichertMelden(false, e instanceof Error ? e.message : String(e));
+      throw e;
     }
   });
-  ipcMain.handle('einstellungen:speichern', (_e, daten: unknown) => sicherSchreiben(pfad('einstellungen', '.json'), JSON.stringify(daten, null, 2)));
+  ipcMain.handle('einstellungen:laden', async () => {
+    const b = await lesenOderNull(pfad('einstellungen', '.json'));
+    let roh: Record<string, unknown> | null = null;
+    try {
+      roh = b ? JSON.parse(b.toString('utf8')) : null;
+    } catch {
+      roh = null;
+    }
+    // Gemeinsamer Ordner: Vorlagen gelten für die ganze Agentur (zuletzt gespeichert gilt)
+    const ag = (await aktuelleAblage().agenturLesen()) as { vorlagen?: unknown } | null;
+    if (ag && Array.isArray(ag.vorlagen) && ag.vorlagen.length) roh = { ...(roh ?? {}), vorlagen: ag.vorlagen };
+    return roh;
+  });
+  ipcMain.handle('einstellungen:speichern', async (_e, daten: unknown) => {
+    await sicherSchreiben(pfad('einstellungen', '.json'), JSON.stringify(daten, null, 2));
+    const v = (daten as { vorlagen?: unknown } | null)?.vorlagen;
+    if (Array.isArray(v) && aktuelleAblage().gemeinsam) {
+      const alt = (await aktuelleAblage().agenturLesen()) as { vorlagen?: unknown } | null;
+      if (JSON.stringify(alt?.vorlagen) !== JSON.stringify(v)) await aktuelleAblage().agenturSchreiben({ ...(alt ?? {}), vorlagen: v });
+    }
+  });
   ipcMain.handle('darstellung:setzen', (_e, d: Darstellung) => {
     nativeTheme.themeSource = d === 'hell' ? 'light' : d === 'dunkel' ? 'dark' : 'system';
   });
@@ -354,7 +375,7 @@ function ipcEinrichten(): void {
     if (r.canceled || !p) return null;
     return { pfad: p, name: basename(p, extname(p)) };
   });
-  ipcMain.handle('daten:loeschen', (_e, name: string) => rm(pfad(name), { force: true }));
+  ipcMain.handle('daten:loeschen', (_e, name: string) => aktuelleAblage().loeschen(name));
   ipcMain.handle('protokoll:laden', () => protokollLaden());
   ipcMain.handle('protokoll:schreiben', (_e, eintrag: ProtokollEintrag) => protokollSchreiben(eintrag));
   ipcMain.handle('text:speichern', async (e, dateiname: string, text: string) => {
@@ -420,9 +441,10 @@ app.on('second-instance', (_e, argv) => {
   else void hauptFensterBereit();
 });
 
-app.whenReady().then(() => {
+app.whenReady().then(async () => {
   if (!einzig) return;
   if (process.platform !== 'darwin') Menu.setApplicationMenu(null);
+  await ablageEinrichten(datenOrdner(), benutzerName());
   ipcEinrichten();
   updatesEinrichten();
   const start = [...dateienAusArgs(process.argv), ...fruehe];

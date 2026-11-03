@@ -14,11 +14,11 @@ import {
   type Vorschlag,
   type Zahlweise,
 } from '../../../shared';
-import { Sym } from '../komponenten/ui';
+import { Avatar, Sym } from '../komponenten/ui';
 import { Auswahl, BetragFeld, DatumFeld, TextFeld } from './felder';
 import { useEditorKontext } from './kontext';
 import { LEISTUNG_OPTIONEN, SPALTEN, ZAHLWEISE_OPTIONEN, type Spalte } from './spalten';
-import { ZAHLWEISE_TEXT } from '../../../shared';
+import { MARKE_MS, ZAHLWEISE_TEXT, vorWann } from '../../../shared';
 
 export function istLeer(v: Vertrag): boolean {
   const r = v as unknown as Record<string, unknown>;
@@ -109,11 +109,33 @@ export function VertragZeile({
   };
 
   const spalten = SPALTEN[typ];
+  const mit = k.mitarbeit;
+  const dort = mit?.orte.get(v.id);
+  const m = mit?.marken.get(v.id);
+  const marke = m && mit && mit.jetzt - m.zeit < MARKE_MS ? m : undefined;
+  const mbFuer = (feld: VertragFeld): { cls: string; extra: React.ReactNode } => {
+    const geaendert = !!marke && marke.felder.some((f) => f === feld || feld.startsWith(`${f}.`));
+    const hier = dort?.spalte === feld;
+    return {
+      cls: `${geaendert ? 'mb-neu' : ''} ${hier ? 'mb-feld' : ''}`.trim(),
+      extra: (
+        <>
+          {hier && <span className="mb-flag mb-flag-zelle">{dort.name}</span>}
+          {marke && feld === 'bemerkung' && (
+            <span className="mb-tag">
+              <Avatar id={marke.vonId ?? marke.von} name={marke.von} cls="mb-av" />
+              geändert von {marke.von} · {vorWann(marke.zeit, mit!.jetzt)}
+            </span>
+          )}
+        </>
+      ),
+    };
+  };
   return (
     <tr
       ref={sortable.setNodeRef}
       style={stil}
-      className={`${k.markiert === v.id ? 'focus markiert' : ''} ${sortable.isDragging ? 'zieht' : ''}`}
+      className={`${k.markiert === v.id ? 'focus markiert' : ''} ${sortable.isDragging ? 'zieht' : ''} ${dort ? 'mb-row' : ''}`}
       data-vertrag={v.id}
       data-quelle={v.quelleId}
       data-paar={v.quelleId ?? v.id}
@@ -142,6 +164,7 @@ export function VertragZeile({
           escLeer={escLeer}
           loeschen={loeschen}
           zusatz={zusatz?.(s.feld)}
+          mb={mbFuer(s.feld)}
         />
       ))}
     </tr>
@@ -161,7 +184,10 @@ function Zelle({
   escLeer,
   loeschen,
   zusatz,
+  mb,
 }: {
+  /** Bild 15: Klasse + Zusatz (Namensfähnchen, „geändert von …“) für diese Zelle. */
+  mb: { cls: string; extra: React.ReactNode };
   s: Spalte;
   v: Vertrag;
   typ: BereichTyp;
@@ -185,26 +211,28 @@ function Zelle({
 
   switch (s.art) {
     case 'name':
-      return <NameZelle v={v} typ={typ} ugId={ugId} ugNamen={ugNamen} aendern={aendern} gemeinsam={gemeinsam} />;
+      return <NameZelle v={v} typ={typ} ugId={ugId} ugNamen={ugNamen} aendern={aendern} gemeinsam={gemeinsam} mb={mb} />;
     case 'bem':
       return (
-        <td className="bem">
+        <td className={`bem ${mb.cls}`} data-feld={s.feld}>
           <TextFeld {...gemeinsam} label="Bemerkung" mehrzeilig wert={v.bemerkung} placeholder="Bemerkung" onCommit={(w) => aendern('bemerkung', w)} />
           {zusatz}
+          {mb.extra}
           {ende}
         </td>
       );
     case 'betrag':
       return (
-        <td className="num">
+        <td className={`num ${mb.cls}`} data-feld={s.feld}>
           <BetragFeld {...gemeinsam} label={s.titel} wert={feldWert(v, s.feld) as Betrag} strich={s.strich ?? false} onCommit={(w) => aendern(s.feld, w)} />
           {zusatz}
+          {mb.extra}
           {ende}
         </td>
       );
     case 'zw':
       return (
-        <td className="zw">
+        <td className={`zw ${mb.cls}`} data-feld={s.feld}>
           <Auswahl
             feldRef={gemeinsam.feldRef}
             onEnter={gemeinsam.onEnter}
@@ -213,12 +241,13 @@ function Zelle({
             optionen={ZAHLWEISE_OPTIONEN}
             onChange={(w) => aendern('zahlweise', w)}
           />
+          {mb.extra}
           {ende}
         </td>
       );
     case 'rate':
       return (
-        <td className="num rate-zelle">
+        <td className={`num rate-zelle ${mb.cls}`} data-feld={s.feld}>
           <span className="rate-reihe">
             <BetragFeld {...gemeinsam} label="Rate/Tilgung" wert={feldWert(v, 'rate') as Betrag} onCommit={(w) => aendern('rate', w)} />
             <Auswahl
@@ -231,13 +260,14 @@ function Zelle({
             />
           </span>
           {zusatz}
+          {mb.extra}
           {ende}
         </td>
       );
     case 'leistung': {
       const l = (v as VertragAV).leistung;
       return (
-        <td className="num v2-lz">
+        <td className={`num v2-lz ${mb.cls}`} data-feld={s.feld}>
           <BetragFeld {...gemeinsam} label="Leistung/Guthaben" wert={l.betrag} strich onCommit={(w) => aendern('leistung.betrag', w)} />
           <Auswahl<Leistungsart>
             cls="v2-art"
@@ -246,6 +276,7 @@ function Zelle({
             optionen={LEISTUNG_OPTIONEN}
             onChange={(w) => aendern('leistung.art', w)}
           />
+          {mb.extra}
           {ende}
         </td>
       );
@@ -253,7 +284,7 @@ function Zelle({
     case 'datum':
     case 'monat':
       return (
-        <td className={s.art === 'datum' ? 'num' : 'zw'}>
+        <td className={`${s.art === 'datum' ? 'num' : 'zw'} ${mb.cls}`} data-feld={s.feld}>
           <DatumFeld
             {...gemeinsam}
             art={s.art}
@@ -261,6 +292,7 @@ function Zelle({
             wert={(feldWert(v, s.feld) as string | null) ?? null}
             onCommit={(w) => aendern(s.feld, w)}
           />
+          {mb.extra}
           {ende}
         </td>
       );
@@ -275,7 +307,9 @@ function NameZelle({
   ugNamen,
   aendern,
   gemeinsam,
+  mb,
 }: {
+  mb: { cls: string; extra: React.ReactNode };
   v: Vertrag;
   typ: BereichTyp;
   ugId: string;
@@ -307,7 +341,7 @@ function NameZelle({
 
   const offen = liste.length > 0;
   return (
-    <td className={`vname ${offen ? 'ac-td' : ''}`}>
+    <td className={`vname ${offen ? 'ac-td' : ''} ${mb.cls}`} data-feld="name">
       <span className="ac-wrap">
         <TextFeld
           {...gemeinsam}
@@ -402,6 +436,7 @@ function NameZelle({
           </div>
         </div>
       )}
+      {mb.extra}
     </td>
   );
 }

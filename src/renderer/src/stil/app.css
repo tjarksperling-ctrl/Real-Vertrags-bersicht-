@@ -414,3 +414,20 @@ button.ds-nach { display: inline-flex; gap: 8px; }
 .update-zeile small.update-fehler { color: var(--orange); }
 .update-balken { display: block; width: 260px; height: 5px; border-radius: 3px; background: var(--line); margin-top: 6px; overflow: hidden; }
 .update-balken i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+
+/* ---------- M5b: gemeinsam bearbeiten (Bild 15) ---------- */
+.mb-anwesend { position: relative; display: inline-flex; align-items: center; gap: 3px; margin: 14px -4px 0 -3px; align-self: center; }
+.mb-av-knopf { border-radius: 50%; padding: 0; line-height: 0; }
+.mb-av-knopf .avatar { width: 20px; height: 20px; font-size: 8px; box-shadow: 0 0 0 1.5px var(--bg), 0 0 0 3px #ff9f0a; }
+.mb-anwesend .mb-karte { top: calc(100% + 12px); left: -154px; text-align: left; font-weight: 400; color: var(--text); }
+.mb-anwesend .mb-karte .mb-link { padding: 0; font-size: inherit; }
+.mb td.mb-feld { position: relative; box-shadow: inset 0 0 0 2px #ff9f0a; border-radius: 6px; }
+.mb .mb-flag.mb-flag-zelle { right: auto; left: 6px; top: -9px; transform: none; z-index: 4; pointer-events: none; }
+.mb td.mb-neu input, .mb td.mb-neu textarea, .mb td.mb-neu .edit-cell { background: rgba(255,159,10,.14); border-radius: 4px; }
+.mb td.bem .mb-tag { margin-top: 2px; }
+.sidebar .bottom .row.mb-fehler { color: var(--red); font-weight: 500; }
+:root.dunkel .mb-karte, :root.dunkel .mb-pfeil { background: var(--card); }
+:root.dunkel .mb-tag { color: #ffb340; }
+.toolbar.v1 .crumb { min-width: 0; flex-shrink: 1; }
+.toolbar.v1 .crumb h1 { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.toolbar.v1 > :not(.crumb) { flex-shrink: 0; }

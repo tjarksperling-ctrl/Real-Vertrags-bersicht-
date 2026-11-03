@@ -1,6 +1,7 @@
 /**
- * Lokaler Speicher der Oberfläche: hält die Yjs-Dokumente (Bestand + je Übersicht) und schreibt
- * jede Änderung kurz verzögert über `window.api` ins Benutzerprofil.
+ * Speicher der Oberfläche: hält die Yjs-Dokumente (Bestand + je Übersicht) und schreibt
+ * jede eigene Änderung kurz verzögert über `window.api` (Benutzerprofil oder gemeinsamer Ordner).
+ * M5b: Änderungen anderer kommen über `aufFremdeAenderung` und werden mit Ursprung `FERN` eingespielt.
  */
 import * as Y from 'yjs';
 import {
@@ -21,7 +22,12 @@ import {
   type Kunde,
   type Uebersicht,
   type Vorlage,
+  FERN,
+  MARKE_MS,
+  fremdeMarken,
+  type FremdMarke,
 } from '../../../shared';
+import type { FremdeAenderung } from '../../../shared/api';
 import { demoKunden } from './demo';
 
 const VERZOEGERUNG = 300;
@@ -48,6 +54,9 @@ export class Speicher {
   benutzer = '';
   private readonly docs = new Map<string, Y.Doc>();
   private readonly timer = new Map<string, ReturnType<typeof setTimeout>>();
+  /** „geändert von …“ je Übersicht und Vertrag (Bild 15). */
+  readonly marken = new Map<string, Map<string, FremdMarke>>();
+  private readonly markenHoerer = new Set<() => void>();
 
   static async oeffnen(demo: boolean, benutzer = ''): Promise<Speicher> {
     const s = new Speicher();
@@ -60,12 +69,59 @@ export class Speicher {
         s.anlegen(d.kunde, d.uebersicht, d.von);
         if (d.umgesetzt) uebersichtAktualisieren(s.bestand, d.uebersicht.id, { umgesetzt: d.umgesetzt });
       }
-    window.addEventListener('beforeunload', () => s.sofortSpeichern());
+    window.addEventListener('beforeunload', () => void s.sofortSpeichern());
+    window.api.aufFremdeAenderung((l) => s.fremdEinspielen(l));
     return s;
   }
 
+  /** Änderungen anderer Personen einspielen (nicht rückgängig zu machen, nicht erneut speichern). */
+  fremdEinspielen(l: FremdeAenderung[]): void {
+    const jetzt = Date.now();
+    let marken = false;
+    for (const a of l) {
+      try {
+        if (a.name === 'bestand') {
+          Y.applyUpdate(this.bestand, a.daten, FERN);
+          continue;
+        }
+        const id = a.name.slice(2);
+        const doc = this.docs.get(id);
+        if (!doc) continue;
+        const vorher = leseUebersicht(doc);
+        Y.applyUpdate(doc, a.daten, FERN);
+        const neu = fremdeMarken(vorher, leseUebersicht(doc), a.von.name, jetzt, a.von.id);
+        if (neu.size) {
+          const m = this.marken.get(id) ?? new Map<string, FremdMarke>();
+          for (const [k, v] of neu) m.set(k, v);
+          this.marken.set(id, m);
+          marken = true;
+        }
+      } catch {
+        /* unvollständige Datei – kommt beim nächsten Abgleich */
+      }
+    }
+    if (marken) for (const f of this.markenHoerer) f();
+  }
+
+  /** Marken einer Übersicht (abgelaufene werden entfernt). */
+  markenFuer(id: string, jetzt = Date.now()): Map<string, FremdMarke> {
+    const m = this.marken.get(id);
+    if (!m) return new Map();
+    for (const [k, v] of m) if (jetzt - v.zeit > MARKE_MS) m.delete(k);
+    return m;
+  }
+  aufMarken(f: () => void): () => void {
+    this.markenHoerer.add(f);
+    return () => this.markenHoerer.delete(f);
+  }
+
+  private beobachtenMelden(): void {
+    void window.api.ablageBeobachten([...this.docs.keys()].map((id) => `u-${id}`));
+  }
+
   private beobachten(name: string, doc: Y.Doc, nachher?: () => void): void {
-    doc.on('update', () => {
+    doc.on('update', (_u: Uint8Array, ursprung: unknown) => {
+      if (ursprung === FERN) return;
       clearTimeout(this.timer.get(name));
       this.timer.set(
         name,
@@ -78,13 +134,15 @@ export class Speicher {
     });
   }
 
-  sofortSpeichern(): void {
+  sofortSpeichern(): Promise<void> {
+    const l: Promise<unknown>[] = [];
     for (const [name, t] of this.timer) {
       clearTimeout(t);
       const doc = name === 'bestand' ? this.bestand : this.docs.get(name.slice(2));
-      if (doc) void window.api.speichern(name, Y.encodeStateAsUpdate(doc));
+      if (doc) l.push(window.api.speichern(name, Y.encodeStateAsUpdate(doc)));
     }
     this.timer.clear();
+    return Promise.all(l).then(() => undefined);
   }
 
   /** Legt Kunde + erste Übersicht an. */
@@ -110,6 +168,7 @@ export class Speicher {
 
   private registrieren(id: string, doc: Y.Doc): void {
     this.docs.set(id, doc);
+    this.beobachtenMelden();
     this.beobachten(`u-${id}`, doc, () => {
       const u = leseUebersicht(doc);
       uebersichtAktualisieren(this.bestand, id, {
@@ -170,6 +229,8 @@ export class Speicher {
     this.timer.delete(name);
     this.docs.get(id)?.destroy();
     this.docs.delete(id);
+    this.marken.delete(id);
+    this.beobachtenMelden();
   }
 
   /** Übersicht endgültig löschen (Verzeichnis + Datei). */
@@ -184,7 +245,7 @@ export class Speicher {
     const ids = kundeEntfernen(this.bestand, kundeId);
     for (const id of ids) this.vergessen(id);
     await Promise.all(ids.map((id) => window.api.loeschen(`u-${id}`)));
-    this.sofortSpeichern();
+    await this.sofortSpeichern();
     return ids.length;
   }
 

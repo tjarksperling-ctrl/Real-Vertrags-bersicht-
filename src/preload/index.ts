@@ -2,6 +2,13 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { Api } from '../shared/api';
 
+/** Ereignis aus dem Hauptprozess abonnieren; liefert die Abmeldung. */
+function horchen<T>(kanal: string, fn: (d: T) => void): () => void {
+  const h = (_e: Electron.IpcRendererEvent, d: T) => fn(d);
+  ipcRenderer.on(kanal, h);
+  return () => ipcRenderer.off(kanal, h);
+}
+
 const api: Api = {
   info: () => ipcRenderer.invoke('app:info'),
   laden: (name) => ipcRenderer.invoke('daten:laden', name),
@@ -37,6 +44,17 @@ const api: Api = {
     ipcRenderer.on('update:stand', h);
     return () => ipcRenderer.off('update:stand', h);
   },
+  ablageStand: () => ipcRenderer.invoke('ablage:stand'),
+  aufAblageStatus: (fn) => horchen('ablage:status', fn),
+  ablageBeobachten: (namen) => ipcRenderer.invoke('ablage:beobachten', namen),
+  aufFremdeAenderung: (fn) => horchen('ablage:fremd', fn),
+  anwesenheit: (m) => ipcRenderer.invoke('ablage:anwesenheit', m),
+  personen: () => ipcRenderer.invoke('ablage:personen'),
+  aufPersonen: (fn) => horchen('ablage:personen', fn),
+  ordnerWaehlen: () => ipcRenderer.invoke('ablage:ordnerWaehlen'),
+  ordnerInfo: (ort) => ipcRenderer.invoke('ablage:info', ort),
+  ablageOeffnen: () => ipcRenderer.invoke('ablage:oeffnen'),
+  ablageWechseln: (ort) => ipcRenderer.invoke('ablage:wechseln', ort),
 };
 
 contextBridge.exposeInMainWorld('api', api);

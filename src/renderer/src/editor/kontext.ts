@@ -52,6 +52,8 @@ export interface EditorKontextWert {
   aufgabenZeigen?: () => void;
   /** Nur ansehen (geöffnete Desktop-Datei, Bild 10). */
   nurLesen?: boolean;
+  /** Gemeinsam bearbeiten (Bild 15): wer wo steht, was andere geändert haben. */
+  mitarbeit?: import('../mitarbeit/mitarbeit').Mitarbeit | undefined;
 }
 
 export const EditorKontext = createContext<EditorKontextWert | null>(null);

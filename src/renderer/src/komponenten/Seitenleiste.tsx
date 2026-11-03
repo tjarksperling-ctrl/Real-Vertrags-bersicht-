@@ -4,6 +4,7 @@ import { heuteDatum, zaehleFaellige, type Bestand } from '../../../shared';
 import { zeigeHinweis } from '../../../shared/update/update';
 import { Avatar, STRG, Sym } from './ui';
 import { useUpdate } from './update';
+import { SpeicherStatus, useAblage } from '../mitarbeit/mitarbeit';
 
 export interface SeitenleisteProps {
   bestand: Bestand;
@@ -24,6 +25,7 @@ export interface SeitenleisteProps {
 export const Seitenleiste = forwardRef<HTMLInputElement, SeitenleisteProps>(function Seitenleiste(p, sucheRef) {
   const [suche, setSuche] = useState('');
   const update = useUpdate();
+  const ablage = useAblage();
   const q = suche.trim().toLocaleLowerCase('de');
   const treffer = p.bestand.kunden.filter((k) => !q || k.name.toLocaleLowerCase('de').includes(q));
   const pinKunden = [...new Set(p.angepinnt.map((id) => p.bestand.uebersichten.find((u) => u.id === id)?.kundeId).filter((x): x is string => !!x))]
@@ -106,9 +108,7 @@ export const Seitenleiste = forwardRef<HTMLInputElement, SeitenleisteProps>(func
             </button>
           </div>
         )}
-        <div className="row" title="Gespeichert im Benutzerprofil. Der Abgleich über OneDrive folgt mit Meilenstein 5.">
-          <Sym n="cloud" /> Lokal gespeichert <span className="dot" style={{ marginLeft: 'auto' }} />
-        </div>
+        <SpeicherStatus s={ablage} />
         <div className="row">
           <Avatar id={p.benutzer} name={p.benutzer} cls="klein" /> {p.benutzer}
           <button type="button" className="knopf-rein einst-knopf" title="Einstellungen" onClick={p.onEinstellungen}>

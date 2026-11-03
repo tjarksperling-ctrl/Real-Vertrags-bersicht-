@@ -397,7 +397,64 @@ async function m5c() {
   }
 }
 
-const schritte = { m2, m3, m4, m5, m5c };
+/** Feld eines Vertrags (Zeile über den Vertragsnamen gefunden). */
+async function feld(win, vertrag, spalte) {
+  const id = await win.evaluate((n) => [...document.querySelectorAll('tr[data-vertrag]')].find((t) => t.querySelector('td.vname input')?.value === n)?.dataset.vertrag, vertrag);
+  return win.locator(`tr[data-vertrag="${id}"] td[data-feld="${spalte}"]`).locator('input,textarea').first();
+}
+
+/** M5b Teil 1: zwei Personen im selben gemeinsamen Ordner (Bild 15). */
+async function m5b() {
+  const team = mkdtempSync(join(tmpdir(), 'vtue-team-'));
+  const a = await starten({ VTUE_ORDNER: team, VTUE_MEHRFACH: '1' });
+  let b;
+  try {
+    await pause(1500); // Demo-Daten landen im gemeinsamen Ordner
+    b = await starten({ VTUE_ORDNER: team, VTUE_MEHRFACH: '1', VTUE_BENUTZER: 'Sabine K.', VTUE_DEMO: '0' });
+    await bergerOeffnen(a.win);
+    await bergerOeffnen(b.win);
+    // Sabine ergänzt die Bemerkung bei Rechtsschutz und steht danach im Beitrag von Wohngebäude
+    const bem = await feld(b.win, 'Rechtsschutz', 'bemerkung');
+    await bem.click();
+    await b.win.keyboard.press('End');
+    await b.win.keyboard.type(', Vermieter');
+    await b.win.keyboard.press('Tab');
+    const wg = await feld(b.win, 'Wohngebäude', 'beitrag');
+    await wg.click();
+    await pause(11000); // Abgleich (2 s) + Anwesenheit (bis 8 s)
+    await a.win.evaluate(() => document.querySelector('tr.mb-row')?.scrollIntoView({ block: 'center' }));
+    await pause(300);
+    await bild(a.win, 'm5b-mehrbenutzer');
+    await a.win.click('.mb-av-knopf');
+    await pause(250);
+    await bild(a.win, 'm5b-mehrbenutzer-karte');
+    await a.win.keyboard.press('Escape');
+    // Einstellungen → Speicherort
+    await a.win.click('.einst-knopf');
+    await a.win.click('.kk-nav-i:has-text("Speicherort")');
+    await pause(600);
+    await bild(a.win, 'm5b-einst-speicherort');
+  } finally {
+    await a.app.close();
+    if (b) await b.app.close();
+  }
+  // offline (Bild 15 offline)
+  const c = await starten({ VTUE_ORDNER: team, VTUE_MEHRFACH: '1', VTUE_OFFLINE: '1', VTUE_DEMO: '0' });
+  try {
+    await bergerOeffnen(c.win);
+    const bem = await feld(c.win, 'Hausrat', 'bemerkung');
+    await bem.click();
+    await c.win.keyboard.type(' ');
+    await c.win.keyboard.press('Tab');
+    await pause(4000);
+    await bild(c.win, 'm5b-offline');
+  } finally {
+    await c.app.close();
+    rmSync(team, { recursive: true, force: true });
+  }
+}
+
+const schritte = { m2, m3, m4, m5, m5c, m5b };
 for (const [name, fn] of Object.entries(schritte)) {
   if (was === 'alle' || was === name) {
     console.log(`Screenshots ${name} …`);
